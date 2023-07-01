@@ -612,3 +612,89 @@ public ListNode reverseList(ListNode head) {
         return rev(temp, node);
     }
 ```
+## 21. Merge Two Sorted Lists (Classic)
+https://leetcode.com/problems/merge-two-sorted-lists/description/
+
+
+    Take a pointer, point it to the least valued node, increment both pointer. In the end just point the resulting list to a non empty list if there any.
+```java 
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        ListNode head=new ListNode();
+        ListNode pointer=head;
+        while(list1!=null && list2!=null){
+            if(list1.val<list2.val){
+                pointer.next=list1;
+                list1=list1.next;
+            }else{
+                pointer.next=list2;
+                list2=list2.next;
+            }
+            pointer=pointer.next;
+        }
+        pointer.next=list1!=null?list1:list2;
+        return head.next;
+    }
+```
+
+## 234. Palindrome Linked List
+https://leetcode.com/problems/palindrome-linked-list/
+
+```java
+    public boolean isPalindrome(ListNode head) {
+        StringBuilder str=new StringBuilder("");
+        while(head!=null){
+            str.append(head.val);
+            head=head.next;
+        }
+        StringBuilder strrev=new StringBuilder(str).reverse();
+        boolean ans=true;
+        for(int i=0;i<str.length();i++){
+            if(str.charAt(i)!=strrev.charAt(i)){
+                ans= false;
+            }
+        }
+        return ans;
+    }
+```
+
+
+## 234. Palindrome Linked List
+https://leetcode.com/problems/palindrome-linked-list/
+
+    Reverse the later half after reversing just start comparing if at any time the value doesn't match it's not a palindrome, i.e. return false, else it's a palindrome and return true.
+    It'll automatically take care of the edge cases of odd and even
+
+```java
+class Solution {
+
+    public boolean isPalindrome(ListNode head) {
+        ListNode fast = head;
+        ListNode slow = head;
+        while (fast != null && fast.next != null) {
+            fast = fast.next.next;
+            slow = slow.next;
+        }
+        ListNode temp = reverse(slow);
+        while (temp != null && head != null) {
+            if (temp.val != head.val) return false;
+            temp = temp.next;
+            head = head.next;
+        }
+        return true;
+    }
+
+    public ListNode reverse(ListNode head) {
+        ListNode p = null;
+        ListNode q = null;
+        ListNode r = head;
+        while (r != null) {
+            p = q;
+            q = r;
+            r = r.next;
+            q.next = p;
+        }
+        return q;
+    }
+}
+
+```
