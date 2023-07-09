@@ -766,3 +766,40 @@ class Solution {
     }
 }
 ```
+
+
+2130. Maximum Twin Sum of a Linked List
+https://leetcode.com/problems/maximum-twin-sum-of-a-linked-list/description/
+
+```java
+    public int pairSum(ListNode head) {
+        // Lets find the midpoint, and then reverse the LL from there.
+        int ans=-1;
+        // Midpoint
+        ListNode slow=head;
+        ListNode fast=head;
+        while(fast!=null && fast.next!=null){
+            slow=slow.next;
+            fast=fast.next.next;
+        }
+
+        // Reverse
+        ListNode current=slow;
+        ListNode prev=null;
+        ListNode nextn=null;
+        while(current!=null){
+            nextn=current.next;
+            current.next=prev;
+            prev=current;
+            current=nextn;
+        }
+
+        // checking for twins
+        while(head!=null && prev!=null){
+            ans=Math.max(ans, (head.val + prev.val));
+            head=head.next;
+            prev=prev.next;
+        }
+        return ans;
+    }
+```
