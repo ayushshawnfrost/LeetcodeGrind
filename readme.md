@@ -698,3 +698,71 @@ class Solution {
 }
 
 ```
+
+## 203. Remove Linked List Elements
+https://leetcode.com/problems/remove-linked-list-elements/
+
+
+```java
+public ListNode removeElements(ListNode head, int val) {
+        if (head == null) return null;
+        head.next = removeElements(head.next, val);
+        return head.val == val ? head.next : head;
+    }
+```
+
+
+## 143. Reorder List
+https://leetcode.com/problems/reorder-list/description/
+
+```java 
+class Solution {
+    ListNode reverseList(ListNode head){
+        ListNode prev=null;
+        ListNode curr_node=head;
+        ListNode next_node=null;
+        while(curr_node!=null){
+            next_node=curr_node.next;
+            curr_node.next=prev;
+            prev=curr_node;
+            curr_node=next_node;
+        }
+        return prev;
+    }
+     void merge(ListNode l1,ListNode l2){
+         while(l1!=null){
+            ListNode l1_next=l1.next;
+            ListNode l2_next=l2.next;
+
+            l1.next=l2;
+            if(l1_next==null){
+                break;
+            }
+            l2.next=l1_next;
+            l1=l1_next;
+            l2=l2_next;
+         }
+    }
+    public void reorderList(ListNode head) {
+        if(head==null||head.next==null){return;}
+        
+        //head and tail of list 1
+        ListNode first_head=head;
+        ListNode first_tail=null;
+
+        //head and tail of list 2
+        ListNode slow=head;
+        ListNode fast=head;
+        
+        while(fast!=null && fast.next!=null){
+            first_tail=slow;
+            slow=slow.next;
+            fast=fast.next.next;
+        }
+        first_tail.next=null;
+
+        ListNode l2=reverseList(slow);
+        merge(first_head,l2);
+    }
+}
+```
