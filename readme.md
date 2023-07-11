@@ -768,7 +768,7 @@ class Solution {
 ```
 
 
-2130. Maximum Twin Sum of a Linked List
+## 2130. Maximum Twin Sum of a Linked List
 https://leetcode.com/problems/maximum-twin-sum-of-a-linked-list/description/
 
 ```java
@@ -801,5 +801,111 @@ https://leetcode.com/problems/maximum-twin-sum-of-a-linked-list/description/
             prev=prev.next;
         }
         return ans;
+    }
+```
+
+## 19. Remove Nth Node From End of List
+https://leetcode.com/problems/remove-nth-node-from-end-of-list/
+
+![Alt text](image.png)
+
+    Note that we need not the nth node but the node just before that, hence we are using an extra node. Important thing is to see that first and secong is pointing to temp(the node before head).
+
+```java
+
+    public ListNode removeNthFromEnd(ListNode head, int key) {
+        if(head==null || head.next==null)return null;
+        ListNode temp=new ListNode(0);
+        temp.next=head;
+        ListNode first = temp;
+        ListNode second = temp;
+        
+        while(key>0){
+            second=second.next;key--;
+        }
+
+        while(second.next!=null){
+            first=first.next;
+            second=second.next;
+        }
+        first.next=first.next.next;
+        return temp.next;
+
+    }
+```
+
+
+
+## 1721. Swapping Nodes in a Linked List
+https://leetcode.com/problems/swapping-nodes-in-a-linked-list/
+
+![Alt text](image-1.png)
+```java
+    public ListNode swapNodes(ListNode head, int k) {
+        ListNode second=head;
+        ListNode first=head;
+        ListNode kstart=null;
+        while(k>1){
+            second=second.next;
+            k--;
+        }
+        kstart=second;
+        while(second.next!=null){
+            first=first.next;
+            second=second.next;
+        }
+        int tempval=first.val;
+        first.val=kstart.val;
+        kstart.val=tempval;
+        return head;
+    }
+```
+
+## 138. Copy List with Random Pointer
+https://leetcode.com/problems/copy-list-with-random-pointer/description/
+https://www.youtube.com/watch?v=4apaOcK586U&ab_channel=AnujBhaiya
+
+    3 approachs to do this question 
+    1. O(n^2) for every node do a loop from start.
+    2. O(n) time and space the below solution
+    3. O(n) time ans constant space.
+```java
+class Solution {
+
+    public Node copyRandomList(Node head) {
+        Node cur = head;
+        HashMap<Node, Node> map = new HashMap<>();
+        while (cur != null) {
+            map.put(cur, new Node(cur.val));
+            cur = cur.next;
+        }
+        cur = head;
+        while (cur != null) {
+            map.get(cur).next = map.get(cur.next);
+            map.get(cur).random = map.get(cur.random);
+            cur = cur.next;
+        }
+        return map.get(head);
+    }
+}
+
+```
+
+
+## 141. Linked List Cycle (Classic)
+https://leetcode.com/problems/linked-list-cycle/description/
+
+```java
+    public boolean hasCycle(ListNode head) {
+        ListNode slow=head;
+        ListNode fast=head;
+
+        while(fast!=null && fast.next!=null){
+            slow=slow.next;
+            fast=fast.next.next;
+            
+            if(slow==fast)return true;
+        }
+        return false;
     }
 ```
