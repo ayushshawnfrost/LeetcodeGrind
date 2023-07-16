@@ -909,3 +909,183 @@ https://leetcode.com/problems/linked-list-cycle/description/
         return false;
     }
 ```
+
+
+## 61. Rotate List  (Good Question)
+https://leetcode.com/problems/rotate-list/description/
+
+```java
+ public ListNode rotateRight(ListNode head, int k) {
+        if(head==null||head.next==null||k==0)return head;
+        int len=1;
+        ListNode temp=head;
+
+        while(temp.next!=null){
+            temp=temp.next;len++;
+        }
+        temp.next=head;
+        k=k%len;
+        k=len-k;
+        while(k>0){
+            temp=temp.next;k--;
+        }
+
+        head = temp.next;
+        temp.next = null;
+
+        return head;
+    }
+```
+
+
+## 104. Maximum Depth of Binary Tree
+https://leetcode.com/problems/maximum-depth-of-binary-tree/description/
+
+```java
+    public int maxDepth(TreeNode root) {
+        return recur(root,0);
+
+    }
+    public int recur(TreeNode root, int height){
+        if(root==null)return height;
+        return Math.max(recur(root.left,height+1),recur(root.right,height+1));
+    }
+```
+
+
+## 226. Invert Binary Tree
+https://leetcode.com/problems/invert-binary-tree/
+
+```java
+     public TreeNode invertTree(TreeNode root) {
+        if(root==null)return null;
+        TreeNode templeft=root.left;
+        root.left=invertTree(root.right);
+        root.right=invertTree(templeft);
+        return root;
+    }
+```
+
+
+## 543. Diameter of Binary Tree
+https://leetcode.com/problems/diameter-of-binary-tree/description/
+
+
+    We have 2 approach for this solution. First would be traversing each node on the 
+    tree using bfs/dfs and calculating the height of left and right tree at each node,
+    and saving the maximum (left+right). This approach is O(n^2)
+
+    The below approach is visiting each node once, but fom bottom up pattern resulting in O(n)
+
+```java 
+class Solution {
+    int target=0;
+    public int height(TreeNode root) {
+        if(root==null)return -1;
+        int left=1+height(root.left);
+        int right=1+height(root.right);
+        target=Math.max(target,(left+right));
+        return Math.max(left,right);
+    }
+    public int diameterOfBinaryTree(TreeNode root) {
+        height(root);
+        return target;
+    }
+}
+```
+
+
+## 110. Balanced Binary Tree
+https://leetcode.com/problems/balanced-binary-tree/description/
+
+### Height-Balanced
+A height-balanced binary tree is a binary tree in which the depth of the two subtrees of every node never differs by more than one.
+
+### Aproach 1
+
+O(n^2): at each node checking if |left height - right hight|
+
+```java
+class Solution {
+    public boolean isBalanced(TreeNode root) {
+        return dfs(root);
+    }
+    public boolean dfs(TreeNode root) {
+        if(root==null)return true;
+        int left=height(root.left,0);
+        int right=height(root.right,0);
+        if(Math.abs(left-right)>1)return false;
+        return dfs(root.left) && dfs(root.right);
+    }
+    public int height(TreeNode root,int h) {
+        if(root==null)return h;
+        return Math.max(height(root.left,h+1),height(root.right,h+1));
+    }
+}
+```
+
+### Approach 2
+
+O(n): traversing each node only once and simoultaneously calculate height 
+
+    import javafx.util.Pair;
+
+```java
+class Solution {
+    public Pair<Boolean,Integer> dfs(TreeNode root){
+        if(root==null)return new Pair<Boolean,Integer>(true,0);
+        Pair<Boolean,Integer> left=dfs(root.left);
+        Pair<Boolean,Integer> right=dfs(root.right);
+        Boolean balanced=left.getKey() && right.getKey() && (Math.abs(left.getValue()-right.getValue())<=1);
+        return new Pair<Boolean,Integer>(balanced,1+Math.max(left.getValue(),right.getValue()));
+    }
+    public boolean isBalanced(TreeNode root) {
+        return dfs(root).getKey();
+    }
+}
+```
+
+
+## 572. Subtree of Another Tree
+https://leetcode.com/problems/subtree-of-another-tree/description/
+
+    // Time Complexity: O(n)
+    // Extra Space Complexity: O(n)
+
+```java
+class Solution {
+    public boolean isSubtree(TreeNode root, TreeNode subRoot) {
+        return dfs(root,subRoot);
+    }
+    public boolean dfs(TreeNode root, TreeNode subRoot) {
+        if((subRoot==null)||check(root,subRoot))return true;
+        if(root==null)return false;
+        return dfs(root.left,subRoot) || dfs(root.right,subRoot);
+    }
+    public boolean check(TreeNode root, TreeNode subRoot) {
+        if(root==null && subRoot==null)return true;
+        if((root==null) || (subRoot==null) || root.val!=subRoot.val )return false;
+        return check(root.left,subRoot.left) && check(root.right,subRoot.right);
+    }
+}
+```
+
+
+## 108. Convert Sorted Array to Binary Search Tree
+https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/description/
+
+```java
+class Solution {
+    public TreeNode sortedArrayToBST(int[] nums) {
+        return makenodes(nums, 0,nums.length-1);
+    }
+    public TreeNode makenodes(int[] nums, int left, int right) {
+        if(left>right)return null;
+        int mid=(left+right)/2;
+        TreeNode root=new TreeNode(nums[mid]);
+        root.left=makenodes(nums, left,mid-1);
+        root.right=makenodes(nums, mid+1,right);
+        return root;
+    }
+}
+```
