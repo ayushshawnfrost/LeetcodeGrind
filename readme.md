@@ -1089,3 +1089,95 @@ class Solution {
     }
 }
 ```
+
+
+## 617. Merge Two Binary Trees
+https://leetcode.com/problems/merge-two-binary-trees/description/
+
+
+```java
+class Solution {
+    public TreeNode mergeTrees(TreeNode root1, TreeNode root2) {
+        if(root1==null && root2==null)return null;
+        int val1 = root1 != null ? root1.val : 0;
+        int val2 = root2 != null ? root2.val : 0;
+
+        TreeNode root = new TreeNode(val1 + val2);
+
+        root.left=mergeTrees(root1!=null?root1.left:null,root2!=null?root2.left:null);
+        root.right=mergeTrees(root1!=null?root1.right:null,root2!=null?root2.right:null);
+        return root;
+    }
+}
+```
+
+
+## 235. Lowest Common Ancestor of a Binary Search Tree
+https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/
+
+```java
+
+class Solution {
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if(root.val>p.val && root.val>q.val)return lowestCommonAncestor(root.left,p,q);
+        if(root.val<p.val && root.val<q.val)return lowestCommonAncestor(root.right,p,q);
+        return root;
+    }
+}
+```
+
+
+## 701. Insert into a Binary Search Tree
+https://leetcode.com/problems/insert-into-a-binary-search-tree/description/
+
+```java
+class Solution {
+    public TreeNode insertIntoBST(TreeNode root, int val) {
+        if(root==null)return new TreeNode(val);
+        if(val>root.val){
+            root.right=insertIntoBST(root.right,val);
+        }else{
+            root.left= insertIntoBST(root.left,val);
+        }
+        return root;
+    }
+}
+```
+
+## 450. Delete Node in a BST
+https://leetcode.com/problems/delete-node-in-a-bst/description/
+
+    https://www.youtube.com/watch?v=petKaikRiIA&t=709s&ab_channel=AnujBhaiya
+
+```java
+class Solution {
+    public TreeNode deleteNode(TreeNode root, int key) {
+        if(root == null) return null;
+        if(key>root.val){
+            root.right=deleteNode(root.right,key);
+        }
+        else if(key<root.val){
+            root.left=deleteNode(root.left,key);
+        }
+        else{
+            if(root.left==null)return root.right;
+            else if(root.right==null) return root.left;
+
+            root.val=minValue(root.right);
+            root.right=deleteNode(root.right,root.val);
+        }
+        
+        return root;
+    }
+    public int minValue(TreeNode root){
+        // Finding the inorder successor of the target node. and that node will always have node.left=null; 
+        int min=root.val;
+        while(root.left!=null){
+            min=root.left.val;
+            root=root.left;
+        }
+        return min;
+    }
+    
+}
+```
