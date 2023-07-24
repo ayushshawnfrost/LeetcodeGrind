@@ -1181,3 +1181,103 @@ class Solution {
     
 }
 ```
+
+## 102. Binary Tree Level Order Traversal
+https://leetcode.com/problems/binary-tree-level-order-traversal/description/
+
+
+```java
+class Solution {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        Queue<TreeNode> q=new LinkedList<>();
+        List<List<Integer>> ans=new ArrayList<>();
+        
+        q.add(root);
+        while(!q.isEmpty()){
+            int len=q.size();
+            List<Integer> sub=new ArrayList<>();
+            for(int i=0;i<len;i++){
+                TreeNode temp=q.poll();
+                if(temp!=null){
+                    sub.add(temp.val);
+                    if(temp.left!=null){q.add(temp.left);}
+                    if(temp.right!=null){q.add(temp.right);}
+                }
+            }
+            if(sub.size()>0)ans.add(sub);
+        }
+        return ans;
+    }
+}
+```
+
+
+## 199. Binary Tree Right Side View
+https://leetcode.com/problems/binary-tree-right-side-view/description/
+
+![Alt text](image-2.png)
+
+```java
+class Solution {
+
+    public List<Integer> rightSideView(TreeNode root) {
+        List<Integer> list = new ArrayList<Integer>();
+        if (root == null) return list;
+        bfs(list, root);
+        return list;
+    }
+
+    public void bfs(List<Integer> list, TreeNode root) {
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            int levelSize = q.size();
+            for (int i = 0; i < levelSize; i++) {
+                TreeNode cur = q.poll();
+                if (i == 0) list.add(cur.val);
+                if (cur.right != null) q.offer(cur.right);
+                if (cur.left != null) q.offer(cur.left);
+            }
+        }
+    }
+}
+```
+
+
+## 783. Minimum Distance Between BST Nodes
+https://leetcode.com/problems/minimum-distance-between-bst-nodes/description/
+
+```java
+class Solution {
+    int prev=Integer.MAX_VALUE;
+    int ans=Integer.MAX_VALUE;
+    public int minDiffInBST(TreeNode root) {
+        inorder(root);
+        return ans;
+    }
+    public void inorder(TreeNode root) {
+        if(root==null)return;
+        inorder(root.left);
+        ans=Math.min(ans,Math.abs(root.val-prev));
+        prev=root.val;
+        inorder(root.right);
+    }
+}
+```
+
+
+##101. Symmetric Tree
+https://leetcode.com/problems/symmetric-tree/description/
+
+```java 
+class Solution {
+    public boolean isSymmetric(TreeNode root) {
+        return check(root.right,root.left);
+    }
+    public boolean check(TreeNode t1, TreeNode t2) {
+        if(t1==null && t2==null)return true;
+        if((t1==null && t2!=null) || (t1!=null && t2==null) || (t1.val!=t2.val))return false;
+        return check(t1.left,t2.right) && check(t1.right,t2.left);
+    }
+}
+```
