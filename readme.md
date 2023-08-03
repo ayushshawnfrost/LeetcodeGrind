@@ -1266,7 +1266,7 @@ class Solution {
 ```
 
 
-##101. Symmetric Tree
+## 101. Symmetric Tree
 https://leetcode.com/problems/symmetric-tree/description/
 
 ```java 
@@ -1278,6 +1278,65 @@ class Solution {
         if(t1==null && t2==null)return true;
         if((t1==null && t2!=null) || (t1!=null && t2==null) || (t1.val!=t2.val))return false;
         return check(t1.left,t2.right) && check(t1.right,t2.left);
+    }
+}
+```
+
+
+## 103. Binary Tree Zigzag Level Order Traversal
+https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/
+
+```java
+class Solution {
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        List<List<Integer>> ans=new ArrayList<>();
+        Queue<TreeNode> q=new LinkedList<>();
+        if(root==null)return ans;
+        q.add(root);
+        int level=1;
+        while(!q.isEmpty()){
+            List<Integer> subList=new ArrayList<>();
+            int size=q.size();
+            while(size!=0){
+                TreeNode node=q.poll();
+                subList.add(node.val);
+
+                if(node.left!=null)q.add(node.left);
+                if(node.right!=null)q.add(node.right);
+
+                size--;
+            }
+            if(level%2==0){
+                Collections.reverse(subList);
+            }
+            ans.add(subList);
+            level++;
+        }
+        return ans;
+    }
+}
+```
+
+## 958. Check Completeness of a Binary Tree
+https://leetcode.com/problems/check-completeness-of-a-binary-tree/
+
+```java
+class Solution {
+    public boolean isCompleteTree(TreeNode root) {
+        Queue<TreeNode> q=new LinkedList<>();
+        if(root==null)return true;
+        q.offer(root);
+        while(!q.isEmpty()){
+                TreeNode node=q.poll();
+                if(node != null )q.offer(node.left);
+                if(node != null )q.offer(node.right);
+                if(node==null){
+                    while(!q.isEmpty()){
+                        if(q.poll()!=null)return false;
+                    }
+                }
+            }
+    return true;
     }
 }
 ```
