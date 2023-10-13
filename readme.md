@@ -1340,3 +1340,717 @@ class Solution {
     }
 }
 ```
+
+## Kth Largest Element in a Stream
+https://leetcode.com/problems/kth-largest-element-in-a-stream/description/
+
+```java
+class KthLargest {
+    private static int k;
+    private PriorityQueue<Integer> heap;
+
+    public KthLargest(int k, int[] nums) {
+        this.k=k;
+        heap=new PriorityQueue<>();
+
+        for(int num:nums)heap.offer(num);
+
+        while(heap.size()>k)heap.poll();
+    }
+    
+    public int add(int val) {
+        heap.offer(val);
+        while(heap.size()>k)heap.poll();
+
+        return heap.peek();
+    }
+}
+```
+
+## K Closest Points to Origin
+https://leetcode.com/problems/k-closest-points-to-origin/description/
+
+```java
+class Solution {
+    private class Point{
+        double dist;
+        int[] point;
+        Point(int[] point){
+            this.dist=Math.sqrt(Math.pow(point[0],2)+Math.pow(point[1],2));
+            this.point=point;
+        }
+    }
+    public int[][] kClosest(int[][] points, int k) {
+        PriorityQueue<Point> minHeap=new PriorityQueue<>((p1, p2) -> Double.compare(p1.dist, p2.dist));
+        int[][] ans=new int[k][2];
+        for(int[] c:points){
+            minHeap.offer(new Point(c));
+        }
+        for(int i=0;i<k;i++){
+            ans[i]=minHeap.poll().point;
+            // ans[i][1]=minHeap.poll().point;
+        }
+        return ans;
+    }
+}
+```
+
+## Kth Largest Element in an Array
+https://leetcode.com/problems/kth-largest-element-in-an-array/description/
+```java
+class Solution {
+    public int findKthLargest(int[] nums, int k) {
+        int ans=-1;
+        PriorityQueue<Integer> pr=new PriorityQueue<>(Collections.reverseOrder());
+
+        for(int i=0;i<nums.length;i++){
+            pr.add(nums[i]);
+        }
+        
+        while(!pr.isEmpty()){
+            int temp=pr.poll();
+            if(k==1){ans=temp;break;}
+            k--;
+            
+        }
+    return ans;
+    }
+}
+
+```
+
+
+## Subsets
+https://leetcode.com/problems/subsets/description/
+```java
+class Solution {
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> ans=new ArrayList<>();
+        List<Integer> sub=new ArrayList<>();
+        dfs(nums,sub,ans,0);
+        return ans;
+    }
+
+    public void dfs(int[] nums,List<Integer> sub,List<List<Integer>> list, int index ) {
+        if(index>=nums.length){
+            list.add(sub);
+        }else{
+            sub.add(nums[index]);
+            dfs(nums,new ArrayList<>(sub),list,index+1);
+            sub.remove(sub.size()-1);
+            dfs(nums,new ArrayList<>(sub),list,index+1);
+        }
+    }
+}
+
+```
+
+
+## Combination Sum
+https://leetcode.com/problems/combination-sum/description/
+```java
+class Solution {
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> ans=new ArrayList<>();
+        List<Integer> sub=new ArrayList<>();
+        dfs(ans,sub,candidates,target,0,0);
+        return ans;
+    }
+
+    public void dfs(List<List<Integer>> ans, List<Integer> sub, int[] candidates, int target, int currSum, int index){
+        if(currSum==target){
+            ans.add(sub);return;
+        }
+        if(currSum>target || index >=candidates.length){
+            return;
+        }
+        sub.add(candidates[index]);
+        dfs(ans,new ArrayList<>(sub),candidates,target,currSum+candidates[index],index);
+        sub.remove(sub.size()-1);
+        dfs(ans,new ArrayList<>(sub),candidates,target,currSum,index+1);
+    }
+}
+
+```
+
+Approach 2:
+
+```java
+class Solution {
+    public List<List<Integer>> subsets(int[] nums) {
+        // List<List<Integer>> ans=new ArrayList<>();
+        // List<Integer> sub=new ArrayList<>();
+        // dfs(nums,sub,ans,0);
+        // return ans;
+                Arrays.sort(nums);
+        List<List<Integer>> ans = new ArrayList<>();
+        List<Integer> list = new ArrayList<>();
+        subSet(nums, 0, ans, list);
+        return ans;
+    }
+
+    public void subSet(
+        int[] nums,
+        int idx,
+        List<List<Integer>> ans,
+        List<Integer> list
+        ) {
+
+        ans.add(new ArrayList<>(list));
+
+        for (int i = idx; i < nums.length; i++) {
+            list.add(nums[i]);
+            subSet(nums, i + 1, ans, list);
+            list.remove(list.size() - 1);
+        }
+    }
+}
+```
+
+## Permutations
+https://leetcode.com/problems/permutations/description/
+
+```java
+class Solution {
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> ans=new ArrayList<>();
+        List<Integer> sub=new ArrayList<>();
+        dfs(nums,sub,0,ans);
+        return ans;
+    }
+    public void dfs(int[] nums, List<Integer> sub, int index, List<List<Integer>> ans) {
+        if(sub.size()>=nums.length){
+            ans.add(sub);return;
+        }
+        for(int i=index;i<index+nums.length;i++){
+            if(sub.contains(nums[i%nums.length]))continue;
+            sub.add(nums[i%nums.length]);
+            dfs(nums,new ArrayList<>(sub),i+1,ans);
+            sub.remove(sub.size()-1);
+        } 
+    }
+}
+```
+
+## Subsets II
+https://leetcode.com/problems/subsets-ii/description/
+```java
+class Solution {
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        Arrays.sort(nums);
+        List<List<Integer>> ans=new ArrayList<>();
+        List<Integer> sub=new ArrayList<>();
+        dfs(nums,sub,ans,0);
+        return ans;  
+    }
+    public void dfs(int[] nums,List<Integer> sub,List<List<Integer>> list, int index ) {
+        list.add(new ArrayList<>(sub));
+
+        for(int i=index;i<nums.length;i++){
+            if(i>index && nums[i] == nums[i-1])continue;
+            sub.add(nums[i]);
+            dfs(nums, sub, list, i+1);
+            sub.remove(sub.size()-1);
+        }
+    }
+}
+```
+
+## Climbing Stairs
+https://leetcode.com/problems/climbing-stairs/description/
+```java
+class Solution {
+    public int climbStairs(int n) {
+        if(n<3)return n;
+        int[] dp=new int[n+1];
+        dp[1]=1;dp[2]=2;
+        
+        for(int i=3;i<=n;i++){
+            dp[i]=dp[i-1]+dp[i-2];
+        }
+        return dp[n];
+        // if(n==1 || n==2)return n;
+        // return climbStairs(n-1) + climbStairs(n-2);
+    }
+}
+
+```
+
+
+## House Robber
+https://leetcode.com/problems/house-robber/description/
+```java
+class Solution {
+    public int rob(int[] nums) {
+        if(nums.length==1)return nums[0];
+        if(nums.length==2)return nums[0]<nums[1]?nums[1]:nums[0];
+
+        int[] dp=new int[nums.length+1];
+        dp[0]=0;
+        dp[1]=nums[0];
+        dp[2]=nums[1]>nums[0]?nums[1]:nums[0];
+        for(int i=2;i<nums.length+1;i++){
+            dp[i]=dp[i-2]+nums[i-1]>dp[i-1]?dp[i-2]+nums[i-1]:dp[i-1];
+        }
+        return dp[nums.length];
+    }
+}
+```
+
+
+## House Robber II
+https://leetcode.com/problems/house-robber-ii/description/
+```java
+class Solution {
+    public int rob(int[] nums) {
+        if(nums.length==1)return nums[0];
+        if(nums.length==2)return Math.max(nums[0],nums[1]);
+
+        int[] dp0=new int[nums.length];
+        dp0[1]=nums[0];
+        dp0[2]=Math.max(nums[0],nums[1]);
+        for(int i=3;i<nums.length;i++){
+            dp0[i]=Math.max(dp0[i-2]+nums[i-1],dp0[i-1]);
+        }     
+        int[] dp1=new int[nums.length+1];
+        dp1[2]=nums[1];
+        dp1[3]=Math.max(nums[1],nums[2]);
+        for(int i=4;i<nums.length+1;i++){
+            dp1[i]=Math.max(dp1[i-2]+nums[i-1],dp1[i-1]);
+        }  
+        return Math.max(dp0[nums.length-1],dp1[nums.length]);      
+    }
+}
+```
+
+
+## Longest Palindromic Substring
+https://leetcode.com/problems/longest-palindromic-substring/description/
+```java
+class Solution {
+    public String longestPalindrome(String s) {
+        int longestPalLen=0;
+        String longestPal="";
+        for(int i=0;i<s.length();i++){
+            //odd length palindrome
+            int l=i; int r=i;
+            while(l>=0 && r<s.length() && s.charAt(l)==s.charAt(r)){
+                if(r-l+1>longestPalLen)
+                { 
+                    longestPalLen=r-l+1;
+                    longestPal=s.substring(l,r+1);
+                }
+                l--;r++;
+            }
+            //even length palindrome
+            l=i; r=i+1;
+            while(l>=0 && r<s.length() && s.charAt(l)==s.charAt(r)){
+                if(r-l+1>longestPalLen)
+                {
+                    longestPalLen=r-l+1;
+                    longestPal=s.substring(l,r+1);
+                }
+                l--;r++;
+            }
+        }
+        return longestPal;
+    }
+}
+```
+
+
+## Palindromic Substrings
+https://leetcode.com/problems/palindromic-substrings/
+
+```java
+class Solution {
+    public int countSubstrings(String s) {
+        int cnt=0;
+        for(int i=0;i<s.length();i++){
+            //odd length
+            int l=i; int r=i;
+            while(l>=0 && r<s.length() && s.charAt(l)==s.charAt(r)){
+                cnt++;l--;r++;
+            }
+            //even length
+            l=i; r=i+1;
+            while(l>=0 && r<s.length() && s.charAt(l)==s.charAt(r)){
+                cnt++;l--;r++;
+            }
+        }
+        return cnt;
+    }
+}
+```
+
+## Coin Change
+https://leetcode.com/problems/coin-change/
+
+```java
+class Solution {
+    public int coinChange(int[] coins, int amount) {
+        if (amount < 0 || coins.length == 0 || coins == null) {
+            return 0;
+        }
+        int[] dp=new int[amount+1];Arrays.fill(dp,amount+1);
+        dp[0]=0;
+        for (int i = 1; i <= amount; i++) {
+            for (int coin : coins) {
+                if (i - coin >= 0) {
+                    dp[i] = Math.min(dp[i], 1 + dp[i - coin]);
+                }
+            }
+        }
+        return dp[amount] != amount + 1 ? dp[amount] : -1;
+    }
+}
+```
+
+## Find the Duplicate Number
+https://leetcode.com/problems/find-the-duplicate-number/
+
+```java
+class Solution {
+    public int findDuplicate(int[] nums) {
+        Arrays.sort(nums);
+        int prev=Integer.MIN_VALUE;
+        for(int n:nums){
+            if(prev==n)return n;
+            prev=n;
+        }
+        return -1;
+    }
+}
+```
+
+## Word Break
+https://leetcode.com/problems/word-break/
+
+```java
+class Solution {
+    public boolean wordBreak(String s, List<String> wordDict) {
+        boolean[] dp=new boolean[s.length()+1];
+        dp[s.length()]=true;
+        for(int i=s.length()-1;i>=0;i--){
+            for(String word:wordDict){
+                if(word.length()+i<=s.length() && s.startsWith(word,i)){
+                    dp[i]=dp[i+word.length()];
+                }
+                if(dp[i])break;
+            }
+        }
+        return dp[0];
+    }
+}
+```
+
+## Maximum Odd Binary Number
+https://leetcode.com/contest/weekly-contest-364/problems/maximum-odd-binary-number/
+
+```java
+class Solution {
+    public String maximumOddBinaryNumber(String s) {
+        int cnt=0;
+        for(int i=0;i<s.length();i++){
+            if(s.charAt(i)=='1')cnt++;
+        }
+        StringBuilder str=new StringBuilder();
+        for(int i=0;i<s.length();i++){
+            if(cnt>1){
+                str.append("1");cnt--;
+            }else if(cnt==1 && i!=s.length()-1){
+                str.append("0");
+            }else{
+                str.append("1");
+            }
+        }
+        return str.toString();
+    }
+}
+```
+
+## Beautiful Towers I
+https://leetcode.com/contest/weekly-contest-364/problems/beautiful-towers-i/
+
+```java
+class Solution {
+    public long maximumSumOfHeights(List<Integer> maxHeights) {
+        long[] ans=new long[maxHeights.size()];
+        for(int i=0;i<maxHeights.size();i++){
+            
+            long peek=maxHeights.get(i);
+            long heightSum=peek;
+            int left=i-1;
+            int right=i+1;
+            long peekl=peek;
+            long peekr=peek;
+            
+            while(left>=0){
+                if(maxHeights.get(left)<=peekl){
+                    heightSum+=maxHeights.get(left);peekl=maxHeights.get(left);
+                }else{
+                    heightSum+=peekl;
+                }
+                left--;
+            }
+            while(right<maxHeights.size()){
+                if(maxHeights.get(right)<=peekr){
+                    heightSum+=maxHeights.get(right);peekr=maxHeights.get(right);
+                }else{
+                    heightSum+=peekr;
+                }
+                right++;
+            }
+            ans[i]=heightSum;
+        }
+        Arrays.sort(ans);
+        return ans[ans.length-1];
+    }
+}
+```
+
+## Triangle
+https://leetcode.com/problems/triangle/
+
+```java
+class Solution {
+    public int minimumTotal(List<List<Integer>> triangle) {
+        int[] dp=new int[triangle.size()+1];
+
+        for(int i=triangle.size()-1;i>=0;i--){
+            for(int col=0;col<triangle.get(i).size();col++){
+                dp[col]=triangle.get(i).get(col)+Math.min(dp[col],dp[col+1]);
+            }
+        }
+        return dp[0];
+
+    }
+}
+```
+
+## Find the Difference
+https://leetcode.com/problems/find-the-difference/
+
+```java
+class Solution {
+    public char findTheDifference(String s, String t) {
+        int[] charmap=new int[26];
+        for(char c:s.toCharArray()){charmap[c-'a']++;}
+        char ans='=';
+        for(char c:t.toCharArray()){charmap[c-'a']--;}
+        for(int i=0;i<26;i++){
+            if(charmap[i]!=0){
+                ans=(char)(i+'a');
+            }
+        }
+        return ans;
+    }
+}
+```
+
+## Majority Element II
+https://leetcode.com/problems/majority-element-ii/
+
+```java
+class Solution {
+    public List<Integer> majorityElement(int[] nums) {
+        int times=(int)Math.floor((float)(nums.length/3));
+        HashMap<Integer,Integer> hs=new HashMap<>();
+        List<Integer> ans=new ArrayList<>();
+        for(int i:nums){
+            hs.put(i,hs.getOrDefault(i,0)+1);
+        }
+        for(Map.Entry<Integer,Integer> er:hs.entrySet()){
+            if(er.getValue()>times){
+                ans.add(er.getKey());
+            }
+        }
+        return ans;
+
+    }
+}
+```
+
+## Number of Good Pairs
+https://leetcode.com/problems/number-of-good-pairs/
+
+```java
+class Solution {
+    public int numIdenticalPairs(int[] nums) {
+        int ans=0;
+        for(int i=0;i<nums.length-1;i++){
+            for(int j=i+1;j<nums.length;j++){
+                if(nums[i]==nums[j])ans++;
+            }
+        }
+        return ans;
+    }
+}
+```
+
+## Divisible and Non-divisible Sums Difference
+https://leetcode.com/contest/weekly-contest-366/problems/divisible-and-non-divisible-sums-difference/
+
+```java
+class Solution {
+    public int differenceOfSums(int n, int m) {
+        int num1=0;
+        int num2=0;
+        for( int i=1;i<=n;i++){
+            if(i%m==0){
+                num2+=i;
+            }else{
+                num1+=i;
+            }
+        }
+        return num1-num2;
+    }
+}
+```
+
+## Island Perimeter
+
+https://leetcode.com/problems/island-perimeter/
+
+```java
+class Solution {
+    public int islandPerimeter(int[][] grid) {
+        int ans=0;
+        for(int i=0;i<grid.length;i++){
+            for(int j=0;j<grid[0].length;j++){
+                if(grid[i][j]==1){
+                    if((i+1<grid.length && grid[i+1][j]==0) || i+1>=grid.length){
+                        ans++;
+                    }
+                    if((i-1>=0 && grid[i-1][j]==0) || i-1<0){
+                        ans++;
+                    }
+                    if((j+1<grid[0].length && grid[i][j+1]==0) || j+1>=grid[0].length ){
+                        ans++;
+                    }
+                    if((j-1>=0 && grid[i][j-1]==0) || j-1<0){
+                        ans++;
+                    }
+                }
+            }
+        }return ans;
+    }
+}
+```
+
+## Number of Islands
+https://leetcode.com/problems/number-of-islands/
+
+```java
+class Solution {
+    int ans=0;
+    public void dfs(char[][] grid, int i, int j) {
+        if(i>=grid.length || j>=grid[0].length || i<0 || j<0 || grid[i][j] == '0')return;
+        grid[i][j]='0';
+        dfs(grid,i+1,j);
+        dfs(grid,i,j+1);
+        dfs(grid,i-1,j);
+        dfs(grid,i,j-1);
+    }
+    public int numIslands(char[][] grid) {
+        for(int i=0;i<grid.length;i++){
+            for(int j=0;j<grid[0].length;j++){
+                if(grid[i][j]=='1'){
+                    dfs(grid,i,j);
+                    ans++;
+                }
+            }
+        }
+        return ans;
+    }
+}
+```
+
+## Surrounded Regions
+https://leetcode.com/problems/surrounded-regions/
+
+```java
+class Solution {
+    public void dfs(char[][] grid, int i, int j) {
+        if(i>=grid.length || j>=grid[0].length || i<0 || j<0 || grid[i][j] != 'O')return;
+        grid[i][j]='A';
+        dfs(grid,i+1,j);
+        dfs(grid,i,j+1);
+        dfs(grid,i-1,j);
+        dfs(grid,i,j-1);
+    }
+    public void solve(char[][] board) {
+        for(int i=0;i<board.length;i++){
+            for(int j=0;j<board[0].length;j++){
+                if(i==0 || i==board.length-1 || j==0 || j==board[0].length-1 ){
+                    if(board[i][j]=='O'){dfs(board,i,j);System.out.println("krl");}
+                }
+            }
+        }
+        for(int i=0;i<board.length;i++){
+            for(int j=0;j<board[0].length;j++){
+                    if(board[i][j]=='O'){
+                        board[i][j]='X';
+                    }
+            }
+        }
+                for(int i=0;i<board.length;i++){
+            for(int j=0;j<board[0].length;j++){
+                    if(board[i][j]=='A'){
+                        board[i][j]='O';
+                    }
+                
+            }
+        }
+    }
+}
+```
+
+## Rotting Oranges
+https://leetcode.com/problems/rotting-oranges/
+
+```java
+
+class Solution {
+    class Cell{
+        int x;int y;
+        Cell(int x,int y){
+            this.x=x;this.y=y;
+        }
+    }
+    public int orangesRotting(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        Queue<Cell> queue = new LinkedList<>();
+        int fresh = 0;
+
+        for (int i = 0; i < m; i += 1) {
+            for (int j = 0; j < n; j += 1) {
+                if (grid[i][j] == 2) queue.offer(new Cell (i, j)); else if (
+                    grid[i][j] == 1
+                ) fresh += 1;
+            }
+        }
+
+        int count = 0;
+        int[][] dirs = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
+        while (!queue.isEmpty() && fresh != 0) {
+            count += 1;
+            int sz = queue.size();
+            for (int i = 0; i < sz; i += 1) {
+                Cell rotten = queue.poll();
+                int r = rotten.x, c = rotten.y;
+                for (int[] dir : dirs) {
+                    int x = r + dir[0], y = c + dir[1];
+                    if (0 <= x && x < m && 0 <= y && y < n && grid[x][y] == 1) {
+                        grid[x][y] = 2;
+                        queue.offer(new Cell (x, y));
+                        fresh -= 1;
+                    }
+                }
+            }
+        }
+        return fresh == 0 ? count : -1;
+
+    }
+}
+```
