@@ -2054,3 +2054,81 @@ class Solution {
     }
 }
 ```
+
+## Maximum Subarray
+https://leetcode.com/problems/maximum-subarray/
+
+```java
+class Solution {
+
+    public int maxSubArray(int[] nums) {
+        if (nums.length == 1) return nums[0];
+
+        int sum = 0;
+        int max = Integer.MIN_VALUE;
+
+        for (int n : nums) {
+            sum += n;
+            max = Math.max(max, sum);
+
+            if (sum < 0) {
+                sum = 0;
+            }
+        }
+        return max;
+    }
+}
+```
+
+## 2968. Apply Operations to Maximize Frequency Score
+
+https://leetcode.com/problems/apply-operations-to-maximize-frequency-score/description/
+
+```java
+class Solution {
+    public int maxFrequencyScore(int[] nums, long k) {
+        Arrays.sort(nums);
+        int n = nums.length;
+        long[] prefixSum = new long[n];
+        for (int i = 1; i < n; i++) {
+            prefixSum[i] = prefixSum[i-1] + nums[i];
+        }
+        int l = 0;
+        int r = n;
+        int ans = 1;
+        while (l <= r) {
+            int mid = (l + r) / 2;
+            int lenToTry=mid;
+            boolean isOk=false;
+            // [1,2,3] here 2 is median. we want to make others as 2. 
+            //So, we need to find the sum from the left part and deduct it from the required sum i.e (2+2) which is (median * length of left part(mid-start). this is cost to convert left elements to the median.
+            // For rightsum we need to find the actual sum of right elements which is prefixSum[end] - prefixSum[mid] and deduct required sum which is  median * (end - mid)
+            
+            for(int i=0,j=0;i<n;i++){
+                if(i-j+1==lenToTry){
+                    int medianIndex=(i+j)/2;
+                    int median=nums[medianIndex];
+                    long leftSum=prefixSum[medianIndex] - prefixSum[j] + nums[j];
+                    long countLeft=medianIndex - j +1;
+                    long rightSum=prefixSum[i] - prefixSum[medianIndex] + nums[medianIndex];
+                    long countRight=i-medianIndex+1;
+                    long sum=(median * countLeft - leftSum) + (rightSum- countRight * median);
+                    if(sum<=k){
+                        isOk=true;
+                        break;
+                    }
+                    j++;
+                }
+            }
+            
+            if(isOk){
+                ans=lenToTry;
+                l=mid+1;
+            }else{
+                r=mid-1;
+            }
+        }
+        return ans;
+    }
+}
+```
