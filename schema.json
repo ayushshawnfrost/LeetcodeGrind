@@ -1,0 +1,457 @@
+// Blueprint
+{
+    "row_id": {
+      "N": "0.2799658909952767"
+    },
+    "assigned_to": {
+      "S": "assigned_to"
+    },
+    "attainable": {
+      "S": "h"
+    },
+    "company_code": {
+      "S": "BS01"
+    },
+    "company_name": {
+      "S": ""
+    },
+    "completion_date": {
+      "S": "completion_date"
+    },
+    "created_date": {
+      "S": "created_date"
+    },
+    "data_of_logic": {
+      "S": "data_of_logic"
+    },
+    "measurable": {
+      "S": "h"
+    },
+    "project_description": {
+      "S": "h"
+    },
+    "project_title": {
+      "S": "BraveSpaces"
+    },
+    "relevant": {
+      "S": "h"
+    },
+    "specific": {
+      "S": "h"
+    },
+    "status": {
+      "S": "status"
+    },
+    "time_based": {
+      "S": "h"
+    },
+    "updates": {
+      "S": "updates"
+    }
+  }
+
+  // census
+  {
+    "geo_id": {
+      "S": "0500000US40119"
+    },
+    "county": {
+      "S": "119"
+    },
+    "disability": {
+      "S": "9.9"
+    },
+    "eth_hisp": {
+      "S": "5.0"
+    },
+    "eth_not_hisp": {
+      "S": "95.0"
+    },
+    "name": {
+      "S": "Payne County, Oklahoma"
+    },
+    "non_veteran": {
+      "S": "95.3"
+    },
+    "race_american_indian": {
+      "S": "5.8"
+    },
+    "race_asian": {
+      "S": "4.3"
+    },
+    "race_black": {
+      "S": "3.9"
+    },
+    "race_haw_pac": {
+      "S": "0.0"
+    },
+    "race_others": {
+      "S": "0.4"
+    },
+    "race_white": {
+      "S": "76.3"
+    },
+    "sex_female_total": {
+      "S": "48.6"
+    },
+    "sex_male_total": {
+      "S": "51.4"
+    },
+    "state": {
+      "S": "40"
+    },
+    "total_eth": {
+      "S": "81989"
+    },
+    "total_population": {
+      "S": "81989"
+    },
+    "total_race": {
+      "S": "81989"
+    },
+    "total_vet": {
+      "S": "66453"
+    },
+    "veteran": {
+      "S": "4.7"
+    }
+  }
+
+  // company
+  {
+    "company_code": {
+      "S": "FD01"
+    },
+    "company_name": {
+      "S": "Jacobs & Cushman San Diego Food Bank"
+    },
+    "county": {
+      "S": "San Diego"
+    },
+    "geo_id": {
+      "S": "0500000US06073"
+    },
+    "state": {
+      "S": "California"
+    }
+  }
+
+
+  // disablility
+
+  {
+    "row_id": {
+      "N": "2"
+    },
+    "company_code": {
+      "S": "BS01"
+    },
+    "company_name": {
+      "S": "BraveSpaces"
+    },
+    "count": {
+      "N": "0"
+    },
+    "county_id": {
+      "N": "1"
+    },
+    "county_name": {
+      "S": "san diego"
+    },
+    "date": {
+      "S": "2022"
+    },
+    "geo_id": {
+      "S": "0500000US06073"
+    },
+    "is_disable": {
+      "S": "1"
+    },
+    "percent": {
+      "S": "9"
+    }
+  }
+
+  // Ethnicity
+  {
+    "row_id": {
+      "N": "3"
+    },
+    "company_code": {
+      "S": "BS01"
+    },
+    "company_name": {
+      "S": "BraveSpaces"
+    },
+    "count": {
+      "N": "2129535"
+    },
+    "county_id": {
+      "N": "73"
+    },
+    "county_name": {
+      "S": "san diego"
+    },
+    "date": {
+      "S": "2022"
+    },
+    "ethnicity": {
+      "S": "non hispanic"
+    },
+    "geo_id": {
+      "S": "0500000US06073"
+    },
+    "percent": {
+      "S": "46.3"
+    }
+  }
+
+
+// gender
+{
+    "row_id": {
+      "N": "3"
+    },
+    "company_code": {
+      "S": "BS01"
+    },
+    "company_name": {
+      "S": "BraveSpaces"
+    },
+    "count": {
+      "N": "44"
+    },
+    "county_id": {
+      "N": "1"
+    },
+    "county_name": {
+      "S": "san diego"
+    },
+    "date": {
+      "S": "2022"
+    },
+    "gender": {
+      "S": "female"
+    },
+    "geo_id": {
+      "S": "0500000US06073"
+    },
+    "percent": {
+      "S": "45"
+    }
+  }
+
+  // Race
+  {
+    "row_id": {
+      "N": "10"
+    },
+    "company_code": {
+      "S": "EI01"
+    },
+    "company_name": {
+      "S": "Education Institute"
+    },
+    "count": {
+      "N": "0"
+    },
+    "county_id": {
+      "N": "1"
+    },
+    "county_name": {
+      "S": "Alameda County"
+    },
+    "date": {
+      "S": "2022"
+    },
+    "geo_id": {
+      "S": "0500000US06001"
+    },
+    "percent": {
+      "S": "0"
+    },
+    "race": {
+      "S": "black"
+    }
+  }
+
+
+  //veteran
+
+  {
+    "row_id": {
+      "N": "8"
+    },
+    "company_code": {
+      "S": "BS01"
+    },
+    "company_name": {
+      "S": "BraveSpaces"
+    },
+    "count": {
+      "N": "0"
+    },
+    "county_id": {
+      "N": "73"
+    },
+    "county_name": {
+      "S": "san diego"
+    },
+    "date": {
+      "S": "2022"
+    },
+    "geo_id": {
+      "S": "0500000US06073"
+    },
+    "is_veteran": {
+      "S": "0"
+    },
+    "percent": {
+      "S": "90"
+    }
+  }
+
+
+
+
+  -- Creating the 'company' table
+    CREATE TABLE company (
+        company_code VARCHAR(255) PRIMARY KEY,
+        company_name VARCHAR(255),
+        county_name VARCHAR(255),
+        county_id VARCHAR(255),
+        geo_id VARCHAR(255),
+        state_name VARCHAR(255),
+        state_id VARCHAR(255),
+        label VARCHAR(255)
+    );
+
+  -- Creating the 'blueprint' table
+  CREATE TABLE blueprint (
+      row_id NUMERIC PRIMARY KEY,
+      assigned_to VARCHAR(255),
+      attainable VARCHAR(255),
+      company_code VARCHAR(255),
+      company_name VARCHAR(255),
+      completion_date DATE,
+      created_date DATE,
+      data_of_logic VARCHAR(255),
+      measurable VARCHAR(255),
+      project_description VARCHAR(255),
+      project_title VARCHAR(255),
+      relevant VARCHAR(255),
+      specific VARCHAR(255),
+      status VARCHAR(255),
+      time_based VARCHAR(255),
+      updates VARCHAR(255),
+      label VARCHAR(255)
+  );
+  
+  -- Creating the 'census' table
+  CREATE TABLE census (
+      geo_id VARCHAR(255) PRIMARY KEY,
+      county VARCHAR(255),
+      disability NUMERIC,
+      eth_hisp NUMERIC,
+      eth_not_hisp NUMERIC,
+      name VARCHAR(255),
+      non_veteran NUMERIC,
+      race_american_indian NUMERIC,
+      race_asian NUMERIC,
+      race_black NUMERIC,
+      race_haw_pac NUMERIC,
+      race_others NUMERIC,
+      race_white NUMERIC,
+      sex_female_total NUMERIC,
+      sex_male_total NUMERIC,
+      state VARCHAR(255),
+      total_eth NUMERIC,
+      total_population NUMERIC,
+      total_race NUMERIC,
+      total_vet NUMERIC,
+      veteran NUMERIC,
+      label VARCHAR(255)
+  );
+  
+  -- Creating the 'disability' table
+  CREATE TABLE disability (
+      row_id NUMERIC PRIMARY KEY,
+      company_code VARCHAR(255),
+      company_name VARCHAR(255),
+      count NUMERIC,
+      county_id NUMERIC,
+      county_name VARCHAR(255),
+      date DATE,
+      geo_id VARCHAR(255),
+      is_disable BOOLEAN,
+      percent VARCHAR(255),
+      label VARCHAR(255)
+  );
+  -- Creating the 'veteran' table
+  CREATE TABLE veteran (
+      row_id SERIAL PRIMARY KEY,
+      company_code VARCHAR(255),
+      company_name VARCHAR(255),
+      count INTEGER,
+      county_id VARCHAR(255),
+      county_name VARCHAR(255),
+      date DATE,
+      geo_id VARCHAR(255),
+      is_veteran BOOLEAN,
+      percent VARCHAR(255),
+      label VARCHAR(255)
+  );
+
+  -- Creating the 'ethnicity' table
+  CREATE TABLE ethnicity (
+      row_id NUMERIC PRIMARY KEY,
+      company_code VARCHAR(255),
+      company_name VARCHAR(255),
+      count NUMERIC,
+      county_id NUMERIC,
+      county_name VARCHAR(255),
+      date DATE,
+      ethnicity VARCHAR(255),
+      geo_id VARCHAR(255),
+      percent VARCHAR(255),
+      label VARCHAR(255)
+  );
+  
+  -- Creating the 'gender' table
+  CREATE TABLE gender (
+      row_id NUMERIC PRIMARY KEY,
+      company_code VARCHAR(255),
+      company_name VARCHAR(255),
+      count NUMERIC,
+      county_id NUMERIC,
+      county_name VARCHAR(255),
+      date DATE,
+      gender VARCHAR(255),
+      geo_id VARCHAR(255),
+      percent VARCHAR(255),
+      label VARCHAR(255)
+  );
+  
+  -- Creating the 'race' table
+  CREATE TABLE race (
+      row_id NUMERIC PRIMARY KEY,
+      company_code VARCHAR(255),
+      company_name VARCHAR(255),
+      count NUMERIC,
+      county_id NUMERIC,
+      county_name VARCHAR(255),
+      date DATE,
+      geo_id VARCHAR(255),
+      percent VARCHAR(255),
+      race VARCHAR(255),
+      label VARCHAR(255)
+  );
+
+
+  INSERT INTO disability (company_code, company_name, count, county_id, county_name, date, geo_id, is_disable, percent, label) VALUES 
+('EI01', 'Education Institute', 0, '1', 'Alameda County', '2023-12-1', '0500000US06001', FALSE, 99, 'label'),
+('BS01', 'BraveSpaces', 0, '1', 'san diego', '2023-12-1', '0500000US06073', TRUE, 9, 'label'),
+('EI01', 'Education Institute', 0, '1', 'Alameda County', '2023-12-1', '0500000US06001', TRUE, 1, 'label'),
+('FD01', 'San Diego foodbank', 0, '1', 'san diego', '2023-12-1', '0500000US06001', TRUE, 5, 'label'),
+('BS01', 'BraveSpaces', 0, '73', 'san diego', '2023-12-1', '0500000US06073', FALSE, 91, 'label'),
+('FD01', 'San Diego foodbank', 0, '73', 'san diego', '2023-12-1', '0500000US06073', FALSE, 95, 'label');
