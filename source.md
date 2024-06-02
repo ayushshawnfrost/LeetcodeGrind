@@ -6139,11 +6139,15 @@ $$O(n)$$
 
 </details>
 
-<details id="1584. Min Cost to Connect All Points">
+<details id="260. Single Number III">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">260. Single Number III 
 </span>
 </summary>
+
+
+https://leetcode.com/problems/single-number-iii/description/
+
 
 Once again, we need to use XOR to solve this problem. But this time, we need to do it in two passes:
 
