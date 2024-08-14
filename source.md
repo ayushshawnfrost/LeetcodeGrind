@@ -3037,7 +3037,7 @@ class Solution {
             for (int j = 0; j < n; j += 1) {
                 if (grid[i][j] == 2) {
                     queue.offer(new Cell (i, j));
-                    } 
+                } 
                 else if (grid[i][j] == 1) fresh += 1;
             }
         }
@@ -3052,7 +3052,7 @@ class Solution {
                 int r = rotten.x, c = rotten.y;
                 for (int[] dir : dirs) {
                     int x = r + dir[0], y = c + dir[1];
-                    if (0 <= x && x < m && 0 <= y && y < n && grid[x][y] == 1) {
+                    if (0 <= x && x < m && 0 <= y && y < n && grid[x][y] == 1){
                         grid[x][y] = 2;
                         queue.offer(new Cell (x, y));
                         fresh -= 1;
@@ -3108,9 +3108,10 @@ Sol:
 https://www.youtube.com/watch?v=EUDwWbvtB_Q
 
 ```java
+
 class Solution {
     public boolean canFinish(int numCourses, int[][] prerequisites) {
-        // Topological sort: by Khan's Algorithm
+        // Topological sort: by Khan's Algorithm (BFS based)
         int[] indegree = new int[numCourses];
         List<Integer>[] adj = new ArrayList[numCourses];
         
@@ -3148,6 +3149,77 @@ class Solution {
         return numCourses == visited;
     }
 }
+```
+
+```java
+// DFS based topological sort
+import java.util.*;
+
+class Solution {
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        // Create an adjacency list for the graph representation
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < numCourses; i++) {
+            graph.add(new ArrayList<>());
+        }
+
+        // Fill in the graph with the prerequisites information
+        for (int[] prerequisite : prerequisites) {
+            int course = prerequisite[0];
+            int prereq = prerequisite[1];
+            graph.get(prereq).add(course);
+        }
+
+        // Create arrays to track visited nodes and the current path
+        boolean[] visited = new boolean[numCourses];
+        boolean[] onPath = new boolean[numCourses];
+        Stack<Integer> stack = new Stack<>();
+
+        // Helper function to perform DFS
+        boolean hasCycle = false;
+        for (int i = 0; i < numCourses; i++) {
+            if (!visited[i] && !dfs(graph, visited, onPath, stack, i)) {
+                return new int[0];
+            }
+        }
+
+        // Convert the stack to an array
+        int[] result = new int[numCourses];
+        for (int i = 0; i < numCourses; i++) {
+            result[i] = stack.pop();
+        }
+
+        return result;
+    }
+
+    private boolean dfs(List<List<Integer>> graph, boolean[] visited, boolean[] onPath, Stack<Integer> stack, int course) {
+        if (onPath[course]) {
+            return false; // Cycle detected
+        }
+        if (visited[course]) {
+            return true; // Already visited node
+        }
+
+        // Mark the node as visited and part of the current path
+        visited[course] = true;
+        onPath[course] = true;
+
+        // Visit all the neighbors
+        for (int neighbor : graph.get(course)) {
+            if (!dfs(graph, visited, onPath, stack, neighbor)) {
+                return false;
+            }
+        }
+
+        // After visiting all neighbors, mark the node as not part of the current path
+        onPath[course] = false;
+        // Add the course to the stack
+        stack.push(course);
+
+        return true;
+    }
+}
+
 ```
 </details>
 
@@ -4104,6 +4176,7 @@ Constraints:
 Follow up: If you have figured out the O(n) solution, try coding another solution using the divide and conquer approach, which is more subtle.
 
 ```java
+// Kaden's Algorithm
 class Solution {
     public int maxSubArray(int[] nums) {
     if (nums.length == 1) return nums[0];
@@ -4113,6 +4186,7 @@ class Solution {
             sum += n;
             max = Math.max(max, sum);
             if (sum < 0) {
+                // Lets drop the current subarray
                 sum = 0;
             }
         }
@@ -6436,24 +6510,1907 @@ class Solution {
 
 
 
+<details id="66. Plus One">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">66. Plus One 
+</span>
+</summary>
+
+https://leetcode.com/problems/plus-one/description/
+
+You are given a large integer represented as an integer array digits, where each digits[i] is the ith digit of the integer. The digits are ordered from most significant to least significant in left-to-right order. The large integer does not contain any leading 0's.
+
+Increment the large integer by one and return the resulting array of digits.
+
+ 
+
+Example 1:
+
+Input: digits = [1,2,3]
+Output: [1,2,4]
+Explanation: The array represents the integer 123.
+Incrementing by one gives 123 + 1 = 124.
+Thus, the result should be [1,2,4].
+Example 2:
+
+Input: digits = [4,3,2,1]
+Output: [4,3,2,2]
+Explanation: The array represents the integer 4321.
+Incrementing by one gives 4321 + 1 = 4322.
+Thus, the result should be [4,3,2,2].
+Example 3:
+
+Input: digits = [9]
+Output: [1,0]
+Explanation: The array represents the integer 9.
+Incrementing by one gives 9 + 1 = 10.
+Thus, the result should be [1,0].
+ 
+
+Constraints:
+
+1 <= digits.length <= 100
+0 <= digits[i] <= 9
+digits does not contain any leading 0's.
+
+
+```java
+class Solution {
+    public int[] plusOne(int[] digits) {
+        boolean lastcarry=false;
+
+        for(int i=digits.length-1;i>=0;i--){
+            if(i==digits.length-1){
+                if(digits[i]==9){
+                    lastcarry=true;
+                    digits[i]=0;
+                }else{
+                    digits[i]++;
+                    lastcarry=false;
+                    break;
+                }
+            }
+            else if(lastcarry){
+                if(digits[i]==9 && lastcarry==true){
+                    lastcarry=true;
+                    digits[i]=0;
+                }else{
+                    lastcarry=false;
+                    digits[i]++;
+                    break;
+                }
+            }
+        }
+        if(lastcarry){
+            int[] ans=new int[digits.length+1];
+            ans[0]=1;
+            for(int i=0;i<digits.length;i++){
+                ans[i+1]=digits[i];
+            }
+            return ans;
+        }
+        return digits;
+    }
+}
+
+
+```
+</details>
+
+
+<details id="42. Trapping Rain Water">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">42. Trapping Rain Water 
+</span>
+</summary>
+
+https://leetcode.com/problems/trapping-rain-water/description/
+
+Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.
+
+ ![alt text](image-62.png)
+
+Example 1:
+
+
+Input: height = [0,1,0,2,1,0,1,3,2,1,2,1]
+Output: 6
+Explanation: The above elevation map (black section) is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. In this case, 6 units of rain water (blue section) are being trapped.
+Example 2:
+
+Input: height = [4,2,0,3,2,5]
+Output: 9
+ 
+
+Constraints:
+
+n == height.length
+1 <= n <= 2 * 104
+0 <= height[i] <= 105
+
+
+```java
+class Solution {
+    public int trap(int[] height) {
+        int len=height.length;
+        int[] maxright=new int[len];
+        int[] maxleft=new int[len];
+        int ans=0;
+        int max=0;
+        for(int i=0;i<len-1;i++){
+            maxleft[i]=max;
+            max=Math.max(max,height[i]);
+        }
+        max=0;
+        for(int i=len-1;i>=0;i--){
+            maxright[i]=max;
+            max=Math.max(max,height[i]);
+        }
+        for(int i=0;i<len;i++){
+            ans = ans+Math.max(Math.min(maxright[i],maxleft[i])-height[i],0);
+        }
+        return ans;
+    }
+}
+```
+
+</details>
+
+
+
+
+<details id="973. K Closest Points to Origin">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">973. K Closest Points to Origin 
+</span>
+</summary>
+
+https://leetcode.com/problems/k-closest-points-to-origin/description/
+
+![alt text](image-63.png)
+
+Given an array of points where points[i] = [xi, yi] represents a point on the X-Y plane and an integer k, return the k closest points to the origin (0, 0).
+
+The distance between two points on the X-Y plane is the Euclidean distance (i.e., √(x1 - x2)2 + (y1 - y2)2).
+
+You may return the answer in any order. The answer is guaranteed to be unique (except for the order that it is in).
+
+ 
+
+Example 1:
+
+
+Input: points = [[1,3],[-2,2]], k = 1
+Output: [[-2,2]]
+Explanation:
+The distance between (1, 3) and the origin is sqrt(10).
+The distance between (-2, 2) and the origin is sqrt(8).
+Since sqrt(8) < sqrt(10), (-2, 2) is closer to the origin.
+We only want the closest k = 1 points from the origin, so the answer is just [[-2,2]].
+Example 2:
+
+Input: points = [[3,3],[5,-1],[-2,4]], k = 2
+Output: [[3,3],[-2,4]]
+Explanation: The answer [[-2,4],[3,3]] would also be accepted.
+ 
+
+Constraints:
+
+1 <= k <= points.length <= 104
+-104 <= xi, yi <= 104
+
+
+```java
+
+class Point{
+    int[] cordinates;
+    double origindist;
+    Point(int[] cordinates){
+        this.cordinates=new int[]{cordinates[0],cordinates[1]};
+        this.origindist= Math.sqrt(Math.pow(cordinates[0],2) + Math.pow(cordinates[1],2));
+    }
+}
+
+class Solution {
+    public int[][] kClosest(int[][] points, int k) {
+        PriorityQueue<Point> queue=new PriorityQueue<>((a,b)->(Double.compare(a.origindist,b.origindist)));
+        List<int[]> ans=new ArrayList<>();
+        for(int[] point:points){
+            queue.offer(new Point(point));
+        }
+        for(int i=0;i<k;i++){
+            ans.add(queue.poll().cordinates);
+        }
+        return ans.toArray(new int[ans.size()][]);
+    }
+}
+
+```
+</details>
+
+
+<details id="1046. Last Stone Weight">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1046. Last Stone Weight 
+</span>
+</summary>
+
+https://leetcode.com/problems/last-stone-weight/
+
+You are given an array of integers stones where stones[i] is the weight of the ith stone.
+
+We are playing a game with the stones. On each turn, we choose the heaviest two stones and smash them together. Suppose the heaviest two stones have weights x and y with x <= y. The result of this smash is:
+
+If x == y, both stones are destroyed, and
+If x != y, the stone of weight x is destroyed, and the stone of weight y has new weight y - x.
+At the end of the game, there is at most one stone left.
+
+Return the weight of the last remaining stone. If there are no stones left, return 0.
+
+ 
+
+Example 1:
+
+Input: stones = [2,7,4,1,8,1]
+Output: 1
+Explanation: 
+We combine 7 and 8 to get 1 so the array converts to [2,4,1,1,1] then,
+we combine 2 and 4 to get 2 so the array converts to [2,1,1,1] then,
+we combine 2 and 1 to get 1 so the array converts to [1,1,1] then,
+we combine 1 and 1 to get 0 so the array converts to [1] then that's the value of the last stone.
+Example 2:
+
+Input: stones = [1]
+Output: 1
+ 
+
+Constraints:
+
+1 <= stones.length <= 30
+1 <= stones[i] <= 1000
+
+
+```java
+class Solution {
+    public int lastStoneWeight(int[] stones) {
+        PriorityQueue<Integer> queue=new PriorityQueue<>(Collections.reverseOrder());
+        for(int s:stones){
+            queue.offer(s);
+        }
+        while(queue.size()>1){
+            int first=queue.poll();
+            int second=queue.poll();
+            if(first!=second)queue.offer(Math.abs(first-second));
+        }
+        if(!queue.isEmpty())return queue.poll();
+        return 0;
+    }
+}
+```
+
+</details>
+
+
+
+<details id="202. Happy Number">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">202. Happy Number 
+</span>
+</summary>
+
+https://leetcode.com/problems/happy-number/description/
+
+Write an algorithm to determine if a number n is happy.
+
+A happy number is a number defined by the following process:
+
+Starting with any positive integer, replace the number by the sum of the squares of its digits.
+Repeat the process until the number equals 1 (where it will stay), or it loops endlessly in a cycle which does not include 1.
+Those numbers for which this process ends in 1 are happy.
+Return true if n is a happy number, and false if not.
+
+ 
+
+Example 1:
+
+Input: n = 19
+Output: true
+Explanation:
+12 + 92 = 82
+82 + 22 = 68
+62 + 82 = 100
+12 + 02 + 02 = 1
+Example 2:
+
+Input: n = 2
+Output: false
+ 
+
+Constraints:
+
+1 <= n <= 231 - 1
+
+
+```java
+class Solution {
+
+    public boolean isHappy(int n) {
+        Set<Integer> visit = new HashSet<Integer>();
+        // compute square until getting duplicate value
+        while (!visit.contains(n)) {
+            visit.add(n);
+            n = sumOfSquare(n);
+            if (n == 1) return true;
+        }
+        return false;
+    }
+
+    public int sumOfSquare(int n) {
+        int output = 0;
+        while (n != 0) {
+            int digit = n % 10;
+            digit = digit * digit;
+            output += digit;
+            n = n / 10;
+        }
+        return output;
+    }
+}
+```
+</details>
+
+
+
+<details id="560. Subarray Sum Equals K">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">560. Subarray Sum Equals K 
+</span>
+</summary>
+
+https://leetcode.com/problems/subarray-sum-equals-k/description/
+
+
+Given an array of integers nums and an integer k, return the total number of subarrays whose sum equals to k.
+
+A subarray is a contiguous non-empty sequence of elements within an array.
+
+ 
+
+Example 1:
+
+Input: nums = [1,1,1], k = 2
+Output: 2
+
+
+Example 2:
+
+Input: nums = [1,2,3], k = 3
+Output: 2
+ 
+
+Constraints:
+
+1 <= nums.length <= 2 * 104
+-1000 <= nums[i] <= 1000
+-107 <= k <= 107
+
+
+```java
+// Good old O(n^2) solution 
+class Solution {
+    public int subarraySum(int[] nums, int k) {
+        int csum=0;
+        int ans=0;
+        for(int i=0;i<nums.length;i++){
+            csum=nums[i];if(csum==k)ans++;
+            for(int j=i+1;j<nums.length;j++){
+                csum+=nums[j];
+                if(csum==k)ans++;
+            }
+        }
+        return ans;
+    }
+}
+
+// Prefix Sum Solution O(n)
+// Simoultaneously make current sum and check if we have a prefix sum that we can chop off to make the sum equal to target. A prefix sum always starts from index 0. 
+class Solution {
+    public int subarraySum(int[] nums, int k) {
+        HashMap<Integer,Integer> hmap=new HashMap<>();
+        hmap.put(0,1);
+        int ans=0;
+        int csum=0;
+        for(int i:nums){
+            csum+=i;
+            if(hmap.containsKey(csum-k)){
+                ans+=hmap.get(csum-k);
+            }
+            hmap.put(csum,hmap.getOrDefault(csum,0)+1);
+        }
+        return ans;
+    }
+}
+```
+</details>
+
+
+
+<details id="45. Jump Game II">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">45. Jump Game II 
+</span>
+</summary>
+
+https://leetcode.com/problems/jump-game-ii/description/
+
+You are given a 0-indexed array of integers nums of length n. You are initially positioned at nums[0].
+
+Each element nums[i] represents the maximum length of a forward jump from index i. In other words, if you are at nums[i], you can jump to any nums[i + j] where:
+
+0 <= j <= nums[i] and
+i + j < n
+Return the minimum number of jumps to reach nums[n - 1]. The test cases are generated such that you can reach nums[n - 1].
+
+ 
+
+Example 1:
+
+Input: nums = [2,3,1,1,4]
+Output: 2
+Explanation: The minimum number of jumps to reach the last index is 2. Jump 1 step from index 0 to 1, then 3 steps to the last index.
+Example 2:
+
+Input: nums = [2,3,0,1,4]
+Output: 2
+ 
+
+Constraints:
+
+1 <= nums.length <= 104
+0 <= nums[i] <= 1000
+It's guaranteed that you can reach nums[n - 1].
+
+
+```java
+// O(n^2)
+class Solution {
+    public int jump(int[] nums) {
+        int[] dp=new int[nums.length+1];
+        Arrays.fill(dp,Integer.MAX_VALUE);
+        dp[0]=0;dp[1]=0;
+        for(int i=0;i<nums.length;i++){
+            int num=nums[i];
+            int x=i+1;
+            while(num!=0 && x<dp.length-1){
+                dp[x+1]=Math.min(dp[x+1],1+dp[i+1]);
+                num--;
+                x++;
+            }
+        }
+        return dp[nums.length];
+    }
+}
+```
+</details>
+
+
+
+<details id="763. Partition Labels">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">763. Partition Labels 
+</span>
+</summary>
+
+https://leetcode.com/problems/partition-labels/description/
+
+You are given a string s. We want to partition the string into as many parts as possible so that each letter appears in at most one part.
+
+Note that the partition is done so that after concatenating all the parts in order, the resultant string should be s.
+
+Return a list of integers representing the size of these parts.
+
+ 
+
+Example 1:
+
+Input: s = "ababcbacadefegdehijhklij"
+Output: [9,7,8]
+Explanation:
+The partition is "ababcbaca", "defegde", "hijhklij".
+This is a partition so that each letter appears in at most one part.
+A partition like "ababcbacadefegde", "hijhklij" is incorrect, because it splits s into less parts.
+Example 2:
+
+Input: s = "eccbbbbdec"
+Output: [10]
+ 
+
+Constraints:
+
+1 <= s.length <= 500
+s consists of lowercase English letters.
+
+
+```java
+// Time Complexity: O(n^2) based on char count (another way to track the last index of each element)
+class Solution {
+    public List<Integer> partitionLabels(String s) {
+        HashMap<Character,Integer> map=new HashMap<>();
+        List<Integer> ans=new ArrayList<>();
+        for(char c:s.toCharArray()){
+            map.put(c,map.getOrDefault(c,0)+1);
+        }
+        HashMap<Character,Integer> cmap=new HashMap<>();
+        int left=0;
+        int right=0;
+        while(left<s.length() && right<s.length()){
+            char curr=s.charAt(right);
+            cmap.put(curr,cmap.getOrDefault(curr,0)+1);
+            for(int i=left;i<=right;i++){
+                if(cmap.get(s.charAt(i))!=map.get(s.charAt(i)))break;
+                if(i==right){
+                    ans.add(right-left+1);
+                    cmap.clear();
+                    left=right+1;
+                }
+            }
+            right++;
+        }
+        return ans;
+    }
+}
+```
+</details>
+
+
+
+<details id="329. Longest Increasing Path in a Matrix">
+<summary> 
+<span style="color:red;font-size:16px;font-weight:bold">329. Longest Increasing Path in a Matrix 
+</span>
+</summary>
+
+Given an m x n integers matrix, return the length of the longest increasing path in matrix.
+
+From each cell, you can either move in four directions: left, right, up, or down. You may not move diagonally or move outside the boundary (i.e., wrap-around is not allowed).
+
+ 
+
+Example 1:
+
+![alt text](image-64.png)
+
+Input: matrix = [[9,9,4],[6,6,8],[2,1,1]]
+Output: 4
+Explanation: The longest increasing path is [1, 2, 6, 9].
+
+Example 2:
+
+![alt text](image-65.png)
+
+Input: matrix = [[3,4,5],[3,2,6],[2,2,1]]
+Output: 4
+Explanation: The longest increasing path is [3, 4, 5, 6]. Moving diagonally is not allowed.
+Example 3:
+
+Input: matrix = [[1]]
+Output: 1
+ 
+
+Constraints:
+
+m == matrix.length
+n == matrix[i].length
+1 <= m, n <= 200
+0 <= matrix[i][j] <= 231 - 1
+
+```java
+
+// Time complexity: O(r*c)
+class Solution {
+    public int longestIncreasingPath(int[][] matrix) {
+        int r=matrix.length;
+        int c=matrix[0].length;
+        int[][] dp=new int[r][c];
+        int ans=0;
+        for(int i=0;i<r;i++){
+            for(int j=0;j<c;j++){
+                ans=Math.max(ans,dfs(matrix, -1, i,j,dp));
+            }
+        }
+        return ans;
+    }
+    public int dfs(int[][] matrix, int lastnum, int r, int c, int[][] dp){
+        if(r>=matrix.length || c>=matrix[0].length || r<0 || c<0 || matrix[r][c]<=lastnum)return 0;
+        if(dp[r][c]!=0)return dp[r][c];
+        int down=dfs(matrix, matrix[r][c], r+1,c,dp);
+        int up=dfs(matrix, matrix[r][c], r-1,c,dp);
+        int right=dfs(matrix, matrix[r][c], r,c+1,dp);
+        int left=dfs(matrix, matrix[r][c], r,c-1,dp);
+        dp[r][c]=1+Math.max(Math.max(down,up),Math.max(left,right));
+        return dp[r][c];
+    }
+}
+```
+</details>
+
+
+
+<details id="303. Range Sum Query - Immutable">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">303. Range Sum Query - Immutable 
+</span>
+</summary>
+
+Given an integer array nums, handle multiple queries of the following type:
+
+Calculate the sum of the elements of nums between indices left and right inclusive where left <= right.
+Implement the NumArray class:
+
+NumArray(int[] nums) Initializes the object with the integer array nums.
+int sumRange(int left, int right) Returns the sum of the elements of nums between indices left and right inclusive (i.e. nums[left] + nums[left + 1] + ... + nums[right]).
+ 
+
+Example 1:
+
+Input
+["NumArray", "sumRange", "sumRange", "sumRange"]
+[[[-2, 0, 3, -5, 2, -1]], [0, 2], [2, 5], [0, 5]]
+Output
+[null, 1, -1, -3]
+
+Explanation
+NumArray numArray = new NumArray([-2, 0, 3, -5, 2, -1]);
+numArray.sumRange(0, 2); // return (-2) + 0 + 3 = 1
+numArray.sumRange(2, 5); // return 3 + (-5) + 2 + (-1) = -1
+numArray.sumRange(0, 5); // return (-2) + 0 + 3 + (-5) + 2 + (-1) = -3
+ 
+
+Constraints:
+
+1 <= nums.length <= 104
+-105 <= nums[i] <= 105
+0 <= left <= right < nums.length
+At most 104 calls will be made to sumRange.
+
+```java
+// Prefix sum
+class NumArray {
+    private int[] arr;
+    public NumArray(int[] nums) {
+        arr=new int[nums.length];
+        int sum=0;
+        for(int i=0;i<nums.length;i++){
+            sum+=nums[i];
+            arr[i]=sum;
+        }
+    }
+    
+    public int sumRange(int left, int right) {
+        if(left==0 || right==0)return arr[right];
+        return arr[right]-arr[left-1];
+    }
+}
+
+```
+</details>
+
+
+
+<details id="525. Contiguous Array">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">525. Contiguous Array 
+</span>
+</summary>
+
+Given a binary array nums, return the maximum length of a contiguous subarray with an equal number of 0 and 1.
+
+ 
+
+Example 1:
+
+Input: nums = [0,1]
+Output: 2
+Explanation: [0, 1] is the longest contiguous subarray with an equal number of 0 and 1.
+Example 2:
+
+Input: nums = [0,1,0]
+Output: 2
+Explanation: [0, 1] (or [1, 0]) is a longest contiguous subarray with equal number of 0 and 1.
+ 
+
+Constraints:
+
+1 <= nums.length <= 105
+nums[i] is either 0 or 1.
+
+
+```java
+class Solution {
+    public int findMaxLength(int[] nums) {
+        // (Count, Index) Prefix sum
+        Map<Integer,Integer> hm=new HashMap<>();
+        int ans=0;
+        int sum=0;
+        for(int i=0;i<nums.length;i++){
+            sum = sum + (nums[i] == 1 ? 1 : -1);
+            if(sum == 0)
+    			ans = Math.max(ans, i+1);  
+            if(hm.containsKey(sum)){
+                ans=Math.max(ans,i-hm.get(sum));
+            }else{
+                hm.put(sum,i);
+            }
+        }
+        return ans;
+    }
+}
+```
+</details>
+
+
+
+
+<details id="496. Next Greater Element I">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">496. Next Greater Element I 
+</span>
+</summary>
+
+The next greater element of some element x in an array is the first greater element that is to the right of x in the same array.
+
+You are given two distinct 0-indexed integer arrays nums1 and nums2, where nums1 is a subset of nums2.
+
+For each 0 <= i < nums1.length, find the index j such that nums1[i] == nums2[j] and determine the next greater element of nums2[j] in nums2. If there is no next greater element, then the answer for this query is -1.
+
+Return an array ans of length nums1.length such that ans[i] is the next greater element as described above.
+
+ 
+
+Example 1:
+
+Input: nums1 = [4,1,2], nums2 = [1,3,4,2]
+Output: [-1,3,-1]
+Explanation: The next greater element for each value of nums1 is as follows:
+- 4 is underlined in nums2 = [1,3,4,2]. There is no next greater element, so the answer is -1.
+- 1 is underlined in nums2 = [1,3,4,2]. The next greater element is 3.
+- 2 is underlined in nums2 = [1,3,4,2]. There is no next greater element, so the answer is -1.
+Example 2:
+
+Input: nums1 = [2,4], nums2 = [1,2,3,4]
+Output: [3,-1]
+Explanation: The next greater element for each value of nums1 is as follows:
+- 2 is underlined in nums2 = [1,2,3,4]. The next greater element is 3.
+- 4 is underlined in nums2 = [1,2,3,4]. There is no next greater element, so the answer is -1.
+ 
+
+Constraints:
+
+1 <= nums1.length <= nums2.length <= 1000
+0 <= nums1[i], nums2[i] <= 104
+All integers in nums1 and nums2 are unique.
+All the integers of nums1 also appear in nums2.
+ 
+
+Follow up: Could you find an O(nums1.length + nums2.length) solution?
+
+
+```java
+class Solution {
+    public int[] nextGreaterElement(int[] nums1, int[] nums2) {
+        Map<Integer,Integer> map=new HashMap<>();
+        Stack<Integer> st=new Stack<>();
+        int[] ans=new int[nums1.length];
+        for(int i:nums2){
+            while(!st.isEmpty() && i>st.peek()){
+                map.put(st.pop(),i);
+            }
+            st.push(i);
+        }
+        for(int i=0;i<nums1.length;i++){
+            ans[i]=map.containsKey(nums1[i])?map.get(nums1[i]):-1;
+        }
+        return ans;
+    }
+}
+```
+</details>
+
+
+
+<details id="739. Daily Temperatures">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">739. Daily Temperatures 
+</span>
+</summary>
+
+Given an array of integers temperatures represents the daily temperatures, return an array answer such that answer[i] is the number of days you have to wait after the ith day to get a warmer temperature. If there is no future day for which this is possible, keep answer[i] == 0 instead.
+
+ 
+
+Example 1:
+
+Input: temperatures = [73,74,75,71,69,72,76,73]
+Output: [1,1,4,2,1,1,0,0]
+Example 2:
+
+Input: temperatures = [30,40,50,60]
+Output: [1,1,1,0]
+Example 3:
+
+Input: temperatures = [30,60,90]
+Output: [1,1,0]
+ 
+
+Constraints:
+
+1 <= temperatures.length <= 105
+30 <= temperatures[i] <= 100
+
+
+```java
+class Solution {
+    public int[] dailyTemperatures(int[] temperatures) {
+        Stack<Pair<Integer,Integer>> mono=new Stack<>();
+        int[] ans=new int[temperatures.length];
+
+        for(int i=0;i<temperatures.length;i++){
+            while(!mono.isEmpty() && temperatures[i]>mono.peek().getValue()){
+                Pair<Integer,Integer> pair=mono.pop();
+                ans[pair.getKey()]=i-pair.getKey();
+            }
+            mono.push(new Pair(i,temperatures[i]));
+        }
+        return ans;
+    }
+}
+```
+</details>
+
+
+
+
+<details id="DIJKSTRA ALGORITHM">
+<summary> 
+<span style="color:blue;font-size:16px;font-weight:bold">DIJKSTRA ALGORITHM 
+</span>
+</summary>
+
+https://www.geeksforgeeks.org/problems/implementing-dijkstra-set-1-adjacency-matrix/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=implementing-dijkstra-set-1-adjacency-matrix
+
+Single source shortest Path algorithm
+
+Time Complexity: O(E * logV), Where E is the number of edges and V is the number of vertices.
+The while loop runs at most V times because each vertex is processed only once.
+For each vertex, we perform relaxation on its neighbors. In the worst case, each edge is considered once.
+Therefore, the overall time complexity is O(E*logV), where V is the number of vertices, and the logV factor comes from the priority queue operations.
+Auxiliary Space: O(V),
+The dist array of size V is used to store the minimum distances from the source vertex to all other vertices. So, the space complexity for dist is O(V)
+The pq priority queue is used to keep track of vertices to visit next. In the worst case, it can contain all V vertices. So, the space complexity for the priority queue is O(V).
+Overall, the space complexity of the algorithm is O(V).
+
+```java
+//{ Driver Code Starts
+import java.util.*;
+import java.io.*;
+import java.lang.*;
+
+class DriverClass
+{
+    public static void main(String args[]) throws IOException {
+
+        BufferedReader read =
+            new BufferedReader(new InputStreamReader(System.in));
+        int t = Integer.parseInt(read.readLine());
+        while (t-- > 0) {
+            String str[] = read.readLine().trim().split(" ");
+            int V = Integer.parseInt(str[0]);
+            int E = Integer.parseInt(str[1]);
+    
+            ArrayList<ArrayList<ArrayList<Integer>>> adj = new ArrayList<ArrayList<ArrayList<Integer>>>();
+            for(int i=0;i<V;i++)
+            {
+                adj.add(new ArrayList<ArrayList<Integer>>());
+            }
+            
+            int i=0;
+            while (i++<E) {
+                String S[] = read.readLine().trim().split(" ");
+                int u = Integer.parseInt(S[0]);
+                int v = Integer.parseInt(S[1]);
+                int w = Integer.parseInt(S[2]);
+                ArrayList<Integer> t1 = new ArrayList<Integer>();
+                ArrayList<Integer> t2 = new ArrayList<Integer>();
+                t1.add(v);
+                t1.add(w);
+                t2.add(u);
+                t2.add(w);
+                adj.get(u).add(t1);
+                adj.get(v).add(t2);
+            }
+            
+            int S = Integer.parseInt(read.readLine());
+            
+            Solution ob = new Solution();
+            
+            int[] ptr = ob.dijkstra(V, adj, S);
+            
+            for(i=0; i<V; i++)
+                System.out.print(ptr[i] + " ");
+            System.out.println();
+        }
+    }
+}
+// } Driver Code Ends
+
+
+//User function Template for Java
+
+class Co{
+    int dist;
+    int node;
+    Co(int dist, int node){
+        this.dist=dist;
+        this.node=node;
+    }
+}
+class Solution
+{
+    //Function to find the shortest distance of all the vertices
+    //from the source vertex S.
+    static int[] dijkstra(int V, ArrayList<ArrayList<ArrayList<Integer>>> adj, int S)
+    {
+        // Min Heap
+        PriorityQueue<Co> pq=new PriorityQueue<>((a,b)->a.dist-b.dist);
+        
+        int[] dist=new int[V];
+        Arrays.fill(dist,Integer.MAX_VALUE);
+        dist[S]=0;
+        pq.offer(new Co(0,S));
+        
+        while(!pq.isEmpty()){
+            int dis = pq.peek().dist; 
+            int node = pq.peek().node; 
+            pq.poll();
+            for(int i = 0;i<adj.get(node).size();i++) {
+                int edgeWeight = adj.get(node).get(i).get(1); 
+                int adjNode = adj.get(node).get(i).get(0); 
+                if(dis + edgeWeight < dist[adjNode]) {
+                    dist[adjNode] = dis + edgeWeight; 
+                    pq.offer(new Co(dist[adjNode], adjNode)); 
+                }
+            }
+        }
+        
+        return dist;
+    }
+}
+
+
+```
+</details>
+
+
+
+<details id="1334. Find the City With the Smallest Number of Neighbors at a Threshold Distance">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1334. Find the City With the Smallest Number of Neighbors at a Threshold Distance 
+</span>
+</summary>
+
+
+https://leetcode.com/problems/find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance/description/
+
+There are n cities numbered from 0 to n-1. Given the array edges where edges[i] = [fromi, toi, weighti] represents a bidirectional and weighted edge between cities fromi and toi, and given the integer distanceThreshold.
+
+Return the city with the smallest number of cities that are reachable through some path and whose distance is at most distanceThreshold, If there are multiple such cities, return the city with the greatest number.
+
+Notice that the distance of a path connecting cities i and j is equal to the sum of the edges' weights along that path.
+
+ 
+
+Example 1:
+
+![alt text](image-66.png)
+
+Input: n = 4, edges = [[0,1,3],[1,2,1],[1,3,4],[2,3,1]], distanceThreshold = 4
+Output: 3
+Explanation: The figure above describes the graph. 
+The neighboring cities at a distanceThreshold = 4 for each city are:
+City 0 -> [City 1, City 2] 
+City 1 -> [City 0, City 2, City 3] 
+City 2 -> [City 0, City 1, City 3] 
+City 3 -> [City 1, City 2] 
+Cities 0 and 3 have 2 neighboring cities at a distanceThreshold = 4, but we have to return city 3 since it has the greatest number.
+
+Example 2:
+
+![alt text](image-67.png)
+
+Input: n = 5, edges = [[0,1,2],[0,4,8],[1,2,3],[1,4,2],[2,3,1],[3,4,1]], distanceThreshold = 2
+Output: 0
+Explanation: The figure above describes the graph. 
+The neighboring cities at a distanceThreshold = 2 for each city are:
+City 0 -> [City 1] 
+City 1 -> [City 0, City 4] 
+City 2 -> [City 3, City 4] 
+City 3 -> [City 2, City 4]
+City 4 -> [City 1, City 2, City 3] 
+The city 0 has 1 neighboring city at a distanceThreshold = 2.
+ 
+
+Constraints:
+
+2 <= n <= 100
+1 <= edges.length <= n * (n - 1) / 2
+edges[i].length == 3
+0 <= fromi < toi < n
+1 <= weighti, distanceThreshold <= 10^4
+All pairs (fromi, toi) are distinct.
+
+
+```java
+class Solution {
+    public int findTheCity(int n, int[][] edges, int distanceThreshold) {
+        int[][] matrix=new int[n][n];
+        for(int[]i:matrix)Arrays.fill(i,Integer.MAX_VALUE);
+        int ans_node=Integer.MAX_VALUE;
+        int ans_num_neigh=Integer.MAX_VALUE;
+        // Make a 2D matrix and update all the edge distance
+        // Since it is a undirectedgraph, add weights both ways
+        for(int i=0;i<edges.length;i++){
+            matrix[edges[i][0]][edges[i][1]]=edges[i][2];
+            matrix[edges[i][1]][edges[i][0]]=edges[i][2];
+        }
+        // i->i weight is 0
+        for(int i=0;i<n;i++){
+            matrix[i][i]=0;
+        }
+        // i-> via node i 
+        for(int i=0;i<n;i++){
+            for(int j=0;j<n;j++){
+                for(int k=0;k<n;k++){
+                    if(matrix[j][i]==Integer.MAX_VALUE || matrix[i][k]==Integer.MAX_VALUE){continue;}
+                    matrix[j][k]=Math.min(matrix[j][k],matrix[j][i]+matrix[i][k]);
+                }
+            }
+        }
+
+        for(int j=0;j<n;j++){
+            int cnt=0;
+            for(int k=0;k<n;k++){
+                if(matrix[j][k]<=distanceThreshold)cnt++;
+            }
+            if(cnt<ans_num_neigh){
+                ans_num_neigh=cnt;
+                ans_node=j;
+            }
+            if(cnt==ans_num_neigh){
+                if(j>ans_node){
+                    ans_node=j;
+                }
+            }
+        }
+        
+        return ans_node;
+    }
+}
+
+```
+</details>
+
+
+
+
+<details id="Detect a cycle using BFS & DFS in a connected component">
+<summary> 
+<span style="color:blue;font-size:16px;font-weight:bold">Detect a cycle using BFS in a connected component 
+</span>
+</summary>
+
+### UNDIRECTED GRAPH
+```java
+
+// BFS
+//{ Driver Code Starts
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+class GFG {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br =
+            new BufferedReader(new InputStreamReader(System.in));
+        int T = Integer.parseInt(br.readLine().trim());
+        while (T-- > 0) {
+            String[] s = br.readLine().trim().split(" ");
+            int V = Integer.parseInt(s[0]);
+            int E = Integer.parseInt(s[1]);
+            ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+            for (int i = 0; i < V; i++) adj.add(i, new ArrayList<Integer>());
+            for (int i = 0; i < E; i++) {
+                String[] S = br.readLine().trim().split(" ");
+                int u = Integer.parseInt(S[0]);
+                int v = Integer.parseInt(S[1]);
+                adj.get(u).add(v);
+                adj.get(v).add(u);
+            }
+            Solution obj = new Solution();
+            boolean ans = obj.isCycle(V, adj);
+            if (ans)
+                System.out.println("1");
+            else
+                System.out.println("0");
+        }
+    }
+}
+// } Driver Code Ends
+
+class Co{
+    int node;
+    int parent;
+    Co(int n, int p){
+        this.node=n;
+        this.parent=p;
+    }
+}
+class Solution {
+    // Function to detect cycle in an undirected graph.
+    public boolean isCycle(int V, ArrayList<ArrayList<Integer>> adj) {
+        boolean[] visited=new boolean[V];
+        
+        for(int i=0;i<V;i++){
+            if(!visited[i] && isCycleUtility(adj,visited,i)){
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean isCycleUtility(ArrayList<ArrayList<Integer>> adj, boolean[] visited, int node){
+        visited[node]=true;
+        Queue<Co> queue=new LinkedList<>();
+        queue.add(new Co(node, -1));
+        
+        while(!queue.isEmpty()){
+            Co pair=queue.poll();
+            
+            for(int i:adj.get(pair.node)){
+                if(i==pair.parent)continue;
+                // Sequene of this statement is very important. 
+                if(visited[i])return true;
+                if(!visited[i]){
+                    visited[i]=true;
+                    queue.add(new Co(i,pair.node));
+                }
+            }
+        }
+        return false;
+    }
+}
+// DFS
+
+class Solution {
+    // Function to detect cycle in an undirected graph.
+    private boolean isCycleUtil(ArrayList<ArrayList<Integer>> graph, int start, boolean[] visited, int parent) {
+        visited[start] = true;
+        
+        for (int neighbor : graph.get(start)) {
+            if (neighbor == parent) {
+                continue;
+            }
+            if (visited[neighbor]) {
+                return true;
+            }
+            if (isCycleUtil(graph, neighbor, visited, start)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean isCycle(int V, ArrayList<ArrayList<Integer>> adj) {
+        boolean[] visited = new boolean[V];
+        
+        for (int i = 0; i < V; i++) {
+            if (!visited[i] && isCycleUtil(adj, i, visited, -1)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+```
+
+
+### DIRECTED GRAPH
+
+Here we need to keep track of which BFS/DFS we are in. basically for every new BFS/DFS we need to pass a reStack[] array having details od nodes in being visited in the current BFS/DFS
+
+
+```java
+// Using DFS
+class Solution {
+    // Function to detect cycle in a directed graph.
+    public boolean isCycle(int V, ArrayList<ArrayList<Integer>> adj) {
+        boolean[] visited = new boolean[V];
+        boolean[] recStack = new boolean[V];
+        
+        for (int i = 0; i < V; i++) {
+            if (isCycleUtil(adj, i, visited, recStack)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isCycleUtil(ArrayList<ArrayList<Integer>> adj, int node, boolean[] visited, boolean[] recStack) {
+        if (recStack[node]) {
+            return true;
+        }
+        
+        if (visited[node]) {
+            return false;
+        }
+
+        visited[node] = true;
+        recStack[node] = true;
+
+        for (int neighbor : adj.get(node)) {
+            if (isCycleUtil(adj, neighbor, visited, recStack)) {
+                return true;
+            }
+        }
+
+        recStack[node] = false;
+        return false;
+    }
+}
+
+
+
+// Using BFS
+
+
+// Normal approach
+class Solution {
+    // Function to detect cycle in a directed graph using BFS.
+    public boolean isCycle(int V, ArrayList<ArrayList<Integer>> adj) {
+        boolean[] visited = new boolean[V];
+        boolean[] recStack = new boolean[V];
+        
+        for (int i = 0; i < V; i++) {
+            if (!visited[i] && isCycleUtil(adj, visited, recStack, i)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isCycleUtil(ArrayList<ArrayList<Integer>> adj, boolean[] visited, boolean[] recStack, int node) {
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(node);
+        visited[node] = true;
+        recStack[node] = true;
+        
+        while (!queue.isEmpty()) {
+            int current = queue.poll();
+            
+            for (int neighbor : adj.get(current)) {
+                if (!visited[neighbor]) {
+                    visited[neighbor] = true;
+                    recStack[neighbor] = true;
+                    queue.add(neighbor);
+                } else if (recStack[neighbor]) {
+                    return true;
+                }
+            }
+            recStack[current] = false;
+        }
+        return false;
+    }
+}
+
+
+
+// Function to detect cycle in a directed graph using BFS (Kahn's Algorithm).
+class Solution {
+    public boolean isCycle(int V, ArrayList<ArrayList<Integer>> adj) {
+        int[] inDegree = new int[V];
+        
+        // Calculate in-degrees of all vertices
+        for (int i = 0; i < V; i++) {
+            for (int neighbor : adj.get(i)) {
+                inDegree[neighbor]++;
+            }
+        }
+
+        Queue<Integer> queue = new LinkedList<>();
+        
+        // Add all vertices with in-degree 0 to the queue
+        for (int i = 0; i < V; i++) {
+            if (inDegree[i] == 0) {
+                queue.add(i);
+            }
+        }
+
+        int count = 0; // Counter for number of vertices included in the topological sort
+
+        while (!queue.isEmpty()) {
+            int node = queue.poll();
+            count++;
+            
+            // Decrease in-degree of all adjacent vertices
+            for (int neighbor : adj.get(node)) {
+                inDegree[neighbor]--;
+                // If in-degree becomes 0, add it to the queue
+                if (inDegree[neighbor] == 0) {
+                    queue.add(neighbor);
+                }
+            }
+        }
+
+        // If count of visited nodes is not equal to number of vertices, there is a cycle
+        return count != V;
+    }
+}
+```
+</details>
+
+
+
+<details id="113. Path Sum II">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">113. Path Sum II 
+</span>
+</summary>
+
+Given the root of a binary tree and an integer targetSum, return all root-to-leaf paths where the sum of the node values in the path equals targetSum. Each path should be returned as a list of the node values, not node references.
+
+A root-to-leaf path is a path starting from the root and ending at any leaf node. A leaf is a node with no children.
+
+ 
+
+Example 1:
+
+![alt text](image-68.png)
+
+Input: root = [5,4,8,11,null,13,4,7,2,null,null,5,1], targetSum = 22
+Output: [[5,4,11,2],[5,8,4,5]]
+Explanation: There are two paths whose sum equals targetSum:
+5 + 4 + 11 + 2 = 22
+5 + 8 + 4 + 5 = 22
+Example 2:
+
+
+Input: root = [1,2,3], targetSum = 5
+Output: []
+
+Example 3:
+
+![alt text](image-69.png)
+
+Input: root = [1,2], targetSum = 0
+Output: []
+ 
+
+Constraints:
+
+The number of nodes in the tree is in the range [0, 5000].
+-1000 <= Node.val <= 1000
+-1000 <= targetSum <= 1000
+
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
+        List<List<Integer>> ans=new ArrayList<>();
+        if(root==null)return ans;
+        dfs(root, targetSum, ans, new ArrayList<Integer>());
+        return ans;
+    }
+    public void dfs(TreeNode root, int target, List<List<Integer>> ans, List<Integer> sub){
+        if(root.left==null && root.right==null && target==root.val){
+            sub.add(root.val);
+            ans.add(new ArrayList<>(sub));
+            sub.remove(sub.size()-1);
+            return;
+        }
+        sub.add(root.val);
+        if(root.left!=null)dfs(root.left, target-root.val, ans, sub);
+        if(root.right!=null)dfs(root.right, target-root.val, ans, sub);
+        sub.remove(sub.size()-1);
+    }
+}
+```
+</details>
+
+
+
+
+<details id="Topological Sort in DAG(Directed Acyclic Graph)">
+<summary> 
+<span style="color:blue;font-size:16px;font-weight:bold">Topological Sort in DAG(Directed Acyclic Graph) 
+</span>
+</summary>
+Topological sort is onlu possible for a Directed, Acyclic graph. Just use general code for cycle detection using BFS/DFS add a small logic for stack to store the order. Code is extended version of the cycle detection. Because if there is a cycle in the graph then it is not acyclic hence no topological order is present. 
+</details>
+
+
+
+<details id="785. Is Graph Bipartite?using DFS">
+<summary> 
+<span style="color:blue;font-size:16px;font-weight:bold">785. Is Graph Bipartite? 
+</span>
+</summary>
+
+https://leetcode.com/problems/is-graph-bipartite/description/
+
+There is an undirected graph with n nodes, where each node is numbered between 0 and n - 1. You are given a 2D array graph, where graph[u] is an array of nodes that node u is adjacent to. More formally, for each v in graph[u], there is an undirected edge between node u and node v. The graph has the following properties:
+
+There are no self-edges (graph[u] does not contain u).
+There are no parallel edges (graph[u] does not contain duplicate values).
+If v is in graph[u], then u is in graph[v] (the graph is undirected).
+The graph may not be connected, meaning there may be two nodes u and v such that there is no path between them.
+A graph is bipartite if the nodes can be partitioned into two independent sets A and B such that every edge in the graph connects a node in set A and a node in set B.
+
+Return true if and only if it is bipartite.
+
+ 
+
+Example 1:
+
+![alt text](image-70.png)
+
+Input: graph = [[1,2,3],[0,2],[0,1,3],[0,2]]
+Output: false
+Explanation: There is no way to partition the nodes into two independent sets such that every edge connects a node in one and a node in the other.
+
+Example 2:
+
+![alt text](image-71.png)
+
+Input: graph = [[1,3],[0,2],[1,3],[0,2]]
+Output: true
+Explanation: We can partition the nodes into two sets: {0, 2} and {1, 3}.
+ 
+
+Constraints:
+
+graph.length == n
+1 <= n <= 100
+0 <= graph[u].length < n
+0 <= graph[u][i] <= n - 1
+graph[u] does not contain u.
+All the values of graph[u] are unique.
+If graph[u] contains v, then graph[v] contains u.
+
+
+```java
+// Solution using DFS
+class Solution {
+    public boolean isBipartite(int[][] graph) {
+        int[] colors=new int[graph.length];
+        Arrays.fill(colors, -1);
+
+        for(int i=0;i<graph.length;i++){
+            if(colors[i]==-1 && !dfs(graph,colors,i,0)){
+                return false;
+            }
+        }    
+        return true;
+    }
+    public boolean dfs(int[][] graph, int[] colors, int node, int color){
+        colors[node]=color;
+        for(int i=0;i<graph[node].length;i++){
+            if(colors[graph[node][i]]==color)return false;
+            if(colors[graph[node][i]]==-1 && !dfs(graph,colors,graph[node][i],1-color))return false;
+        }
+        return true;
+    }
+
+}
+
+
+
+
+// Solution using BFS
+class Co{
+    int node;
+    int color;
+    Co(int n,int c){
+        this.node=n;
+        this.color=c;
+    }
+}
+class Solution {
+    public boolean isBipartite(int[][] graph) {
+        int[] colors=new int[graph.length];
+        Arrays.fill(colors, -1);
+
+        for(int i=0;i<graph.length;i++){
+            if(colors[i]==-1 && !bfs(graph,colors,i)){
+                return false;
+            }
+        }    
+        return true;
+    }
+    public boolean bfs(int[][] graph, int[] colors, int node){
+        Queue<Co> queue=new LinkedList<>();
+        int color=0;
+        queue.add(new Co(node, color));
+        while(!queue.isEmpty()){
+            int c_node=queue.peek().node;
+            int c_color=queue.peek().color;
+            queue.poll();
+            colors[c_node]=c_color;
+            color=1-c_color;
+            for(int i=0;i<graph[c_node].length;i++){
+                if(colors[graph[c_node][i]]==c_color)return false;
+                if(colors[graph[c_node][i]]==-1){
+                    queue.add(new Co(graph[c_node][i], color));
+                }
+            }
+        }
+        return true;
+    }
+}
+```
+</details>
+
+
+
+
+<details id="Detect cycle in a graph">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">Detect cycle in a graph 
+</span>
+</summary>
+
+## Undirected Graph
+We can acomplish this in 3 ways, DFS, BFS and DSU(Disjoint Set Union)
+
+
+```java
+//{ Driver Code Starts
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+class GFG
+{
+    public static void main(String[] args) throws IOException
+    {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int T = Integer.parseInt(br.readLine().trim());
+        while(T-->0)
+        {
+            String[] s = br.readLine().trim().split(" ");
+            int V = Integer.parseInt(s[0]);
+            int E = Integer.parseInt(s[1]);
+            ArrayList<ArrayList<Integer>>adj = new ArrayList<>();
+            for(int i = 0; i < V; i++)
+                adj.add(i, new ArrayList<Integer>());
+            for(int i = 0; i < E; i++){
+                String[] S = br.readLine().trim().split(" ");
+                int u = Integer.parseInt(S[0]);
+                int v = Integer.parseInt(S[1]);
+                adj.get(u).add(v);
+                adj.get(v).add(u);
+            }
+            Solution obj = new Solution();
+            int ans = obj.detectCycle(V, adj);
+            System.out.println(ans);
+        }
+    }
+}
+// } Driver Code Ends
+
+
+class Solution
+{
+    //Function to detect cycle using DSU in an undirected graph.
+    public int detectCycle(int V, ArrayList<ArrayList<Integer>> adj)
+    {
+        int[] parent=new int[V];
+        int[] rank=new int[V];
+        for(int i=0;i<V;i++)parent[i]=i;
+        
+        // Iterate through each edge of the graph.
+        for (int u = 0; u < V; u++) {
+            for (int v : adj.get(u)) {
+                if (u < v) { // To avoid considering the same edge twice.
+                    if (find(u,parent) == find(v,parent))
+                        return 1;
+                    else
+                        union(u, v, parent, rank);
+                }
+            }
+        }
+        return 0;
+        
+    }
+// Function to find the parent of a node x with path compression.
+    private int find(int x, int[] parent) {
+        if (parent[x] == x)
+            return x;
+        return parent[x] = find(parent[x], parent);
+    }
+
+    // Function to perform the union of two sets x and y.
+    private void union(int x, int y, int[] parent, int[] rank) {
+        int xRoot = find(x, parent);
+        int yRoot = find(y, parent);
+
+        if (xRoot != yRoot) {
+            if (rank[xRoot] > rank[yRoot]) {
+                parent[yRoot] = xRoot;
+            } else if (rank[xRoot] < rank[yRoot]) {
+                parent[xRoot] = yRoot;
+            } else {
+                parent[xRoot] = yRoot;
+                rank[yRoot]++;
+            }
+        }
+    }
+
+}
+```
+
+</details>
+
+
+
+<details id="Bipartite Graph">
+<summary> 
+<span style="color:blue;font-size:16px;font-weight:bold">Bipartite Graph 
+</span>
+</summary>
+Given an adjacency list of a graph adj of V no. of vertices having 0 based index. Check whether the graph is bipartite or not.
+
+
+```java
+//{ Driver Code Starts
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+class GFG
+{
+    public static void main(String[] args) throws IOException
+    {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int T = Integer.parseInt(br.readLine().trim());
+        while(T-->0)
+        {
+            String[] S = br.readLine().trim().split(" ");
+            int V = Integer.parseInt(S[0]);
+            int E = Integer.parseInt(S[1]);
+            ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+            for(int i = 0; i < V; i++){
+                adj.add(new ArrayList<Integer>());
+            }
+            for(int i = 0; i < E; i++){
+                String[] s = br.readLine().trim().split(" ");
+                int u = Integer.parseInt(s[0]);
+                int v = Integer.parseInt(s[1]);
+                adj.get(u).add(v);
+                adj.get(v).add(u);
+            }
+            Solution obj = new Solution();
+            boolean ans = obj.isBipartite(V, adj);
+            if(ans)
+                System.out.println("1");
+            else System.out.println("0");
+       }
+    }
+}
+// } Driver Code Ends
+
+
+class Solution
+{
+    public boolean isBipartite(int V, ArrayList<ArrayList<Integer>>adj)
+    {
+        int[] colors=new int[V];
+        Arrays.fill(colors,-1);
+        
+        for(int i=0;i<V;i++){
+            if(colors[i]==-1 && !dfs(adj,0,colors,i)){
+                return false;
+            }
+        }
+        return true;
+    }
+    public boolean dfs(ArrayList<ArrayList<Integer>>adj, int color, int[] colors, int node){
+        colors[node]=color;
+        
+        for(int i:adj.get(node)){
+            if(colors[i]==color)return false;
+            
+            if(colors[i]==-1 && !dfs(adj,1-color,colors,i)){
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
+</details>
+
+
+
+
+
+<details id="743. Network Delay Time (DIJKSTRA IMPLEMENTATION)">
+<summary> 
+<span style="color:blue;font-size:16px;font-weight:bold">743. Network Delay Time (DIJKSTRA IMPLEMENTATION) 
+</span>
+</summary>
+
+https://leetcode.com/problems/network-delay-time/description/
+
+## Learn this implementation
+
+### Maintain a minimum distance array and update it on the go. Use min heap to put (weight, destination node). 
+https://www.youtube.com/watch?v=hptQEIpvaxM&list=PLpIkg8OmuX-LZB9jYzbbZchk277H5CbdY&index=28
+
+
+You are given a network of n nodes, labeled from 1 to n. You are also given times, a list of travel times as directed edges times[i] = (ui, vi, wi), where ui is the source node, vi is the target node, and wi is the time it takes for a signal to travel from source to target.
+
+We will send a signal from a given node k. Return the minimum time it takes for all the n nodes to receive the signal. If it is impossible for all the n nodes to receive the signal, return -1.
+
+ 
+
+Example 1:
+
+![alt text](image-72.png)
+
+Input: times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2
+Output: 2
+Example 2:
+
+Input: times = [[1,2,1]], n = 2, k = 1
+Output: 1
+Example 3:
+
+Input: times = [[1,2,1]], n = 2, k = 2
+Output: -1
+ 
+
+Constraints:
+
+1 <= k <= n <= 100
+1 <= times.length <= 6000
+times[i].length == 3
+1 <= ui, vi <= n
+ui != vi
+0 <= wi <= 100
+All the pairs (ui, vi) are unique. (i.e., no multiple edges.)
+
+### Time Complexity
+![alt text](image-73.png)
+
+```java
+class Co{
+    int weight;
+    int node;
+    Co(int w,int n){
+        this.weight=w;
+        this.node=n;
+    }
+}
+class Solution {
+    public int networkDelayTime(int[][] times, int n, int k) {
+        int[] mintimes=new int[n+1];
+        Arrays.fill(mintimes,Integer.MAX_VALUE);
+        List<List<Co>> adj=new ArrayList<>();
+        for(int i=0;i<n+1;i++){
+            adj.add(new ArrayList<Co>());
+        }
+        for(int i=0;i<times.length;i++){
+            adj.get(times[i][0]).add(new Co(times[i][2], times[i][1]));
+        }
+        PriorityQueue<Co> queue=new PriorityQueue<>((a,b)->a.weight-b.weight);
+        queue.add(new Co(0,k));
+        mintimes[k] = 0;
+        while (!queue.isEmpty()) {
+            Co current = queue.poll();
+            int node = current.node;
+            int weight = current.weight;
+            if (weight > mintimes[node]) {
+                continue;
+            }
+            for (Co neighbor : adj.get(node)) {
+                int newWeight = weight + neighbor.weight;
+                if (newWeight < mintimes[neighbor.node]) {
+                    mintimes[neighbor.node] = newWeight;
+                    queue.add(new Co(newWeight, neighbor.node));
+                }
+            }
+        }
+        int maxTime = Integer.MIN_VALUE;
+        for (int i = 1; i <= n; i++) {
+            if (mintimes[i] == Integer.MAX_VALUE) {
+                return -1; // If any node is unreachable, return -1.
+            }
+            maxTime = Math.max(maxTime, mintimes[i]);
+        }
+        return maxTime;
+    }
+}
+```
+
+
+</details>
+
+
+
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
 <span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
 </span>
 </summary>
 </details> -->
+
+
+
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
 <span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
 </span>
 </summary>
 </details> -->
+
+
+
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
 <span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
 </span>
 </summary>
 </details> -->
+
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
 <span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
