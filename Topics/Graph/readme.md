@@ -2,7 +2,7 @@
 
 <details id="Adjcency Matrix">
 <summary> 
-<span style="color:pink;font-size:16px;font-weight:bold">Adjcency Matrix 
+<span style="color:pink;font-size:16px;font-weight:bold">Adjcency List 
 </span>
 </summary>
 
@@ -169,6 +169,10 @@ class Solution {
 }
 ```
 </details>
+
+
+
+
 
 
 ### Detect Cycle :
@@ -661,49 +665,64 @@ class Solution {
 ```
 
 
-    MIK method
+    BFS Khan's Algorithm
 
 ```java
+
+
 class Solution {
-    public boolean canFinish(int numCourses, int[][] prerequisites) {
-        List<List<Integer>> adj=new ArrayList<>();
-        boolean[] visited=new boolean[numCourses];
-        boolean[] inRec=new boolean[numCourses];
-        
-        // Initializing adjcency list
-        for(int i=0;i<numCourses;i++){
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        // Create adjacency list and indegree array
+        List<List<Integer>> adj = new ArrayList<>();
+        int[] indegree = new int[numCourses];
+
+        // Initialize the adjacency list
+        for (int i = 0; i < numCourses; i++) {
             adj.add(new ArrayList<>());
         }
-        
-        // Making adjcency list
-        for(int[] pre:prerequisites){
+
+        // Build the graph and populate the indegree array
+        for (int[] pre : prerequisites) {
             adj.get(pre[1]).add(pre[0]);
-        } 
+            indegree[pre[0]]++;  // Increment the indegree of the dependent course
+        }
 
-        // For Connected Components
-        for(int i=0;i<numCourses;i++){
-            if(!visited[i]  && dfs(adj, visited, inRec, i)){
-                return false;
+        // Initialize the queue with courses that have 0 indegree (no prerequisites)
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < numCourses; i++) {
+            if (indegree[i] == 0) {
+                queue.offer(i);
             }
         }
-        return true;
-    }
 
-    public boolean dfs(List<List<Integer>> adj, boolean[] visited, boolean[] inRec, int node){
-        // Detect a cycle, hence cant find a topological order
-        visited[node]=true;
-        inRec[node]=true;
+        // Initialize an array to store the course order
+        int[] courseOrder = new int[numCourses];
+        int index = 0;
 
-        for(int neighbour: adj.get(node)){
-            if(visited[neighbour]==false && dfs(adj, visited, inRec, neighbour)){
-                return true;
+        // Process the courses using BFS
+        while (!queue.isEmpty()) {
+            int course = queue.poll();
+            courseOrder[index++] = course;
+
+            // Decrease the indegree of neighboring courses
+            for (int neighbor : adj.get(course)) {
+                indegree[neighbor]--;
+                if (indegree[neighbor] == 0) {
+                    queue.offer(neighbor);  // Add to queue if indegree becomes 0
+                }
             }
-            if(inRec[neighbour]==true) return true;
         }
-        inRec[node]=false;
-        return false;
+
+        // If we processed all courses, return the course order
+        if (index == numCourses) {
+            return courseOrder;
+        }
+
+        // If not all courses could be processed, return an empty array (cycle detected)
+        return new int[0];
     }
 }
+
 ```
 </details>
 
@@ -1105,10 +1124,18 @@ The dist array of size V is used to store the minimum distances from the source 
 The pq priority queue is used to keep track of vertices to visit next. In the worst case, it can contain all V vertices. So, the space complexity for the priority queue is O(V).
 Overall, the space complexity of the algorithm is O(V).
 
+
+    Dijkstra ka output hot ahai ek array jiske har index pr shortest path hoga us node k.
+    Make a min heap 
+    Visited array is not mandatory to use
+    Cant use if negative cycle in a graph
+    can be applied on undirected graph
+
+
 ```java
 import java.util.*;
 
-class DriverClass {
+class DriverClass { 
     class NodeDistPair {
         int dist;
         int node;
@@ -1153,6 +1180,9 @@ class DriverClass {
 
 ```
 </details>
+
+
+
 
 
 <details id="743. Network Delay Time">
@@ -1267,6 +1297,1472 @@ class Solution {
 ```
 
 
+
+
+</details>
+
+
+
+
+### Shortest path to all nodes
+
+
+<details id="Floyed Wasrshall">
+<summary> 
+<span style="color:blue;font-size:16px;font-weight:bold">Floyed Wasrshall 
+</span>
+</summary>
+
+    possible for directed/undirected graph
+    Time Complexity is O(V^3)
+
+```java
+import java.util.*;
+
+class Solution {
+    
+    public void shortest_distance(int[][] grid) {
+        int n = grid.length;
+        
+        // Step 1: Replace -1 with a large number (representing infinity)
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == -1) {
+                    grid[i][j] = 100000; // Large value to represent infinity
+                }
+            }
+        }
+        
+        // Step 2: Apply Floyd-Warshall Algorithm
+        for (int via = 0; via < n; via++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    // Update the distance if a shorter path is found through 'via'
+                    grid[i][j] = Math.min(grid[i][j], grid[i][via] + grid[via][j]);
+                }
+            }
+        }
+        
+        // Step 3: Replace large numbers (infinity) back to -1 to denote no path
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 100000) {
+                    grid[i][j] = -1;
+                }
+            }
+        }
+    }
+}
+
+
+```
+
+
+```java
+import java.util.*;
+
+class Solution {
+    
+    public void shortest_distance(List<List<Pair<Integer, Integer>>> adj, int V) {
+        // Step 1: Initialize the distance matrix
+        int[][] dist = new int[V][V];
+        
+        // Initialize the matrix with a large value (infinity)
+        for (int i = 0; i < V; i++) {
+            Arrays.fill(dist[i], 100000);
+            dist[i][i] = 0; // Distance from a node to itself is 0
+        }
+        
+        // Populate the initial distances based on the adjacency list
+        for (int i = 0; i < V; i++) {
+            for (Pair<Integer, Integer> edge : adj.get(i)) {
+                int neighbor = edge.getKey();
+                int weight = edge.getValue();
+                dist[i][neighbor] = weight;
+            }
+        }
+        
+        // Step 2: Apply Floyd-Warshall Algorithm
+        for (int via = 0; via < V; via++) {
+            for (int i = 0; i < V; i++) {
+                for (int j = 0; j < V; j++) {
+                    // Update the distance if a shorter path is found through 'via'
+                    dist[i][j] = Math.min(dist[i][j], dist[i][via] + dist[via][j]);
+                }
+            }
+        }
+        
+        // Step 3: Convert large distances back to -1 to denote no path
+        for (int i = 0; i < V; i++) {
+            for (int j = 0; j < V; j++) {
+                if (dist[i][j] == 100000) {
+                    dist[i][j] = -1;
+                }
+            }
+        }
+
+        // Output the final distances matrix (for example)
+        System.out.println("The shortest distance matrix is:");
+        for (int i = 0; i < V; i++) {
+            System.out.println(Arrays.toString(dist[i]));
+        }
+    }
+
+    // Helper class to store pairs (neighbor, weight)
+    static class Pair<K, V> {
+        private K key;
+        private V value;
+
+        public Pair(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public K getKey() {
+            return key;
+        }
+
+        public V getValue() {
+            return value;
+        }
+    }
+
+    public static void main(String[] args) {
+        int V = 4; // Number of vertices
+        List<List<Pair<Integer, Integer>>> adj = new ArrayList<>();
+        
+        // Initialize adjacency list
+        for (int i = 0; i < V; i++) {
+            adj.add(new ArrayList<>());
+        }
+
+        // Example graph with weighted edges
+        // Node 0 connects to Node 1 with weight 2, and Node 2 with weight 4
+        adj.get(0).add(new Pair<>(1, 2));
+        adj.get(0).add(new Pair<>(2, 4));
+
+        // Node 1 connects to Node 2 with weight 1
+        adj.get(1).add(new Pair<>(2, 1));
+
+        // Node 2 connects to Node 3 with weight 3
+        adj.get(2).add(new Pair<>(3, 3));
+
+        // Node 3 connects to Node 0 with weight 7
+        adj.get(3).add(new Pair<>(0, 7));
+
+        Solution solution = new Solution();
+        solution.shortest_distance(adj, V);
+    }
+}
+
+```
+</details>
+
+### Strongly Connected Component
+
+<details id="KosaRaju Algorithm">
+<summary> 
+<span style="color:blue;font-size:16px;font-weight:bold">KosaRaju Algorithm 
+</span>
+</summary>
+
+```java
+import java.util.*;
+
+class Solution {
+    
+    // Function to perform DFS and push nodes onto the stack after visiting them
+    private void dfsFill(int u, List<List<Integer>> adj, boolean[] visited, Stack<Integer> st) {
+        visited[u] = true;
+        
+        for (int v : adj.get(u)) {
+            if (!visited[v]) {
+                dfsFill(v, adj, visited, st);
+            }
+        }
+        
+        st.push(u);
+    }
+
+    // Function to perform DFS traversal on the reversed graph
+    private void dfsTraverse(int u, List<List<Integer>> adjReversed, boolean[] visited) {
+        visited[u] = true;
+        
+        for (int v : adjReversed.get(u)) {
+            if (!visited[v]) {
+                dfsTraverse(v, adjReversed, visited);
+            }
+        }
+    }
+
+    // Function to find the number of strongly connected components in the graph.
+    public int kosaraju(int V, List<List<Integer>> adj) {
+        Stack<Integer> st = new Stack<>();
+        boolean[] visited = new boolean[V];
+        
+        // Step 1: Perform DFS and push nodes into the stack in the order of their finishing times
+        for (int i = 0; i < V; i++) {
+            if (!visited[i]) {
+                dfsFill(i, adj, visited, st);
+            }
+        }
+        
+        // Step 2: Reverse the graph
+        List<List<Integer>> adjReversed = new ArrayList<>();
+        for (int i = 0; i < V; i++) {
+            adjReversed.add(new ArrayList<>());
+        }
+        
+        for (int u = 0; u < V; u++) {
+            for (int v : adj.get(u)) {
+                adjReversed.get(v).add(u); // Reverse the edge u -> v to v -> u
+            }
+        }
+        
+        // Step 3: Process the nodes in the order defined by the stack and count SCCs
+        Arrays.fill(visited, false);
+        int count = 0;
+        
+        while (!st.isEmpty()) {
+            int node = st.pop();
+            if (!visited[node]) {
+                // Perform DFS on the reversed graph to find all reachable nodes
+                dfsTraverse(node, adjReversed, visited);
+                count++;
+            }
+        }
+        
+        return count;
+    }
+
+    public static void main(String[] args) {
+        int V = 5;
+        List<List<Integer>> adj = new ArrayList<>();
+        
+        // Initialize adjacency list for graph
+        for (int i = 0; i < V; i++) {
+            adj.add(new ArrayList<>());
+        }
+        
+        // Example graph edges (u -> v)
+        adj.get(0).add(2);
+        adj.get(2).add(1);
+        adj.get(1).add(0);
+        adj.get(0).add(3);
+        adj.get(3).add(4);
+        
+        Solution solution = new Solution();
+        System.out.println("Number of strongly connected components: " + solution.kosaraju(V, adj));
+    }
+}
+
+```
+</details>
+
+
+### Questions
+
+<details id="947. Most Stones Removed with Same Row or Column">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">947. Most Stones Removed with Same Row or Column 
+</span>
+</summary>
+
+```java
+class Solution {
+    public int removeStones(int[][] stones) {
+        boolean[] visited=new boolean[stones.length];
+        int group=0;
+        for(int i=0;i<stones.length;i++){
+            if(!visited[i]){
+                group++;
+                dfs(stones, visited, i);
+            }
+        }
+        return stones.length - group;
+    }
+
+    private void dfs(int[][] stones,  boolean[]  visited, int index){
+        visited[index]=true;
+        int r=stones[index][0];
+        int c=stones[index][1];
+        for(int i=0;i<stones.length;i++){
+            if(!visited[i] && (stones[i][0]==r || stones[i][1]==c)){
+                visited[i]=true;
+                dfs(stones, visited, i);
+            }
+        }
+    }
+}
+```
+</details>
+
+<details id="1926. Nearest Exit from Entrance in Maze">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1926. Nearest Exit from Entrance in Maze 
+</span>
+</summary>
+
+```java
+class Solution {
+    public int nearestExit(char[][] maze, int[] entrance) {
+        Queue<Pair<Integer, Integer>> queue=new LinkedList<>();
+        queue.offer(new Pair(entrance[0], entrance[1]));
+        
+        int path=0;
+        while(!queue.isEmpty()){
+            int size=queue.size();
+            path++;
+            for(int i=0;i<size;i++){
+                Pair<Integer, Integer> currentCell=queue.poll();
+                int r=currentCell.getKey();
+                int c=currentCell.getValue();
+                int[][] dir=new int[][]{{1,0},{0,1},{-1,0},{0,-1}};
+                for(int[] d:dir){
+                    int row=r+d[0];
+                    int col=c+d[1];
+                    if(row<0 || row>=maze.length || col<0 || col >= maze[0].length)continue;
+                    if(maze[row][col] == '+' || (row==entrance[0] && col== entrance[1]))continue;
+                    if(row==0 ||  row==maze.length-1 || col==maze[0].length-1 || col==0){
+                        return path;
+                    }
+                    queue.add(new Pair(row,col));
+                    maze[row][col] = '+';
+                }
+            }
+        }
+        return -1;
+    }
+}
+
+```
+</details>
+
+
+<details id="1971. Find if Path Exists in Graph">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1971. Find if Path Exists in Graph 
+</span>
+</summary>
+
+```java
+class Solution {
+    public boolean validPath(int n, int[][] edges, int source, int destination) {
+        if(source==destination)return true;
+        List<List<Integer>> adj=new ArrayList<>();
+        for(int i=0;i<n;i++){
+            adj.add(new ArrayList<>());
+        }
+        for(int[] u:edges){
+            adj.get(u[0]).add(u[1]);
+            adj.get(u[1]).add(u[0]);
+        }
+        boolean[] visited=new boolean[n];
+        Queue<Integer> queue=new LinkedList<>();
+        queue.offer(source);
+        visited[source]=true;
+        while(!queue.isEmpty()){
+            int size= queue.size();
+
+            for(int i=0;i<size;i++){
+                int node= queue.poll();
+                for(int neighbour: adj.get(node)){
+                    if(neighbour == destination)return true;
+                    if(!visited[neighbour]){
+                        queue.offer(neighbour);
+                        visited[neighbour]=true;
+                    }
+                }
+            } 
+        }
+        return false;
+    }
+}
+```
+</details>
+
+<details id="841. Keys and Rooms">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">841. Keys and Rooms 
+</span>
+</summary>
+
+```java
+class Solution {
+    public boolean canVisitAllRooms(List<List<Integer>> rooms) {
+        int n=rooms.size();
+        boolean[] visited=new boolean[n];
+        int roomsVisited=0;
+        Queue<Integer> queue=new LinkedList<>();
+        queue.offer(0);
+        visited[0]=true;
+        roomsVisited++;
+
+        while(!queue.isEmpty()){
+            int size=queue.size();
+
+            for(int i=0;i<size;i++){
+                int room=queue.poll();
+                for(int key: rooms.get(room)){
+                    if(!visited[key]){
+                        if(++roomsVisited==n)return true;
+                        visited[key]=true;
+                        queue.add(key);
+                    }
+                }
+            }
+        }
+        return false;
+    } 
+}
+```
+  
+</details>
+
+
+
+<details id="886. Possible Bipartition">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">886. Possible Bipartition
+ 
+</span>
+</summary>
+
+```java
+class Solution {
+    public boolean possibleBipartition(int n, int[][] dislikes) {
+        List<List<Integer>> adj = new ArrayList<>();
+
+        for (int i = 0; i <= n; i++) {
+            adj.add(new ArrayList<>());
+        }
+        for (int[] i : dislikes) {
+            adj.get(i[0]).add(i[1]);
+            adj.get(i[1]).add(i[0]);
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        int[] group = new int[n + 1];
+
+        for (int i = 1; i <= n; i++) {
+            if (group[i] == 0) {
+                queue.add(i);
+                group[i] = 1;
+                while (!queue.isEmpty()) {
+                    int node = queue.poll();
+                    for (int ne : adj.get(node)) {
+                        if (group[ne] == 0) {
+                            queue.add(ne);
+                            group[ne] = -group[node];
+                        } else if (group[ne] == group[node])
+                            return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+}
+```
+</details>
+
+<details id="797. All Paths From Source to Target">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">797. All Paths From Source to Target 
+</span>
+</summary>
+
+```java
+class Solution {
+    public List<List<Integer>> allPathsSourceTarget(int[][] graph) {
+        List<List<Integer>> paths=new ArrayList<>();
+        List<Integer> subPath=new ArrayList<>();
+        dfs(paths, subPath, graph, 0, graph.length-1);
+        return paths;
+    }
+    private void dfs(List<List<Integer>> paths, List<Integer> subPath, int[][] graph, int currNode, int target){
+        subPath.add(currNode);
+        if(currNode == target){
+            paths.add(new ArrayList<>(subPath));
+            subPath.remove(subPath.size()-1);
+            return;
+        }
+
+        for(int i: graph[currNode]){
+            dfs(paths, subPath, graph, i, graph.length-1);
+        }
+        subPath.remove(subPath.size()-1);
+    }
+}
+```
+</details>
+
+
+<details id="1061. Lexicographically Smallest Equivalent String">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1061. Lexicographically Smallest Equivalent String 
+</span>
+</summary>
+
+```java
+// DFS Approach
+class Solution {
+    public String smallestEquivalentString(String s1, String s2, String baseStr) {
+        List<Integer>[] adj = new ArrayList[26]; // 26 lowercase English letters
+        for (int i = 0; i < 26; i++) {
+            adj[i] = new ArrayList<>();
+        }
+        // Build edges based on s1 and s2
+        for (int i = 0; i < s1.length(); i++) {
+            int u = s1.charAt(i) - 'a';
+            int v = s2.charAt(i) - 'a';
+            adj[u].add(v);
+            adj[v].add(u);
+        }
+
+        // Step 2: Initialize visited array and mapping array
+        boolean[] visited = new boolean[26];
+        char[] mapping = new char[26]; // Maps each character to its smallest equivalent
+
+        // Initialize mapping to itself for all characters
+        for (int i = 0; i < 26; i++) {
+            mapping[i] = (char) (i + 'a');
+        }
+
+        // Step 3: Find connected components and determine mappings using DFS
+        for (int i = 0; i < 26; i++) {
+            if (!visited[i]) {
+                Set<Integer> componentNodes = new HashSet<>();
+                int minChar = dfs(i, adj, visited, componentNodes);
+                // Update mapping for all nodes in the component
+                char minCharC = (char) (minChar + 'a');
+                for (int node : componentNodes) {
+                    mapping[node] = minCharC;
+                }
+            }
+        }
+
+        // Step 4: Construct the result string using the mapping
+        StringBuilder sb = new StringBuilder();
+        for (char c : baseStr.toCharArray()) {
+            sb.append(mapping[c - 'a']);
+        }
+
+        return sb.toString();
+    }
+
+    // DFS function to traverse the graph and return the smallest character
+    private int dfs(int u, List<Integer>[] adj, boolean[] visited, Set<Integer> componentNodes) {
+        visited[u] = true;
+        componentNodes.add(u);
+        int minChar = u; // Initialize minChar with the current node
+
+        for (int v : adj[u]) {
+            if (!visited[v]) {
+                int childMinChar = dfs(v, adj, visited, componentNodes);
+                // Update minChar if a smaller character is found
+                if (childMinChar < minChar) {
+                    minChar = childMinChar;
+                }
+            }
+        }
+        return minChar;
+    }
+}
+
+```
+
+```java
+class Solution {
+    public String smallestEquivalentString(String s1, String s2, String baseStr) {
+        int[] parent = new int[26];
+
+        for (int i = 0; i < 26; i++) {
+            parent[i] = i;
+        }
+
+        for (int i = 0; i < s1.length(); i++) {
+            union(parent, s1.charAt(i) - 'a', s2.charAt(i) - 'a');
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (char c : baseStr.toCharArray()) {
+            char smallestChar = (char) (find(parent, c - 'a') + 'a');
+            sb.append(smallestChar);
+        }
+
+        return sb.toString();
+    }
+
+    private void union(int[] parent, int x, int y) {
+        int rootX = find(parent, x);
+        int rootY = find(parent, y);
+
+        if (rootX != rootY) {
+            // Union by setting the parent of the larger character to the smaller one
+            if (rootX < rootY) {
+                parent[rootY] = rootX;
+            } else {
+                parent[rootX] = rootY;
+            }
+        }
+    }
+
+    // Find function with path compression
+    private int find(int[] parent, int x) {
+        if (parent[x] == x) {
+            return x;
+        }
+        return parent[x] = find(parent, parent[x]);
+    }
+}
+
+```
+</details>
+
+<details id="133. Clone Graph">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">133. Clone Graph 
+</span>
+</summary>
+
+```java
+
+/*
+// Definition for a Node.
+class Node {
+    public int val;
+    public List<Node> neighbors;
+    public Node() {
+        val = 0;
+        neighbors = new ArrayList<Node>();
+    }
+    public Node(int _val) {
+        val = _val;
+        neighbors = new ArrayList<Node>();
+    }
+    public Node(int _val, ArrayList<Node> _neighbors) {
+        val = _val;
+        neighbors = _neighbors;
+    }
+}
+*/
+
+
+// DFS
+class Solution {
+    public Node cloneGraph(Node node) {
+        if(node ==null)return null;
+        Map<Node, Node> nodeMap=new HashMap<>();
+        Node firstNode =new Node(node.val, new ArrayList<>());
+        nodeMap.put(node, firstNode);
+        cloneGraphRecursively( firstNode,  nodeMap,  node);
+        return firstNode;
+    }
+    private void cloneGraphRecursively(Node clone, Map<Node, Node> nodeMap, Node orignal){
+        for(Node neighbour: orignal.neighbors){
+            if(nodeMap.containsKey(neighbour)){
+                nodeMap.get(neighbour).neighbors.add(clone);
+            }else{
+                ArrayList<Node> n=new ArrayList<>();
+                n.add(clone);
+                Node temp=new Node(neighbour.val, n);
+                nodeMap.put(neighbour, temp);
+                cloneGraphRecursively( temp,  nodeMap,  neighbour);
+            }
+        }
+    }
+}
+```
+
+```java
+// BFS
+class Solution {
+    public Node cloneGraph(Node node) {
+        if(node ==null)return null;
+        return cloneGraphRecursively( node);
+    }
+    private Node cloneGraphRecursively( Node orignal){
+        Queue<Node> queue=new LinkedList<>();
+        queue.offer(orignal);
+        Map<Node, Node> nodeMap=new HashMap<>();
+        Node firstNode =new Node(orignal.val, new ArrayList<>());
+        nodeMap.put(orignal, firstNode);
+
+        while(!queue.isEmpty()){
+            Node originalNode=queue.poll();
+            Node cloneNode=nodeMap.get(originalNode);
+            for(Node neighbour: originalNode.neighbors){
+                if(nodeMap.containsKey(neighbour)){
+                    nodeMap.get(neighbour).neighbors.add(cloneNode);
+                }else{
+                    ArrayList<Node> neighbourList=new ArrayList<>();
+                    neighbourList.add(cloneNode);
+                    Node newCloneNode=new Node(neighbour.val, neighbourList);
+                    nodeMap.put(neighbour, newCloneNode);
+                    queue.add(neighbour);
+                }
+            }
+        }
+        return firstNode;
+    }
+}
+```
+</details>
+
+<details id="839. Similar String Groups">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">839. Similar String Groups 
+</span>
+</summary>
+
+```java
+class Solution {
+    public int numSimilarGroups(String[] strs) {
+        Map<String, List<String>> adj =new HashMap<>();
+
+        for (String str : strs) {
+            adj.putIfAbsent(str, new ArrayList<>());
+        }
+
+        for (int i = 0; i < strs.length; i++) {
+            for (int j = i + 1; j < strs.length; j++) {
+                if (isSimilar(strs[i], strs[j])) {
+                    adj.get(strs[i]).add(strs[j]);
+                    adj.get(strs[j]).add(strs[i]);
+                }
+            }
+        }
+        int count=0;
+        Set<String> visited =new HashSet<>();
+        for(int i=0;i<strs.length;i++){
+            if(!visited.contains(strs[i])){
+                dfs(adj, strs[i], visited);
+                count++;
+            }
+        }
+        return count;
+    }
+    private boolean isSimilar(String s1, String s2) {
+        int dissimilar = 0;
+        for (int i = 0; i < s1.length(); i++) {
+            if (s1.charAt(i) != s2.charAt(i)) {
+                dissimilar++;
+                if (dissimilar > 2) return false;
+            }
+        }
+        return dissimilar == 0 || dissimilar == 2;
+    }
+    private void dfs(Map<String, List<String>> adj, String str, Set<String> visited){
+        visited.add(str);
+        for (String neighbour : adj.get(str)) {
+            if (!visited.contains(neighbour)) {
+                dfs(adj, neighbour, visited);
+            }
+        }
+    }
+}
+
+```
+
+```java
+// DSU
+
+class Solution {
+    public int numSimilarGroups(String[] strs) {
+        int[] parent=new int[strs.length];
+        int[] rank =new int[strs.length];
+
+        for(int i=0;i<strs.length;i++){
+            parent[i]=i;
+        }
+        int groups=strs.length;
+        for(int i=0;i<strs.length;i++){
+            for(int j=i+1; j<strs.length;j++){
+                if(isSimilar(strs[i], strs[j]) && (find(i, parent, rank)!=find(j, parent, rank))){
+                    union(i, j, parent, rank);
+                    groups--;
+                }
+            }
+        }
+        return groups;
+    }
+    private boolean isSimilar(String s1, String s2) {
+        int dissimilar = 0;
+        for (int i = 0; i < s1.length(); i++) {
+            if (s1.charAt(i) != s2.charAt(i)) {
+                dissimilar++;
+                if (dissimilar > 2) return false;
+            }
+        }
+        return dissimilar == 0 || dissimilar == 2;
+    }
+
+    private int find(int str,  int[] parent,  int[] rank  ){
+        if(parent[str]==str)return str;
+        return  parent[str]=find(parent[str],parent, rank);
+    }
+
+    private void union(int str1, int str2, int[] parent,  int[] rank ){
+        int parentStr1=find(str1, parent, rank);
+        int parentStr2=find(str2, parent, rank);
+
+        // This line of code wil never execute
+        if(parentStr1 == parentStr2)return;
+
+        if(rank[parentStr1]>rank[parentStr2]){
+            parent[parentStr2]=parentStr1;
+        }else if(rank[parentStr1]<rank[parentStr2]){
+            parent[parentStr1]=parentStr2;
+        }else{
+            parent[parentStr1]=parentStr2;
+            rank[parentStr2]++;
+        }
+    }
+}
+```
+</details>
+
+
+<details id="1697. Checking Existence of Edge Length Limited Paths">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1697. Checking Existence of Edge Length Limited Paths 
+</span>
+</summary>
+
+```java
+class Solution {
+    class Query {
+        int p;
+        int q;
+        int dist;
+        int index;
+        Query(int p,int q,int dist,int index){
+            this.p=p;
+            this.q=q;
+            this.dist=dist;
+            this.index=index;
+        }
+    }
+
+        public boolean[] distanceLimitedPathsExist(int n, int[][] edgeList, int[][] queries) {
+            int[] parent = new int[n];
+            int[] rank = new int[n];
+            boolean[] answer=new boolean[queries.length];
+            int qIndex=0;
+            int eIndex=0;
+            Arrays.sort(edgeList, (a, b) -> Integer.compare(a[2], b[2]));
+            Query[] queryList=new Query[queries.length];
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+            }
+            for(int i=0;i<queries.length;i++){
+                queryList[i]=new Query(queries[i][0],queries[i][1],queries[i][2],i);
+            }
+            Arrays.sort(queryList, (a,b)->Integer.compare(a.dist, b.dist));
+
+            for(int i=0;i<queryList.length;i++){
+                while(eIndex<edgeList.length && edgeList[eIndex][2]<queryList[qIndex].dist){
+                    union(edgeList[eIndex][0], edgeList[eIndex][1], parent, rank);
+                    eIndex++;
+                }
+                answer[queryList[qIndex].index]=find(queryList[qIndex].p, parent, rank)==find(queryList[qIndex].q, parent, rank);
+                qIndex++;
+            }
+            return answer;
+        }
+
+    private int find(int node, int[] parent, int[] rank){
+        if(parent[node]==node)return node;
+        return parent[node]=find(parent[node], parent, rank);
+    }
+
+    private void union(int node1, int node2, int[] parent, int[] rank){
+        int parent1=find(node1, parent, rank);
+        int parent2=find(node2, parent, rank);
+
+        if(parent1 == parent2)return;
+
+        if(rank[parent1]>rank[parent2]){
+            parent[parent2]=parent1;
+        }else if(rank[parent1]<rank[parent2]){
+            parent[parent1]=parent2;
+        }else{
+            parent[parent2]=parent1;
+            rank[parent1]++;
+        }
+    }
+
+}
+```
+</details>
+
+<details id="1579. Remove Max Number of Edges to Keep Graph Fully Traversable">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1579. Remove Max Number of Edges to Keep Graph Fully Traversable 
+</span>
+</summary>
+
+```java
+
+// DSU
+class Solution {
+    public int maxNumEdgesToRemove(int n, int[][] edges) {
+        Arrays.sort(edges, (a, b)->Integer.compare(b[0], a[0]));
+        int[] parentA = new int[n+1];
+        int[] rankA = new int[n+1];
+        int[] parentB = new int[n+1];
+        int[] rankB = new int[n+1];
+        for (int i = 1; i < n; i++) {
+            parentA[i] = i;
+            parentB[i] = i;
+        }
+        int groupsA=n;
+        int groupsB=n;
+        int edgesUsed=0;
+        for(int[] e:edges){
+            if(groupsA==1 && groupsB==1)return edges.length-edgesUsed;
+            boolean used=false;
+            if((e[0]==3 || e[0]==1) && find(e[1], parentA, rankA)!=find(e[2], parentA, rankA)){
+                union(e[1],e[2], parentA, rankA);groupsA--;used=true;
+            }
+            if((e[0]==3 || e[0]==2) && find(e[1], parentB, rankB)!=find(e[2], parentB, rankB)){
+                union(e[1],e[2], parentB, rankB);groupsB--;used=true;
+            }
+            if(used)edgesUsed++;
+        }
+        return groupsA==1 && groupsB==1?edges.length-edgesUsed:-1;
+    }
+    private int find(int node, int[] parent, int[] rank){
+        if(parent[node]==node)return node;
+        return parent[node]=find(parent[node], parent, rank);
+    }
+
+    private void union(int node1, int node2, int[] parent, int[] rank){
+        int parent1=find(node1, parent, rank);
+        int parent2=find(node2, parent, rank);
+
+        if(parent1 == parent2)return;
+
+        if(rank[parent1]>rank[parent2]){
+            parent[parent2]=parent1;
+        }else if(rank[parent1]<rank[parent2]){
+            parent[parent1]=parent2;
+        }else{
+            parent[parent2]=parent1;
+            rank[parent1]++;
+        }
+    }
+}
+```
+</details>
+
+<details id="1557. Minimum Number of Vertices to Reach All Nodes">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1557. Minimum Number of Vertices to Reach All Nodes 
+</span>
+</summary>
+
+```java
+class Solution {
+    public List<Integer> findSmallestSetOfVertices(int n, List<List<Integer>> edges) {
+        List<Integer> verticies=new ArrayList<>();
+        int[] indegree= new int[n];
+
+        for(List<Integer> e:edges){
+            indegree[e.get(1)]++;
+        }
+        for(int i=0;i<n;i++){
+            if(indegree[i]==0)verticies.add(i);
+        }
+        return verticies;
+    }
+}
+```
+</details>
+
+
+<details id="1091. Shortest Path in Binary Matrix">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1091. Shortest Path in Binary Matrix 
+</span>
+</summary>
+
+```java
+// BFS
+class Solution {
+    public int shortestPathBinaryMatrix(int[][] grid) {
+        if(grid[0][0]==1)return -1;
+        Queue<Pair<Integer, Integer>> queue=new LinkedList<>();
+        queue.offer(new Pair(0,0));
+        int level=0;
+        boolean[][] visited=new boolean[grid.length][grid[0].length];
+        while(!queue.isEmpty()){
+            int size=queue.size();
+            level++;
+            for(int i=0;i<size;i++){
+                Pair<Integer, Integer> node=queue.poll();
+                int x=node.getKey();
+                int y=node.getValue();
+
+                if(x == grid.length-1 && y == grid.length-1)return level;
+                int[][] dir=new int[][]{{-1,0},{-1,1}, {0,1},{1,1},{1,0},{1,-1},{0,-1},{-1,-1}};
+
+                for(int j=0;j<dir.length;j++){
+                    int dirx=x+dir[j][0];
+                    int diry=y+dir[j][1];
+                    if(dirx<0 || dirx>=grid.length || diry<0 || diry>=grid[0].length || grid[dirx][diry]==1 || visited[dirx][diry])continue;
+                    visited[dirx][diry]=true;
+                    queue.offer(new Pair(dirx, diry));
+                }
+            }
+        }
+        return -1;
+    }
+}
+
+```
+
+```java
+class Solution {
+    public int shortestPathBinaryMatrix(int[][] grid) {
+        int r=grid.length;
+        int c=grid[0].length;
+        if (grid[0][0] == 1 || grid[r - 1][c - 1] == 1) return -1;
+
+        // Min heap with <distance_from_source, cell>
+        PriorityQueue<Pair<Integer, Pair<Integer,Integer>>> queue=new PriorityQueue<>((a, b)-> Integer.compare(a.getKey(), b.getKey()));
+        
+        // Shortest Path of node from source
+        int[][] shortestPath=new int[grid.length][grid[0].length];
+
+        // Initializing the shortest path by infnity
+        for(int[] path:shortestPath){
+            Arrays.fill(path, Integer.MAX_VALUE);
+        }
+
+        shortestPath[0][0]=0;
+        queue.offer(new Pair(0, new Pair(0,0)));
+
+        while(!queue.isEmpty()){
+            int distance=queue.peek().getKey();
+            int x=queue.peek().getValue().getKey();
+            int y=queue.peek().getValue().getValue();
+           
+            queue.poll();
+            int[][] dist=new int[][]{{-1,0},{-1,1}, {0,1}, {1,1}, {1,0}, {1,-1}, {0,-1}, {-1, -1}};
+            for(int[] d:dist){
+                int neighborX=x+d[0];
+                int neighborY=y+d[1];
+                int newDistance= distance + 1;
+                if(neighborX<0 || neighborX>=r || neighborY<0 || neighborY>=c || grid[neighborX][neighborY]==1 )continue;
+                if(newDistance<shortestPath[neighborX][neighborY]){
+                    shortestPath[neighborX][neighborY]=newDistance;
+                    queue.offer(new Pair(newDistance, new Pair(neighborX, neighborY)));
+                }
+            }
+        }   
+        return shortestPath[r-1][c-1]==Integer.MAX_VALUE? -1 : shortestPath[r-1][c-1]+1;
+    }
+}
+```
+</details>
+
+<details id="1514. Path with Maximum Probability">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1514. Path with Maximum Probability 
+</span>
+</summary>
+
+```java
+class Solution {
+    public double maxProbability(int n, int[][] edges, double[] succProb, int start_node, int end_node) {
+        // Adjcency List
+        Map<Integer, List<Pair<Integer, Double>>> adj=new HashMap<>();
+
+        // Building the adjacency list
+        for (int i = 0; i < edges.length; i++) {
+            int u = edges[i][0];
+            int v = edges[i][1];
+            double prob = succProb[i];
+
+            adj.putIfAbsent(u, new ArrayList<>());
+            adj.putIfAbsent(v, new ArrayList<>());
+
+            adj.get(u).add(new Pair<>(v, prob));
+            adj.get(v).add(new Pair<>(u, prob));
+        }
+
+        // MaxHeap <probabillty, node>
+         PriorityQueue<Pair<Double, Integer>> queue = new PriorityQueue<>((a, b) -> Double.compare(b.getKey(), a.getKey()));
+
+        // Probability array to store the maximum probability to reach each node
+        double[] probabilities = new double[n];
+        probabilities[start_node] = 1.0;
+        queue.offer(new Pair<>(1.0, start_node));
+
+     // Dijkstra's-like approach using a priority queue
+        while (!queue.isEmpty()) {
+            double prob = queue.peek().getKey();
+            int node = queue.peek().getValue();
+            queue.poll();
+
+            // If we reach the end node, return the probability
+            if (node == end_node) {
+                return probabilities[end_node];
+            }
+
+            // Iterate through neighbors of the current node
+            for (Pair<Integer, Double> pair : adj.getOrDefault(node, new ArrayList<>())) {
+                int neighbor = pair.getKey();
+                double edgeProb = pair.getValue();
+                double newProb = prob * edgeProb;
+
+                // Update the probability if a higher one is found
+                if (newProb > probabilities[neighbor]) {
+                    probabilities[neighbor] = newProb;
+                    queue.offer(new Pair<>(newProb, neighbor));
+                }
+            }
+        }
+
+        return 0.0;
+    }
+}
+```
+</details>
+
+<details id="802. Find Eventual Safe States">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">802. Find Eventual Safe States 
+</span>
+</summary>
+
+```java
+// DFS
+class Solution {
+    public List<Integer> eventualSafeNodes(int[][] graph) {
+        int n=graph.length;
+        boolean[] visited=new boolean[n];
+        boolean[] inRecursion=new boolean[n];
+        List<Integer> safeNodes=new ArrayList<>();
+
+
+        for(int i=0;i<n;i++){
+            if(!visited[i]){
+                isCycle(graph, visited, inRecursion, i);
+            }
+        }
+
+        for(int i=0;i<n;i++){
+            if(!inRecursion[i])safeNodes.add(i);
+        }
+        return safeNodes;
+    }
+
+    private boolean isCycle(int[][] graph, boolean[] visited, boolean[] inRecursion, int node){
+        visited[node]=true;
+        inRecursion[node]=true;
+
+        for(int i: graph[node]){
+            if(!visited[i] && isCycle(graph, visited, inRecursion, i)){
+                return true;
+            }else if(visited[i] && inRecursion[i]){
+                return true;
+            }
+        }
+        inRecursion[node]=false;
+        return false;
+    }
+}
+```
+
+     in a directed graph to find a cycle we need to run Khans Algorithm (topological sort) to find out the cycle. we can directly use DFS to find the cycle.
+
+     Khan algorithms me sabse pelhe reverse krna padt ahai edges and algorith run krna padt ahai. jo jo nodes pop ho jaynge vo nodes safe sahenge and jo nodes queu me bach jaynge vo nodes cycle ka part honge
+
+</details>
+
+
+
+
+<details id="127. Word Ladder">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">127. Word Ladder 
+</span>
+</summary>
+
+```java
+class Solution {
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        Set<String> dict=new HashSet<>(wordList);
+        Set<String> visited=new HashSet<>();
+        Queue<String> queue=new LinkedList<>();
+        if (!dict.contains(endWord)) return 0;
+        queue.offer(beginWord);
+        visited.add(beginWord);
+        int count=1;
+        while(!queue.isEmpty()){
+            int size=queue.size();
+            for(int k=0;k<size;k++){
+                String s=queue.poll();
+                for(int i=0;i<s.length();i++){
+                    StringBuilder str=new StringBuilder(s);
+                    for (int j = 0; j <= 26; j++) {
+                        str.setCharAt(i, (char)('a'+j));
+                        String newword=str.toString();
+                        if(newword.equals(endWord))return count+1;
+                        if(!visited.contains(newword) && dict.contains(newword)){
+                            visited.add(newword);
+                            queue.add(newword);
+                        }
+                    }
+                }
+            }
+            count++;
+        }
+        return 0;
+    }
+}
+```
+</details>
+
+
+
+
+
+
+
+
+<details id="126. Word Ladder II">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">126. Word Ladder II 
+</span>
+</summary>
+
+
+
+
+    O(n!×L)
+    𝑂(n!): Represents the worst-case number of recursive calls, where each word could be considered as a next step.
+    𝑂(𝐿): Represents the time to check if a transformation is valid using the canTransform function.
+
+```java
+// BruteForce (Not accepted)
+class Solution {
+    private int minAnsLen = Integer.MAX_VALUE;
+    
+    public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+        Set<String> visited = new HashSet<>();
+        List<List<String>> words = new ArrayList<>();
+        List<String> path = new ArrayList<>();
+        
+        // Convert wordList to a set for O(1) lookups.
+        Set<String> wordSet = new HashSet<>(wordList);
+        if (!wordSet.contains(endWord)) return words; // Early exit if endWord is not in the list.
+
+        recursivelyFindPath(beginWord, endWord, wordSet, visited, path, words);
+        return words;
+    }
+
+    private void recursivelyFindPath(String beginWord, String endWord, Set<String> wordSet, Set<String> visited, 
+                                     List<String> path, List<List<String>> words) {
+        path.add(beginWord);
+        visited.add(beginWord);
+
+        // Check if we've reached the endWord.
+        if (beginWord.equals(endWord)) {
+            if (path.size() < minAnsLen) {
+                minAnsLen = path.size();
+                words.clear(); // Clear the list to store only the shortest paths.
+            }
+            if (path.size() == minAnsLen) {
+                words.add(new ArrayList<>(path));
+            }
+        } else {
+            // Explore all possible one-letter transformations.
+            for (String word : wordSet) {
+                if (!visited.contains(word) && canTransform(beginWord, word)) {
+                    recursivelyFindPath(word, endWord, wordSet, visited, path, words);
+                }
+            }
+        }
+
+        // Backtrack: remove the current word from path and visited.
+        visited.remove(beginWord);
+        path.remove(path.size() - 1);
+    }
+
+    private boolean canTransform(String begin, String end) {
+        int diff = 0;
+        for (int i = 0; i < begin.length(); i++) {
+            if (begin.charAt(i) != end.charAt(i)) {
+                diff++;
+                if (diff > 1) return false;
+            }
+        }
+        return diff == 1;
+    }
+}
+
+
+```
+
+
+   
+    O(N×L 2 )
+    N: All words might need to be visited. 
+    L^2 : For each word, generating all possible transformations is O(L), and checking for valid transformations (via canTransform) is also O(L).
+    Still not accepting 33/37 passed
+
+```java
+class Solution {
+    public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+        Set<String> wordSet = new HashSet<>(wordList);
+        List<List<String>> words = new ArrayList<>();
+        if (!wordSet.contains(endWord)) return words;
+
+        Set<String> visited = new HashSet<>();
+        Queue<List<String>> queue = new LinkedList<>();
+        queue.add(Arrays.asList(beginWord));
+        boolean foundEndWord = false;
+
+        while (!queue.isEmpty() && !foundEndWord) {
+            int size = queue.size();
+            Set<String> currentLevelVisited = new HashSet<>();
+
+            for (int i = 0; i < size; i++) {
+                List<String> path = queue.poll();
+                String lastWord = path.get(path.size() - 1);
+
+                for (String neighbor : wordSet) {
+                    if (!visited.contains(neighbor) && canTransform(lastWord, neighbor)) {
+                        List<String> newPath = new ArrayList<>(path);
+                        newPath.add(neighbor);
+
+                        if (neighbor.equals(endWord)) {
+                            foundEndWord = true;
+                            words.add(newPath);
+                        } else {
+                            queue.add(newPath);
+                            currentLevelVisited.add(neighbor);
+                        }
+                    }
+                }
+            }
+            // Add all words visited in this level to the global visited set.
+            visited.addAll(currentLevelVisited);
+        }
+
+        return words;
+    }
+
+    private boolean canTransform(String begin, String end) {
+        int diff = 0;
+        for (int i = 0; i < begin.length(); i++) {
+            if (begin.charAt(i) != end.charAt(i)) {
+                diff++;
+                if (diff > 1) return false;
+            }
+        }
+        return diff == 1;
+    }
+}
+
+```
+</details>
+
+<details id="675. Cut Off Trees for Golf Event">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">675. Cut Off Trees for Golf Event 
+</span>
+</summary>
+
+
+```java
+import java.util.*;
+
+class Solution {
+    // Directions for north, south, east, and west.
+    private static final int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+    
+    public int cutOffTree(List<List<Integer>> forest) {
+        int m = forest.size();
+        int n = forest.get(0).size();
+
+        // Step 1: Store all the trees' positions along with their heights.
+        List<int[]> trees = new ArrayList<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (forest.get(i).get(j) > 1) {
+                    trees.add(new int[]{i, j, forest.get(i).get(j)}); // {row, col, height}
+                }
+            }
+        }
+
+        // Step 2: Sort the trees based on their height.
+        Collections.sort(trees, (a, b) -> Integer.compare(a[2], b[2]));
+
+        // Step 3: Calculate the total minimum steps required.
+        int totalSteps = 0;
+        int startX = 0, startY = 0;
+
+        for (int[] tree : trees) {
+            int targetX = tree[0];
+            int targetY = tree[1];
+            int steps = bfs(forest, startX, startY, targetX, targetY);
+
+            if (steps == -1) {
+                return -1; // If a tree is unreachable, return -1.
+            }
+
+            totalSteps += steps;
+            startX = targetX;
+            startY = targetY; // Move the starting point to the last cut tree.
+        }
+
+        return totalSteps;
+    }
+
+    // BFS to find the shortest path from (startX, startY) to (targetX, targetY).
+    private int bfs(List<List<Integer>> forest, int startX, int startY, int targetX, int targetY) {
+        if (startX == targetX && startY == targetY) return 0;
+
+        int m = forest.size();
+        int n = forest.get(0).size();
+        boolean[][] visited = new boolean[m][n];
+        Queue<int[]> queue = new LinkedList<>();
+        queue.add(new int[]{startX, startY, 0}); // {x, y, steps}
+        visited[startX][startY] = true;
+
+        while (!queue.isEmpty()) {
+            int[] current = queue.poll();
+            int x = current[0];
+            int y = current[1];
+            int steps = current[2];
+
+            for (int[] dir : directions) {
+                int newX = x + dir[0];
+                int newY = y + dir[1];
+
+                // Check if the new position is within bounds and walkable.
+                if (newX >= 0 && newX < m && newY >= 0 && newY < n &&
+                    !visited[newX][newY] && forest.get(newX).get(newY) > 0) {
+                    
+                    if (newX == targetX && newY == targetY) {
+                        return steps + 1;
+                    }
+
+                    queue.add(new int[]{newX, newY, steps + 1});
+                    visited[newX][newY] = true;
+                }
+            }
+        }
+
+        return -1; // Return -1 if the target is unreachable.
+    }
+}
+
+```
 </details>
 
 <!-- <details id="1584. Min Cost to Connect All Points">
@@ -1276,12 +2772,231 @@ class Solution {
 </summary>
 </details> -->
 
+
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
 <span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
 </span>
 </summary>
 </details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
 
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 

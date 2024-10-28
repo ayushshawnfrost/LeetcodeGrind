@@ -3449,6 +3449,8 @@ class Solution {
         for(int i=3;i<nums.length;i++){
             dp0[i]=Math.max(dp0[i-2]+nums[i-1],dp0[i-1]);
         }     
+        
+        
         int[] dp1=new int[nums.length+1];
         dp1[2]=nums[1];
         dp1[3]=Math.max(nums[1],nums[2]);
@@ -4089,48 +4091,53 @@ Intution: Focus on the iterative solution which is a bottom up solution.
 Here we have assigned the last row and column to 0. We are starting from 
 dp[ text1.length()-1][ text2.length()-1] diagonally updward to the corner tile. at every comparision we are determining the common subsequence b/w 2 strings where 1st string is from i----text1.length()-1 ans second string is from j----text2.length()-1
 
-
+![alt text](image-74.png)
 
 ```java
 // Iterative version (Bottom-up 2d dp)
 class Solution {
-    
     public int longestCommonSubsequence(String text1, String text2) {
-        int[][] dp = new int[text1.length() + 1][text2.length() + 1];    
-
-        for (int i = text1.length() - 1; i >= 0; i--) {
-            for (int j = text2.length() - 1; j >= 0; j--) {
-                if (text1.charAt(i) == text2.charAt(j)) {
-                    // Increase the maximum sub-string length
-                    dp[i][j] = 1 + dp[i + 1][j + 1];
-                } else {
-                    // Copy the maximum sub-string length so far
-                    dp[i][j] = Math.max(dp[i][j + 1], dp[i + 1][j]);
+        int l1=text1.length();
+        int l2=text2.length();
+        int[][] dp=new int[l1+1][l2+1];
+        for(int j=0;j<=l2;j++){
+                dp[0][j]=0;
+        }
+        for(int j=0;j<=l1;j++){
+                dp[j][0]=0;
+        }
+        for(int i=1;i<=l1;i++){
+            for(int j=1;j<=l2;j++){
+                if(text1.charAt(i-1) == text2.charAt(j-1))dp[i][j]=1+ dp[i-1][j-1];
+                else {
+                    dp[i][j]=Math.max(dp[i-1][j], dp[i][j-1]);
                 }
             }
         }
-
-        return dp[0][0];
+        return dp[l1][l2];
     }
 }
 
-// Iterative version
+
+// Recursive + memo
 class Solution {
-    
     public int longestCommonSubsequence(String text1, String text2) {
-        int[][] dp = new int[text1.length() + 1][text2.length() + 1];    
+        int[][] dp=new int[text1.length()][text2.length()];
+        for(int[] d:dp)Arrays.fill(d,-1);
+        return recursiveLCS(text1, text2, 0, 0, dp);
+    }
+    private int recursiveLCS(String text1, String text2, int i, int j, int[][] dp){
+        // If any of the two indicies overflows, we should not check further
+        if(i>= text1.length() || j>= text2.length())return 0;
 
-        for (int i = text1.length() - 1; i >= 0; i--) {
-            for (int j = text2.length() - 1; j >= 0; j--) {
-                if (text1.charAt(i) == text2.charAt(j)) {
-                    dp[i][j] = 1 + dp[i + 1][j + 1];
-                } else {
-                    dp[i][j] = Math.max(dp[i][j + 1], dp[i + 1][j]);
-                }
-            }
-        }
+        // Check if the value is already calculated
+        if(dp[i][j]!=-1)return dp[i][j];
 
-        return dp[0][0];
+        // If the character are same return 1+ recursiveLCS()
+        if(text1.charAt(i) == text2.charAt(j))return dp[i][j]= 1+recursiveLCS(text1, text2, i+1, j+1, dp);
+
+        // now try explore the two options
+        return dp[i][j]=Math.max(recursiveLCS(text1, text2, i, j+1, dp), recursiveLCS(text1, text2, i+1, j, dp)); 
     }
 }
 ```
@@ -8058,57 +8065,230 @@ class Solution
 
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="1092. Shortest Common Supersequence ">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:red;font-size:16px;font-weight:bold">1092. Shortest Common Supersequence  
 </span>
 </summary>
-</details> -->
+
+
+```java
+class Solution {
+    public String shortestCommonSupersequence(String str1, String str2) {
+        int m=str1.length();
+        int n=str2.length();
+        int[][] dp=new int[m+1][n+1];
+
+        // Making the first column as 0
+        for(int i=0;i<=m;i++){
+            dp[i][0]=i;
+        }
+
+        // Making the first row as 0
+        for(int i=0;i<=n;i++){
+            dp[0][i]=i;
+        }
+
+        for(int i=1;i<=m;i++){
+            for(int j=1;j<=n;j++){
+                if(str1.charAt(i-1) == str2.charAt(j-1)){
+                    dp[i][j] = 1 + dp[i-1][j-1];
+                }else{
+                    dp[i][j]= 1 + Math.min(dp[i][j-1],dp[i-1][j]) ;
+                }
+            }
+        }
+
+        StringBuilder commonSuperSeq = new StringBuilder();
+        int i = m, j = n;
+
+        while (i > 0 && j > 0) {
+            if (str1.charAt(i - 1) == str2.charAt(j - 1)) {
+                commonSuperSeq.append(str1.charAt(i - 1));
+                i--;
+                j--;
+            } else if (dp[i - 1][j] < dp[i][j - 1]) {
+                commonSuperSeq.append(str1.charAt(i - 1));
+                i--;
+            } else {
+                commonSuperSeq.append(str2.charAt(j - 1));
+                j--;
+            }
+        }
+
+        while (i > 0) {
+            commonSuperSeq.append(str1.charAt(i - 1));
+            i--;
+        }
+        while (j > 0) {
+            commonSuperSeq.append(str2.charAt(j - 1));
+            j--;
+        }
+
+        return commonSuperSeq.reverse().toString();
+    }
+}
+```
+
+
+</details>
 
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+
+
+
+
+
+
+
+<details id="516. Longest Palindromic Subsequence">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">516. Longest Palindromic Subsequence 
 </span>
 </summary>
-</details> -->
 
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+```java
+//Approach-1 (Recursion + Memoization)
+//T.C : O(m*n)
+//S.C : O(m*n)
+class Solution {
+    int[][] t = new int[1001][1001];
+
+    public int LPS(String s, int i, int j) {
+        if (i > j)
+            return 0;
+        if (i == j)
+            return 1;
+
+        if (t[i][j] != -1)
+            return t[i][j];
+        if (s.charAt(i) == s.charAt(j))
+            return t[i][j] = 2 + LPS(s, i + 1, j - 1);
+        else
+            return t[i][j] = Math.max(LPS(s, i + 1, j), LPS(s, i, j - 1));
+    }
+
+    public int longestPalindromeSubseq(String s) {
+        int m = s.length();
+        for (int[] row : t) {
+            Arrays.fill(row, -1);
+        }
+        return LPS(s, 0, m - 1); // Approach-1
+    }
+}
+
+
+```
+
+```java
+
+//Approach-2 (Bottom Up)
+//T.C : O(n*n)
+//S.C : O(n*n)
+class Solution {
+    public int longestPalindromeSubseq(String s) {
+        int n = s.length();
+
+        int[][] t = new int[n][n];
+        // t[i][j] = longest common subsequence in string from i to j indices;
+        // strings of length 1 are always a palindrome
+        for (int i = 0; i < n; i++) {
+            t[i][i] = 1;
+        }
+
+        for (int L = 2; L <= n; L++) {
+            for (int i = 0; i < n - L + 1; i++) {
+                int j = i + L - 1;
+
+                if (s.charAt(i) == s.charAt(j) && L == 2)
+                    t[i][j] = 2;
+                else if (s.charAt(i) == s.charAt(j)) {
+                    t[i][j] = 2 + t[i + 1][j - 1];
+                } else {
+                    t[i][j] = Math.max(t[i + 1][j], t[i][j - 1]);
+                }
+            }
+        }
+        return t[0][n - 1];
+    }
+}
+```
+
+</details>
+
+
+
+<details id="1312. Minimum Insertion Steps to Make a String Palindrome">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">1312. Minimum Insertion Steps to Make a String Palindrome 
 </span>
 </summary>
-</details> -->
+
+```java
+//Approach-1 (Recur + Memo - Using Straight Forward Pallindromic Property)
+//T.C : O(n*n)
+//S.C : O(n*n)
+class Solution {
+    private int[][] t;
+
+    private int solve(int i, int j, String s) {
+        if (i >= j)
+            return 0;
+
+        if (t[i][j] != -1)
+            return t[i][j];
+
+        if (s.charAt(i) == s.charAt(j))
+            return t[i][j] = solve(i + 1, j - 1, s);
+
+        return t[i][j] = 1 + Math.min(solve(i, j - 1, s), solve(i + 1, j, s));
+    }
+
+    public int minInsertions(String s) {
+        int n = s.length();
+        t = new int[n][n];
+
+        for (int[] row : t)
+            Arrays.fill(row, -1);
+
+        return solve(0, n - 1, s);
+    }
+}
+
+```
 
 
+```java
 
-<!-- <details id="1584. Min Cost to Connect All Points">
-<summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
-</span>
-</summary>
-</details> -->
+//Approach-2 (Bottom Up - Using my favourite Palindrome Blue Print)
+//T.C : O(n*n)
+//S.C : O(n*n)
+class Solution {
+    public int minInsertions(String s) {
+        int n = s.length();
+        int[][] dp = new int[n][n];
+        // State: dp[i][j] = min insertion to make s[i..j] a palindrome
+        
+        for (int L = 2; L <= n; L++) {
+            for (int i = 0; i < n - L + 1; i++) {
+                int j = i + L - 1;
+                if (s.charAt(i) == s.charAt(j)) {
+                    dp[i][j] = dp[i + 1][j - 1];
+                } else {
+                    dp[i][j] = 1 + Math.min(dp[i + 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        
+        return dp[0][n - 1];
+    }
+}
+```
 
-
-
-<!-- <details id="1584. Min Cost to Connect All Points">
-<summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
-</span>
-</summary>
-</details> -->
-
-
-
-<!-- <details id="1584. Min Cost to Connect All Points">
-<summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
-</span>
-</summary>
-</details> -->
+</details>
 
 
 
