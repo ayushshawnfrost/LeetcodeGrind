@@ -411,35 +411,196 @@ class Solution {
 </details>
 
 
+
+
+<details id="2458. Height of Binary Tree After Subtree Removal Queries">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">2458. Height of Binary Tree After Subtree Removal Queries
+</span>
+</summary>
+
+```java
+
+https://leetcode.com/problems/height-of-binary-tree-after-subtree-removal-queries/description/?envType=daily-question&envId=2024-10-26
+
+
+You are given the root of a binary tree with n nodes. Each node is assigned a unique value from 1 to n. You are also given an array queries of size m.
+
+You have to perform m independent queries on the tree where in the ith query you do the following:
+
+Remove the subtree rooted at the node with the value queries[i] from the tree. It is guaranteed that queries[i] will not be equal to the value of the root.
+Return an array answer of size m where answer[i] is the height of the tree after performing the ith query.
+
+Note:
+
+The queries are independent, so the tree returns to its initial state after each query.
+The height of a tree is the number of edges in the longest simple path from the root to some node in the tree.
+ 
+
+Example 1:
+
+
+Input: root = [1,3,4,2,null,6,5,null,null,null,null,null,7], queries = [4]
+Output: [2]
+Explanation: The diagram above shows the tree after removing the subtree rooted at node with value 4.
+The height of the tree is 2 (The path 1 -> 3 -> 2).
+Example 2:
+
+
+Input: root = [5,8,9,2,1,3,7,4,6], queries = [3,2,4,8]
+Output: [3,2,3,2]
+Explanation: We have the following queries:
+- Removing the subtree rooted at node with value 3. The height of the tree becomes 3 (The path 5 -> 8 -> 2 -> 4).
+- Removing the subtree rooted at node with value 2. The height of the tree becomes 2 (The path 5 -> 8 -> 1).
+- Removing the subtree rooted at node with value 4. The height of the tree becomes 3 (The path 5 -> 8 -> 2 -> 6).
+- Removing the subtree rooted at node with value 8. The height of the tree becomes 2 (The path 5 -> 9 -> 3).
+ 
+
+Constraints:
+
+The number of nodes in the tree is n.
+2 <= n <= 105
+1 <= Node.val <= n
+All the values in the tree are unique.
+m == queries.length
+1 <= m <= min(n, 104)
+1 <= queries[i] <= n
+queries[i] != root.val
+```java
+
+class Solution {
+    public int[] treeQueries(TreeNode root, int[] queries) {
+        int[] heightsMap = new int[(int) Math.pow(10, 5) + 1];
+        int[] nodeLevel = new int[(int) Math.pow(10, 5) + 1];
+        int[] maxHeightNodeAtLevel = new int[(int) Math.pow(10, 5) + 1];
+        int[] secondMaxHeightNodeAtLevel = new int[(int) Math.pow(10, 5) + 1];
+
+        initialize(heightsMap, nodeLevel, maxHeightNodeAtLevel, secondMaxHeightNodeAtLevel, root, 0);
+        int[] heightQueries = new int[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            int L = nodeLevel[queries[i]];
+            int tempResultantHeight = heightsMap[queries[i]] == maxHeightNodeAtLevel[L]
+                    ? secondMaxHeightNodeAtLevel[L]
+                    : maxHeightNodeAtLevel[L];
+            heightQueries[i] = L + tempResultantHeight - 1;
+        }
+        return heightQueries;
+    }
+
+    private int initialize(int[] heightsMap, int[] nodeLevel, int[] maxHeightNodeAtLevel, int[] secondMaxHeightNodeAtLevel,
+            TreeNode root, int level) {
+        if (root == null)
+            return 0;
+
+        int left = initialize(heightsMap, nodeLevel, maxHeightNodeAtLevel, secondMaxHeightNodeAtLevel, root.left, level + 1);
+        int right = initialize(heightsMap, nodeLevel, maxHeightNodeAtLevel, secondMaxHeightNodeAtLevel, root.right, level + 1);
+        int height = 1 + Math.max(left, right);
+        nodeLevel[root.val] = level;
+
+        if (height > maxHeightNodeAtLevel[level]) {
+            secondMaxHeightNodeAtLevel[level] = maxHeightNodeAtLevel[level];
+            maxHeightNodeAtLevel[level] = height;
+        } else if (height > secondMaxHeightNodeAtLevel[level]) {
+            secondMaxHeightNodeAtLevel[level] = height;
+        }
+
+        return heightsMap[root.val] = 1 + Math.max(left, right);
+    }
+}
+```
+
+
+
+
+
+</details>
+
+
+
+
+
+<details id="297. Serialize and Deserialize Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">297. Serialize and Deserialize Binary Tree
+</span>
+</summary>
+
+https://leetcode.com/problems/serialize-and-deserialize-binary-tree/description/
+
+Serialization is the process of converting a data structure or object into a sequence of bits so that it can be stored in a file or memory buffer, or transmitted across a network connection link to be reconstructed later in the same or another computer environment.
+
+Design an algorithm to serialize and deserialize a binary tree. There is no restriction on how your serialization/deserialization algorithm should work. You just need to ensure that a binary tree can be serialized to a string and this string can be deserialized to the original tree structure.
+
+Clarification: The input/output format is the same as how LeetCode serializes a binary tree. You do not necessarily need to follow this format, so please be creative and come up with different approaches yourself.
+
+ 
+
+Example 1:
+
+
+Input: root = [1,2,3,null,null,4,5]
+Output: [1,2,3,null,null,4,5]
+Example 2:
+
+Input: root = []
+Output: []
+ 
+
+Constraints:
+
+The number of nodes in the tree is in the range [0, 104].
+-1000 <= Node.val <= 1000
+
+```java
+
+/**
+ *DFS based solution O(n) time and space 
+ */
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        List<String> s_tree = new ArrayList<>();
+        dfs_serilize(root, s_tree);
+        return String.join(",", s_tree);
+    }
+
+    public void dfs_serilize(TreeNode root, List<String> s_tree) {
+        if(root == null){
+            s_tree.add("N");
+            return;
+        }
+        s_tree.add(String.valueOf(root.val));
+        dfs_serilize(root.left, s_tree);
+        dfs_serilize(root.right, s_tree);
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        String[] s_tree=data.split(",");
+        int[] index=new int[]{0};
+        return dfs_deserialize(s_tree, index);
+    }
+
+    public TreeNode dfs_deserialize(String[] s_tree, int[] index){
+        if(s_tree[index[0]].equals("N")){
+            return null;
+        }
+        TreeNode newNode=new TreeNode(Integer.parseInt(s_tree[index[0]]));
+        index[0]++;
+        newNode.left= dfs_deserialize(s_tree, index);
+        index[0]++;
+        newNode.right= dfs_deserialize(s_tree, index);
+        return newNode;
+    }
+}
+
+```
+</details>
+
+
+
 <!-- 
-
-<details id="236. Lowest Common Ancestor of a Binary Tree">
-<summary> 
-<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
-</span>
-</summary>
-
-```java
-```
-</details>
-
-
-
-
-
-
-<details id="236. Lowest Common Ancestor of a Binary Tree">
-<summary> 
-<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
-</span>
-</summary>
-
-```java
-```
-</details>
-
-
-
 
 
 <details id="236. Lowest Common Ancestor of a Binary Tree">

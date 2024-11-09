@@ -2765,27 +2765,352 @@ class Solution {
 ```
 </details>
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="310. Minimum Height Trees">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">310. Minimum Height Trees 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/minimum-height-trees/description/
+
+A tree is an undirected graph in which any two vertices are connected by exactly one path. In other words, any connected graph without simple cycles is a tree.
+
+Given a tree of n nodes labelled from 0 to n - 1, and an array of n - 1 edges where edges[i] = [ai, bi] indicates that there is an undirected edge between the two nodes ai and bi in the tree, you can choose any node of the tree as the root. When you select a node x as the root, the result tree has height h. Among all possible rooted trees, those with minimum height (i.e. min(h))  are called minimum height trees (MHTs).
+
+Return a list of all MHTs' root labels. You can return the answer in any order.
+
+The height of a rooted tree is the number of edges on the longest downward path between the root and a leaf.
+
+ 
+
+Example 1:
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+Input: n = 4, edges = [[1,0],[1,2],[1,3]]
+Output: [1]
+Explanation: As shown, the height of the tree is 1 when the root is the node with label 1 which is the only MHT.
+Example 2:
+
+
+Input: n = 6, edges = [[3,0],[3,1],[3,2],[3,4],[5,4]]
+Output: [3,4]
+ 
+
+Constraints:
+
+1 <= n <= 2 * 104
+edges.length == n - 1
+0 <= ai, bi < n
+ai != bi
+All the pairs (ai, bi) are distinct.
+The given input is guaranteed to be a tree and there will be no repeated edges.
+
+```java
+class Solution {
+    public List<Integer> findMinHeightTrees(int n, int[][] edges) {
+        // Khan's Algorithm (Optimal Solution)
+        // First we add all the 0 indegree nodes, we will the answer if we end up with
+        // either 1 node or 2 nodes
+         if (n == 1) return Collections.singletonList(0);
+        int[] indegree = new int[n];
+        Queue<Integer> queue = new LinkedList<>();
+        List<List<Integer>> adj = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            adj.add(new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            adj.get(u).add(v);
+            adj.get(v).add(u);
+            indegree[u]++;
+            indegree[v]++;
+        }
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 1)
+                queue.add(i);
+        }
+
+        while (n > 2) {
+            int size = queue.size();
+            n -= size;
+            for (int i = 0; i < size; i++) {
+                int node = queue.poll();
+                for (int neighbour : adj.get(node)) {
+                    indegree[neighbour]--;
+                    if (indegree[neighbour] == 1)
+                        queue.add(neighbour);
+                }
+            }
+        }
+        return new ArrayList<>(queue);
+    }
+}
+
+```
+
+</details>
+
+
+<details id="365. Water and Jug Problem">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">365. Water and Jug Problem 
 </span>
 </summary>
-</details> -->
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+https://leetcode.com/problems/water-and-jug-problem/description/
+
+
+You are given two jugs with capacities x liters and y liters. You have an infinite water supply. Return whether the total amount of water in both jugs may reach target using the following operations:
+
+Fill either jug completely with water.
+Completely empty either jug.
+Pour water from one jug into another until the receiving jug is full, or the transferring jug is empty.
+ 
+
+Example 1:
+
+Input: x = 3, y = 5, target = 4
+
+Output: true
+
+Explanation:
+
+Follow these steps to reach a total of 4 liters:
+
+Fill the 5-liter jug (0, 5).
+Pour from the 5-liter jug into the 3-liter jug, leaving 2 liters (3, 2).
+Empty the 3-liter jug (0, 2).
+Transfer the 2 liters from the 5-liter jug to the 3-liter jug (2, 0).
+Fill the 5-liter jug again (2, 5).
+Pour from the 5-liter jug into the 3-liter jug until the 3-liter jug is full. This leaves 4 liters in the 5-liter jug (3, 4).
+Empty the 3-liter jug. Now, you have exactly 4 liters in the 5-liter jug (0, 4).
+Reference: The Die Hard example.
+
+Example 2:
+
+Input: x = 2, y = 6, target = 5
+
+Output: false
+
+Example 3:
+
+Input: x = 1, y = 2, target = 3
+
+Output: true
+
+Explanation: Fill both jugs. The total amount of water in both jugs is equal to 3 now.
+
+ 
+
+Constraints:
+
+
+1 <= x, y, target <= 103
+
+
+```java
+class State {
+    int x, y;
+
+    State(int a, int b) {
+        this.x = a;
+        this.y = b;
+    }
+
+    }
+
+    public boolean canMeasureWater(int x, int y, int z) {
+        if(x+y==z) return true;
+        if(x+y<z) return false;
+        if(x%2==0 && y%2==0 && z%2!=0)//cannot measure odd capacity using even capacity jugs 
+            return false;
+        
+        HashSet<String> visited=new HashSet<>();//state visited hset of jugs
+        State start=new State(0,0);
+        Queue<State> q=new LinkedList<>();
+        q.add(start);
+        //run a bfs. don't add already visited states
+        while(q.size()>0){
+            int n=q.size();
+            State curr=q.poll();
+            if(curr.x+curr.y==z)
+                return true;
+            visited.add(curr.x+","+curr.y);
+            
+            int newY,newX;
+            //pour x->y ********************* option 1
+            newX=curr.x-Math.min(curr.x,y-curr.y);
+            newY=curr.y+Math.min(curr.x,y-curr.y);
+            if(!visited.contains(newX+","+newY) )
+                q.add(new State(newX,newY));
+            
+            //pour x<-y ********************* option 2
+            newX=curr.x+Math.min(curr.y,x-curr.x);
+            newY=curr.y-Math.min(curr.y,x-curr.x);
+            if(!visited.contains(newX+","+newY) )
+                q.add(new State(newX,newY));
+            
+            //expty x   ********************* option 3
+            newX=0;
+            newY=curr.y;//same
+            if(!visited.contains(newX+","+newY) )
+                q.add(new State(newX,newY));
+            
+            //empty y   ********************* option 4
+            newX=curr.x;//same
+            newY=0;
+            if(!visited.contains(newX+","+newY) )
+                q.add(new State(newX,newY));
+            
+            //fill x    ********************* option 5
+            newX=x;//max capacity
+            newY=curr.y;
+            if(!visited.contains(newX+","+newY) )
+                q.add(new State(newX,newY));
+            
+            //fill y    ********************* option 6
+            newX=curr.x;
+            newY=y;//max capacity
+            if(!visited.contains(newX+","+newY) )
+                q.add(new State(newX,newY));
+        }
+        return false;
+    }
+```
+
+</details>
+
+<details id="399. Evaluate Division">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">399. Evaluate Division 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/evaluate-division/description/
+
+
+You are given an array of variable pairs equations and an array of real numbers values, where equations[i] = [Ai, Bi] and values[i] represent the equation Ai / Bi = values[i]. Each Ai or Bi is a string that represents a single variable.
+
+You are also given some queries, where queries[j] = [Cj, Dj] represents the jth query where you must find the answer for Cj / Dj = ?.
+
+Return the answers to all queries. If a single answer cannot be determined, return -1.0.
+
+Note: The input is always valid. You may assume that evaluating the queries will not result in division by zero and that there is no contradiction.
+
+Note: The variables that do not occur in the list of equations are undefined, so the answer cannot be determined for them.
+
+ 
+
+Example 1:
+
+Input: equations = [["a","b"],["b","c"]], values = [2.0,3.0], queries = [["a","c"],["b","a"],["a","e"],["a","a"],["x","x"]]
+Output: [6.00000,0.50000,-1.00000,1.00000,-1.00000]
+Explanation: 
+Given: a / b = 2.0, b / c = 3.0
+queries are: a / c = ?, b / a = ?, a / e = ?, a / a = ?, x / x = ? 
+return: [6.0, 0.5, -1.0, 1.0, -1.0 ]
+note: x is undefined => -1.0
+Example 2:
+
+Input: equations = [["a","b"],["b","c"],["bc","cd"]], values = [1.5,2.5,5.0], queries = [["a","c"],["c","b"],["bc","cd"],["cd","bc"]]
+Output: [3.75000,0.40000,5.00000,0.20000]
+Example 3:
+
+Input: equations = [["a","b"]], values = [0.5], queries = [["a","b"],["b","a"],["a","c"],["x","y"]]
+Output: [0.50000,2.00000,-1.00000,-1.00000]
+ 
+
+Constraints:
+
+1 <= equations.length <= 20
+equations[i].length == 2
+1 <= Ai.length, Bi.length <= 5
+values.length == equations.length
+0.0 < values[i] <= 20.0
+1 <= queries.length <= 20
+queries[i].length == 2
+1 <= Cj.length, Dj.length <= 5
+Ai, Bi, Cj, Dj consist of lower case English letters and digits.
+
+
+```java
+class Solution {
+    public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
+       // Build the adjacency list
+        Map<String, List<Pair<String, Double>>> adj = new HashMap<>();
+        for(int i = 0; i < equations.size(); i++) {
+            String from = equations.get(i).get(0);
+            String to = equations.get(i).get(1);
+            double weight = values[i];
+            
+            adj.computeIfAbsent(from, k -> new ArrayList<>()).add(new Pair<>(to, weight));
+            adj.computeIfAbsent(to, k -> new ArrayList<>()).add(new Pair<>(from, 1.0 / weight));
+        }
+        
+        double[] answers=new double[queries.size()];
+        int index=0;
+        
+        for(List<String> q : queries){
+            String from = q.get(0);
+            String to = q.get(1);
+            
+            if(!adj.containsKey(from) || !adj.containsKey(to)){
+                answers[index++] = -1.0;
+                continue;
+            }
+            
+            if(from.equals(to)){
+                answers[index++] = 1.0;
+                continue;
+            }
+            
+            // BFS initialization
+            Queue<Pair<String, Double>> queue = new LinkedList<>();
+            Set<String> visited = new HashSet<>();
+
+            // It is very important to also include distance in thhis queus. If we keep track of current 
+            // distance through a variable in the bfs, its value will keep on changing during the iterations.
+            queue.add(new Pair<>(from, 1.0));
+            visited.add(from);
+            boolean found = false;
+            
+            while(!queue.isEmpty() && !found){
+                Pair<String, Double> current = queue.poll();
+                String node = current.getKey();
+                double currentProduct = current.getValue();
+                
+                for(Pair<String, Double> neighbor : adj.get(node)){
+                    String neighborNode = neighbor.getKey();
+                    double value = neighbor.getValue();
+                    
+                    if(!visited.contains(neighborNode)){
+                        double newProduct = currentProduct * value;
+                        if(neighborNode.equals(to)){
+                            answers[index] = newProduct;
+                            found = true;
+                            break;
+                        }
+                        queue.add(new Pair<>(neighborNode, newProduct));
+                        visited.add(neighborNode);
+                    }
+                }
+            }
+            
+            if(!found){
+                answers[index] = -1.0;
+            }
+            index++;
+        }
+        return answers;
+    }
+}
+
+```
+
+
+</details>
 
 
 <!-- <details id="1584. Min Cost to Connect All Points">
