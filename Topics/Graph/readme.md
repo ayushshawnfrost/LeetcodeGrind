@@ -3113,34 +3113,342 @@ class Solution {
 </details>
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="1020. Number of Enclaves">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">1020. Number of Enclaves 
 </span>
 </summary>
-</details> -->
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+https://leetcode.com/problems/number-of-enclaves/description/
+
+You are given an m x n binary matrix grid, where 0 represents a sea cell and 1 represents a land cell.
+
+A move consists of walking from one land cell to another adjacent (4-directionally) land cell or walking off the boundary of the grid.
+
+Return the number of land cells in grid for which we cannot walk off the boundary of the grid in any number of moves.
+
+ 
+
+Example 1:
+
+
+Input: grid = [[0,0,0,0],[1,0,1,0],[0,1,1,0],[0,0,0,0]]
+Output: 3
+Explanation: There are three 1s that are enclosed by 0s, and one 1 that is not enclosed because its on the boundary.
+Example 2:
+
+
+Input: grid = [[0,1,1,0],[0,0,1,0],[0,0,1,0],[0,0,0,0]]
+Output: 0
+Explanation: All 1s are either on the boundary or can reach the boundary.
+ 
+
+Constraints:
+
+m == grid.length
+n == grid[i].length
+1 <= m, n <= 500
+grid[i][j] is either 0 or 1.
+
+
+```java
+// Multisource BFS
+class Solution {
+    public int numEnclaves(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+
+        Queue<int[]> queue = new LinkedList<>();
+
+        // Add boundary land cells to the queue
+        for (int j = 0; j < n; j++) {
+            for (int i = 0; i < m; i++) {
+                if ((i==0 || i==m-1 || j==0 || j==n-1) && grid[i][j] == 1) {
+                    queue.offer(new int[] { i, j });
+                    grid[i][j] = 0;
+                }
+            }
+        }
+        // Directions for moving up, down, left, right
+        int[][] directions = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
+
+        while (!queue.isEmpty()) {
+            int[] cell = queue.poll();
+            int x = cell[0];
+            int y = cell[1];
+
+            for (int[] dir : directions) {
+                int newX = x + dir[0];
+                int newY = y + dir[1];
+
+                if (newX >= 0 && newX < m && newY >= 0 && newY < n && grid[newX][newY] == 1) {
+                    queue.offer(new int[] { newX, newY });
+                    grid[newX][newY] = 0;
+                }
+            }
+        }
+
+        int count = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+}
+
+```
+
+```java
+// DFS
+class Solution {
+    public int numEnclaves(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+        
+        // Eliminate lands connected to the boundary
+        for (int j = 0; j < n; j++) {
+            for (int i = 0; i < m; i++) {
+                if ((i==0 || i==m-1 || j==0 || j==n-1) && grid[i][j] == 1) {
+                    dfs(grid, i, j);
+                }
+            }
+        }
+        
+        // Count remaining land cells (enclaves)
+        int count = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+    
+    private void dfs(int[][] grid, int i, int j) {
+        int m = grid.length;
+        int n = grid[0].length;
+        
+        // Base case: check boundaries and if the cell is sea or already visited
+        if (i < 0 || i >= m || j < 0 || j >= n || grid[i][j] != 1) {
+            return;
+        }
+        
+        // Mark the current cell as visited by setting it to 0 (sea)
+        grid[i][j] = 0;
+        
+        // Explore all four directions
+        dfs(grid, i + 1, j); // Down
+        dfs(grid, i - 1, j); // Up
+        dfs(grid, i, j + 1); // Right
+        dfs(grid, i, j - 1); // Left
+    }
+}
+
+
+```
+</details>
+
+<details id="1765. Map of Highest Peak">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">1765. Map of Highest Peak 
 </span>
 </summary>
-</details> -->
+
+    Here i ihad doubts regarding how maxHeight+1 is correct and i am not travesing the nodes multiple times. 
+    Why Conflicts Do Not Occur in This Solution
+    The BFS approach used in this problem naturally prevents conflicts due to the way it explores cells and assigns heights. Here's how:
+
+    1. Cells Are Visited Exactly Once
+    Visited Check: We use maxHeight[X][Y] == -1 to determine if a cell has been visited.
+    Marking as Visited: Once a cell's height is assigned, we immediately update maxHeight[X][Y] and add the cell to the queue.
+    No Reassignment: Since we only process unvisited cells (maxHeight[X][Y] == -1), each cell's height is assigned exactly once.
+    2. BFS Guarantees Shortest Path First
+    Level-Order Traversal: BFS explores cells in order of their distance from the starting points (water cells in this case).
+    First Encounter Is the Shortest Path: The first time we reach an unvisited cell, we've found the shortest path to it from any water cell.
+    No Need to Update Later: Any subsequent paths to that cell will be equal or longer in distance, so the initially assigned height is the minimum possible.
+    3. Height Assignment Based on Neighbor's Height
+    Incremental Heights: When visiting an adjacent cell, we assign maxHeight[X][Y] = maxHeight[x][y] + 1.
+    Consistent Height Difference: This ensures that the absolute difference between adjacent cells is exactly 1, satisfying the problem's adjacency constraint.
+    No Conflicting Assignments: Since each cell's height is determined by the shortest path (smallest possible height), there's no opportunity for a conflicting, lower height to be assigned later.
+```java
+// Multisource BFS
+class Solution {
+    public int[][] highestPeak(int[][] isWater) {
+        Queue<int[]> queue = new LinkedList<>();
+        int[][] DIR=new int[][]{{1,0}, {0,1}, {-1,0}, {0, -1}};
+        
+        int m = isWater.length;
+        int n = isWater[0].length;
+        int[][] maxHeight =new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (isWater[i][j] == 1) {
+                    maxHeight[i][j]=0;
+                    queue.offer(new int[] { i, j });
+                }else{
+                    maxHeight[i][j]=-1;
+                }
+            }
+        }
+        while(!queue.isEmpty()){
+            int size=queue.size();
+            for(int i=0;i<size;i++){
+                int x=queue.peek()[0];
+                int y=queue.peek()[1];
+                queue.poll();
+
+                for(int[] d:DIR){
+                    int X=x+d[0];
+                    int Y=y+d[1];
+                    if(X>=0 && X<m && Y>=0 && Y<n && maxHeight[X][Y]==-1){
+                        maxHeight[X][Y] = maxHeight[x][y] + 1;
+                        queue.offer(new int[]{X, Y});
+                    }
+                }
+            }
+        }
+        return maxHeight;
+    }
+}
+```
+</details>
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="130. Surrounded Regions">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">130. Surrounded Regions 
 </span>
 </summary>
-</details> -->
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+https://leetcode.com/problems/surrounded-regions/description/
+
+```java
+// Multi source BFS
+class Solution {
+    public void solve(char[][] board) {
+        Queue<int[]> queue=new LinkedList<>();
+        int m=board.length;
+        int n=board[0].length;
+
+        int[][] DIR=new int[][]{{1,0}, {0,1}, {-1,0}, {0,-1}};
+        // char[][] unmarked=new char[m][n];
+        for(int i=0;i<m;i++){
+            for(int j=0;j<n;j++){
+                if(i==0 || j==0 || i==m-1 || j== n-1){
+                    if(board[i][j]=='O')
+                    {
+                        queue.offer(new int[]{i,j});
+                        board[i][j]='M';
+                    }
+                }
+            }
+        }
+
+        while(!queue.isEmpty()){
+            int x=queue.peek()[0];
+            int y=queue.peek()[1];
+            queue.poll();
+
+            for(int[] d:DIR){
+                int X=x+d[0];
+                int Y=y+d[1];
+                if(X>=0 && X<m && Y>=0 && Y<n && board[X][Y]=='O'){
+                    board[X][Y]='M';
+                    queue.offer(new int[]{X,Y});
+                }
+            }
+        }
+
+        for(int i=0;i<m;i++){
+            for(int j=0;j<n;j++){
+                if(board[i][j] == 'O'){
+                    board[i][j]='X';
+                }else if(board[i][j] == 'M'){
+                    board[i][j]='O';
+                }
+            }
+        }
+    }
+}
+```
+
+</details>
+
+<details id="934. Shortest Bridge">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">934. Shortest Bridge 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/shortest-bridge/
+
+    This is a DFS+multisource BFS solution. Here we are visiting all the 1s of first island and putting itr in th equeue, after that we are doing a multisource BFS with that queue
+```java
+class Solution {
+    int[][] DIR = new int[][] { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } };
+
+    public int shortestBridge(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+        Queue<int[]> queue = new LinkedList<>();
+        int[][] visited = new int[m][n];
+         boolean found = false;
+
+        // Step 1: Find the first island and mark all its cells in the queue and visited array.
+        for (int i = 0; i < m; i++) {
+            if (found) break;
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    dfs(grid, queue, visited, i, j);
+                    found = true;
+                    break;
+                }
+            }
+        }
+        int level = 0;
+
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int X = queue.peek()[0];
+                int Y = queue.peek()[1];
+                queue.poll();
+                for (int[] d : DIR) {
+                    int x = d[0] + X;
+                    int y = d[1] + Y;
+                    if (x >= 0 && x < grid.length && y >= 0 && y < grid[0].length && visited[x][y]==0) {
+                        if(grid[x][y] == 1)return level;
+                        queue.offer(new int[]{x,y});
+                        visited[x][y]=1;
+                    }
+                }
+            }
+            level++;
+        }
+        return -1;
+    }
+
+    private void dfs(int[][] grid, Queue<int[]> queue, int[][] visited, int i, int j) {
+        visited[i][j] = 1;
+        queue.add(new int[]{i, j});
+        for (int[] d : DIR) {
+            int x = i + d[0];
+            int y = j + d[1];
+            if (x >= 0 && x < grid.length && y >= 0 && y < grid[0].length && grid[x][y] == 1 && visited[x][y] == 0) {
+                dfs(grid, queue, visited, x, y);
+            }
+        }
+    }
+}
+
+```
+</details>
 
 
 <!-- <details id="1584. Min Cost to Connect All Points">

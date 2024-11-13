@@ -596,37 +596,177 @@ public class Codec {
 }
 
 ```
+```java
+
+public class Codec {
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        if (root == null) return "N";
+        StringBuilder res = new StringBuilder();
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        
+        while (!queue.isEmpty()) {
+            TreeNode node = queue.poll();
+            if (node == null) {
+                res.append("N,");
+            } else {
+                res.append(node.val).append(",");
+                queue.add(node.left);
+                queue.add(node.right);
+            }
+        }
+        return res.toString();
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        String[] vals = data.split(",");
+        if (vals[0].equals("N")) return null;
+        TreeNode root = new TreeNode(Integer.parseInt(vals[0]));
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        int index = 1;
+
+        while (!queue.isEmpty()) {
+            TreeNode node = queue.poll();
+            if (!vals[index].equals("N")) {
+                node.left = new TreeNode(Integer.parseInt(vals[index]));
+                queue.add(node.left);
+            }
+            index++;
+            if (!vals[index].equals("N")) {
+                node.right = new TreeNode(Integer.parseInt(vals[index]));
+                queue.add(node.right);
+            }
+            index++;
+        }
+        return root;
+    }
+}
+```
 </details>
 
+
+
+
+
+<details id="449. Serialize and Deserialize BST">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">449. Serialize and Deserialize BST
+</span>
+</summary>
+
+
+Serialization is converting a data structure or object into a sequence of bits so that it can be stored in a file or memory buffer, or transmitted across a network connection link to be reconstructed later in the same or another computer environment.
+
+Design an algorithm to serialize and deserialize a binary search tree. There is no restriction on how your serialization/deserialization algorithm should work. You need to ensure that a binary search tree can be serialized to a string, and this string can be deserialized to the original tree structure.
+
+The encoded string should be as compact as possible.
+
+ 
+
+Example 1:
+
+Input: root = [2,1,3]
+Output: [2,1,3]
+Example 2:
+
+Input: root = []
+Output: []
+ 
+
+Constraints:
+
+The number of nodes in the tree is in the range [0, 104].
+0 <= Node.val <= 104
+The input tree is guaranteed to be a binary search tree.
+```java
+
+
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        StringBuilder sb = new StringBuilder();
+        serializeHelper(root, sb);
+        return sb.toString();
+    }
+
+    private void serializeHelper(TreeNode node, StringBuilder sb) {
+        if (node == null) {
+            return;
+        }
+        sb.append(node.val).append(",");  // Append the value followed by a comma
+        serializeHelper(node.left, sb);   // Serialize left subtree
+        serializeHelper(node.right, sb);  // Serialize right subtree
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        if (data.isEmpty()) return null;
+        Queue<Integer> nodes = new LinkedList<>();
+        for (String s : data.split(",")) {
+            nodes.offer(Integer.parseInt(s));
+        }
+        return deserializeHelper(nodes, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
+
+    private TreeNode deserializeHelper(Queue<Integer> nodes, int lower, int upper) {
+        if (nodes.isEmpty()) return null;
+
+        int val = nodes.peek();
+        if (val < lower || val > upper) return null;
+
+        nodes.poll();  // Remove the element from the queue
+        TreeNode root = new TreeNode(val);
+        root.left = deserializeHelper(nodes, lower, val);   // Values for the left subtree are < val
+        root.right = deserializeHelper(nodes, val, upper);  // Values for the right subtree are > val
+        return root;
+    }
+}
+
+
+```
+</details>
+
+
+
+
+<details id="515. Find Largest Value in Each Tree Row">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">515. Find Largest Value in Each Tree Row
+</span>
+</summary>
+
+https://leetcode.com/problems/find-largest-value-in-each-tree-row/description/
+
+
+```java
+
+class Solution {
+    public List<Integer> largestValues(TreeNode root) {
+        Map<Integer, Integer> maxElement = new HashMap<>();
+        inorder(root, maxElement, 0);
+        return new ArrayList<Integer>(maxElement.values());
+    }
+
+    private void inorder(TreeNode root, Map<Integer, Integer> maxElement, int level) {
+        if(root==null)return;
+        if (maxElement.containsKey(level)) {
+            maxElement.put(level, Math.max(maxElement.get(level), root.val));
+        } else {
+            maxElement.put(level, root.val);
+        }
+        inorder(root.left, maxElement, level + 1);
+        inorder(root.right, maxElement, level + 1);
+    }
+}
+```
+</details>
 
 
 <!-- 
-
-
-<details id="236. Lowest Common Ancestor of a Binary Tree">
-<summary> 
-<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
-</span>
-</summary>
-
-```java
-```
-</details>
-
-
-
-
-<details id="236. Lowest Common Ancestor of a Binary Tree">
-<summary> 
-<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
-</span>
-</summary>
-
-```java
-```
-</details>
-
-
 
 
 
