@@ -766,33 +766,129 @@ class Solution {
 </details>
 
 
+
+
+
+
+<details id="110. Balanced Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">110. Balanced Binary Tree
+</span>
+</summary>
+
+Given a binary tree, determine if it is 
+height-balanced
+
+    Height-Balanced
+    A height-balanced binary tree is a binary tree in which the depth of the two subtrees of every node never differs by more than one.
+
+.
+
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public boolean isBalanced(TreeNode root) {
+        // Call the helper function and check if it returns -1 (indicating imbalance)
+        return checkHeight(root) != -1;
+    }
+    
+    // Helper function to calculate height and check balance
+    private int checkHeight(TreeNode node) {
+        // An empty tree is balanced with a height of 0
+        if (node == null) return 0;
+        
+        // Recursively check the height of the left subtree
+        int leftHeight = checkHeight(node.left);
+        if (leftHeight == -1) return -1; // If left subtree is unbalanced, propagate -1 up
+        
+        // Recursively check the height of the right subtree
+        int rightHeight = checkHeight(node.right);
+        if (rightHeight == -1) return -1; // If right subtree is unbalanced, propagate -1 up
+        
+        // If the difference in heights is more than 1, mark as unbalanced
+        if (Math.abs(leftHeight - rightHeight) > 1) return -1;
+        
+        // Return the height of the current node
+        return Math.max(leftHeight, rightHeight) + 1;
+    }
+}
+
+```
+</details>
+
+
+
+<details id="543. Diameter of Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">543. Diameter of Binary Tree
+</span>
+</summary>
+
+https://leetcode.com/problems/diameter-of-binary-tree/description/
+
+Given the root of a binary tree, return the length of the diameter of the tree.
+
+The diameter of a binary tree is the length of the longest path between any two nodes in a tree. This path may or may not pass through the root.
+
+The length of a path between two nodes is represented by the number of edges between them.
+
+```java
+class Solution {
+    public int diameterOfBinaryTree(TreeNode root) {
+        return calculateDiameter(root).diameter;
+    }
+
+    private Result calculateDiameter(TreeNode node) {
+        // Base case: If the node is null, height and diameter are 0
+        if (node == null) return new Result(0, 0);
+
+        // Recursively calculate the left and right results
+        Result leftResult = calculateDiameter(node.left);
+        Result rightResult = calculateDiameter(node.right);
+        
+        // Calculate height of the current node
+        int height = Math.max(leftResult.height, rightResult.height) + 1;
+        
+        // Calculate diameter passing through the current node
+        int diameterThroughNode = leftResult.height + rightResult.height;
+        
+        // Determine the maximum diameter found so far
+        int diameter = Math.max(diameterThroughNode, Math.max(leftResult.diameter, rightResult.diameter));
+        
+        // Return both height and diameter as a Result object
+        return new Result(height, diameter);
+    }
+    
+    // Helper class to store both height and diameter
+    private static class Result {
+        int height;
+        int diameter;
+
+        Result(int height, int diameter) {
+            this.height = height;
+            this.diameter = diameter;
+        }
+    }
+}
+```
+</details>
+
 <!-- 
-
-
-
-
-<details id="236. Lowest Common Ancestor of a Binary Tree">
-<summary> 
-<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
-</span>
-</summary>
-
-```java
-```
-</details>
-
-
-
-<details id="236. Lowest Common Ancestor of a Binary Tree">
-<summary> 
-<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
-</span>
-</summary>
-
-```java
-```
-</details>
-
 
 
 

@@ -948,24 +948,25 @@ Approach: Use 2 pointers starting at index 0. in every iteration push the curren
 ```java
 class Solution {
     public int lengthOfLongestSubstring(String s) {
-        if(s.length()<2)return s.length();
-        int ans=0;
-        int currlen=0;
-        int left=0;
-        int right=0;
-        HashSet<Character> hs=new HashSet<>();
-        while(left<=right && right<s.length()){
-            if(hs.contains(s.charAt(right))){
-                ans=Math.max(ans,currlen);
-                left+=1;
-                right=left;
-                hs=new HashSet<>();
-                currlen=0;
-            }else{
-                hs.add(s.charAt(right));right++;currlen++;
+        Set<Character> set = new HashSet<>();
+        int maxUniqueLen = 0;
+        int l = 0;
+        int r = 0;
+
+        while (l <= r && r < s.length()) {
+            if (!set.contains(s.charAt(r))) {
+                set.add(s.charAt(r));
+                maxUniqueLen = Math.max(maxUniqueLen, r - l + 1);
+                r++;
+            } else {
+                while (set.contains(s.charAt(r))) {
+                    set.remove(s.charAt(l));
+                    l++;
+                }
             }
         }
-        return Math.max(ans,currlen);
+
+        return maxUniqueLen;
     }
 }
 ```
@@ -3905,41 +3906,114 @@ Follow up: Can you come up with an algorithm that runs in O(n log(n)) time compl
 ```java
 class Solution {
 
-    // Dynamic programming, O(n^2)
-    public int lengthOfLIS(int[] nums) {
-        if (nums.length == 1) return 1;
+   //Approach-1 (TopDown: Recur+Memo) 
+//T.C : O(n*n)
+class Solution {
+    private int n;
+    private int[][] t;
 
-        int[] LIS = new int[nums.length];
-        Arrays.fill(LIS, 1);
-        int maximumSoFar = 1;
+    public int lis(int[] nums, int prevIdx, int currIdx) {
+        if (currIdx == n)
+            return 0;
 
-        for (int i = nums.length - 1; i >= 0; i--) {
-            for (int j = i + 1; j < nums.length; j++) {
-                if (nums[i] < nums[j]) {
-                    LIS[i] = Math.max(1 + LIS[j], LIS[i]);
-                }
-            }
-            maximumSoFar = Math.max(maximumSoFar, LIS[i]);
-        }
-        return maximumSoFar;
+        if (prevIdx != -1 && t[prevIdx][currIdx] != -1)
+            return t[prevIdx][currIdx];
+
+        int taken = 0;
+        if (prevIdx == -1 || nums[currIdx] > nums[prevIdx])
+            taken = 1 + lis(nums, currIdx, currIdx + 1);
+
+        int notTaken = lis(nums, prevIdx, currIdx + 1);
+
+        if (prevIdx != -1)
+            t[prevIdx][currIdx] = Math.max(taken, notTaken);
+
+        return Math.max(taken, notTaken);
     }
 
-    // Binary search, O(nlogn)
     public int lengthOfLIS(int[] nums) {
-        List<Integer> lis = new ArrayList<>(nums.length);
-
-        for (int n : nums) {
-            int i = Collections.binarySearch(lis, n);
-            if (i < 0) i = -i - 1;
-
-            if (i == lis.size())
-                lis.add(n);
-            else
-                lis.set(i, n);
+        t = new int[2501][2501];
+        for (int[] row : t) {
+            Arrays.fill(row, -1);
         }
-        return lis.size();
+
+        n = nums.length;
+        return lis(nums, -1, 0);
     }
 }
+
+
+//Approach-2 (Bottom Up)
+//T.C : O(n^2)
+
+//LIS[i] -> LIS ending at index i
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int n = nums.length;
+
+        int[] t = new int[n];
+        Arrays.fill(t,1);
+    
+        int maxLIS = 1;
+        
+        for(int i = 1; i < n; i++){
+            for(int j = 0; j < i; j++){
+                if(nums[j] < nums[i]) {
+                    t[i] = Math.max(t[i], t[j] + 1);
+                    maxLIS = Math.max(maxLIS, t[i]);
+                }
+            }
+        }
+
+        return maxLIS;
+    }
+}
+
+
+//Approacj-4 (Using concept of Patience Sorting (O(nlogn))
+//T.C : O(nlogn)
+//S.C : O(n)
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int n = nums.length;
+        List<Integer> sorted = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            /*
+                Why lower bound?
+                We want an increasing subsequence, and hence
+                we want to eliminate the duplicates as well.
+                lower_bound returns the index of "next greater or equal to."
+            */
+            int index = binarySearch(sorted, nums[i]);
+
+            if (index == sorted.size())
+                sorted.add(nums[i]); // greatest: so insert it
+            else
+                sorted.set(index, nums[i]); // replace
+        }
+
+        return sorted.size();
+    }
+
+    private int binarySearch(List<Integer> sorted, int target) {
+        int left = 0, right = sorted.size();
+        int result = sorted.size();
+        
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            
+            if (sorted.get(mid) < target) {
+                left = mid + 1;
+            } else {
+                result = mid;
+                right = mid;
+            }
+        }
+        return result;
+    }
+}
+
 ```
 </details>
 
@@ -5949,34 +6023,52 @@ s contains only lowercase English letters.
 Solution:
 
 ```java
-class Solution {
-    public List<List<String>> partition(String s) {
-        List<List<String>> res= new ArrayList<>();
-        List<String> path = new ArrayList<>();
-        func(0, s, path, res);
-        return res;
+public class Solution {
+    private List<List<String>> allPartitions = new ArrayList<>(); // Stores all valid palindrome partitions
+    private List<String> currentPartition = new ArrayList<>();    // Tracks the current partition being explored
+
+    public List<List<String>> partition(String input) {
+        explorePartitions(0, 0, input);
+        return allPartitions;
     }
-    void dfs(int index, String s, List<String> path, List<List<String>> res){
-        if(index == s.length()) {
-            res.add(new ArrayList<>(path));
-            return;
+
+    private void explorePartitions(int start, int end, String input) {
+        // Base condition: if 'end' reaches or exceeds the length of the string
+        if (end == input.length()) {
+            // If start equals end, it means the entire string has been successfully partitioned
+            if (start == end) {
+                allPartitions.add(new ArrayList<>(currentPartition)); 
+            }
+            return; 
         }
-        for(int i = index; i < s.length(); ++i) {
-            if(isPalindrome(s, index, i)) {
-            path.add(s.substring(index, i+1));
-            dfs(i+1, s, path, res);
-            path.remove(path.size()-1);
+
+        // If the substring from 'start' to 'end' is a palindrome
+        if (isPalindrome(input, start, end)) {
+            // Add the substring to the current partition
+            currentPartition.add(input.substring(start, end + 1));
+            // Explore further partitions starting from the next index
+            explorePartitions(end + 1, end + 1, input);
+            // Backtrack: remove the last added substring to try other possibilities
+            currentPartition.remove(currentPartition.size() - 1);
         }
+
+        // Continue exploring by incrementing the 'end' index
+        explorePartitions(start, end + 1, input);
+    }
+
+    private boolean isPalindrome(String input, int left, int right) {
+        // Check if the substring from 'left' to 'right' is a palindrome
+        while (left < right) {
+            if (input.charAt(left) != input.charAt(right)) {
+                return false; // Not a palindrome
+            }
+            left++;
+            right--;
+        }
+        return true; // It's a palindrome
     }
 }
-    boolean isPalindrome(String s, int start, int end) {
-        while(start <= end) {
-            if(s.charAt(start++) != s.charAt(end--))
-            return false;
-        }
-        return true;
-    }
-}
+
 
 ```
 
@@ -8292,10 +8384,840 @@ class Solution {
 
 
 
+<details id="215. Kth Largest Element in an Array">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">215. Kth Largest Element in an Array 
+</span>
+</summary>
+
+https://leetcode.com/problems/kth-largest-element-in-an-array/description/
+
+Given an integer array nums and an integer k, return the kth largest element in the array.
+
+Note that it is the kth largest element in the sorted order, not the kth distinct element.
+
+Can you solve it without sorting?
+
+ 
+
+Example 1:
+
+Input: nums = [3,2,1,5,6,4], k = 2
+Output: 5
+Example 2:
+
+Input: nums = [3,2,3,1,2,4,5,5,6], k = 4
+Output: 4
+ 
+
+Constraints:
+
+1 <= k <= nums.length <= 105
+-104 <= nums[i] <= 104
+
+```java
+class Solution {
+    /*
+    We try to sort the array in ascending order, not exactly sorted but at the end of each iteration the elements on the left of pivit
+    is less than the element on right of the pivit element.
+    in worst case this algorith has running time of O(n^2) but on average it is O(n) considering the pivit element in each iteration ends up
+    in somewhere in the middle of the array. 
+    */
+    private void swap(int[] nums, int x, int y) {
+        int temp = nums[x];
+        nums[x] = nums[y];
+        nums[y] = temp;
+    }
+    
+    public int partition_algo(int[] nums, int L, int R) {
+        int P = nums[L];
+        // Start check after the pivit
+        int i = L+1; 
+        int j = R; 
+        
+        while(i <= j) {
+            if(nums[i] > P && nums[j] < P) {
+                // We needd to swap
+                swap(nums, i, j);
+                i++;
+                j--;
+            }
+            if(nums[i] <= P) {
+                // Happy case
+                i++;
+            }
+            if(nums[j] >= P) {
+                // Happy case
+                j--;
+            }
+        }
+        swap(nums, L, j);
+        return j;
+    }
+
+    
+    public int findKthLargest(int[] nums, int k) {
+        int n = nums.length;
+        int L = 0;
+        int R = n-1;
+        int targetIndex=n-k;
+        int pivot_idx = 0;
+        
+        while(true) {
+            pivot_idx = partition_algo(nums, L, R);
+            
+            if(pivot_idx == targetIndex) {
+                break;
+            } else if(pivot_idx > targetIndex) {
+                R = pivot_idx - 1;
+            } else {
+                L = pivot_idx + 1;
+            }
+        }
+        return nums[pivot_idx];
+    }
+}
+
+```
+
+The decision to return `i` or `j` from the partition algorithm does **not directly depend on the pivot element's value or the sorting order (ascending/descending)**. Instead, it depends on how the pointers `i` and `j` behave during the partitioning process and which one ends up pointing to the **correct position** of the pivot element after the loop.
+
+Here’s a detailed breakdown:
+
+---
+
+### **Understanding the Role of `i` and `j`**
+- `i` and `j` are used to scan and rearrange the array.
+  - `i` moves forward to find elements **greater than (or not fitting)** the pivot.
+  - `j` moves backward to find elements **smaller than (or not fitting)** the pivot.
+- At the end of the partition:
+  - `j` generally ends up pointing to the **last element less than or equal to the pivot**, which is where the pivot should be placed.
+
+---
+
+### **Returning `j` (Correct Pivot Position)**
+In the majority of partition algorithms, **`j` is returned**, because:
+1. When the loop terminates (`i > j`), `j` is the last position where all elements on the left are less than or equal to the pivot, and all elements on the right are greater.
+2. Swapping the pivot (`nums[L]`) with `nums[j]` correctly places the pivot in its sorted position.
+
+Returning `j` works consistently because it represents the **final correct position of the pivot element** after partitioning.
+
+---
+
+### **When `i` Might Be Used**
+`i` could theoretically be used in a modified partition algorithm, but it usually represents the first element **greater than the pivot** when the loop terminates. To use `i`, you'd need to adjust:
+1. The loop logic to ensure `i` doesn't overstep.
+2. The pivot-swapping logic to align with the partition semantics.
+
+However, returning `i` is less common because it can lead to off-by-one errors unless handled carefully.
+
+---
+
+### **Best Practice**
+Always return `j` unless you have a strong reason to use `i`. This is because:
+1. `j` consistently represents the correct position of the pivot in most implementations.
+2. It is easier to reason about and less prone to errors.
+
+
+In summary:
+- Return `j` because it represents the **correct position of the pivot**.
+- Sorting order affects only the comparison logic, not whether to return `i` or `j`.
+
+</details>
+
+
+
+<details id="146. LRU Cache">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">146. LRU Cache 
+</span>
+</summary>
+
+https://leetcode.com/problems/lru-cache/
+
+```java
+// LRU Cache implementation using a doubly linked list and hashmap
+class LRUCache {
+    class Node {
+        int key;
+        int val;
+        Node prev;    
+        Node next;    
+
+        Node(int key, int val) {
+            this.key = key;
+            this.val = val;
+        }
+    }
+
+    // Dummy head and tail nodes to avoid edge cases
+    Node head = new Node(-1, -1);
+    Node tail = new Node(-1, -1);
+    int cap;  
+    HashMap<Integer, Node> cache = new HashMap<>();
+
+    public LRUCache(int capacity) {
+        cap = capacity;
+        head.next = tail;
+        tail.prev = head;
+    }
+
+
+    private void addNode(Node newnode) {
+        Node tempNext = head.next;
+
+        // Update the connections to insert newnode
+        newnode.next = tempNext;
+        newnode.prev = head;
+
+        head.next = newnode;
+        tempNext.prev = newnode;
+    }
+
+    private void deleteNode(Node delnode) {
+        Node prevNode = delnode.prev;
+        Node nextNode = delnode.next;
+
+        // Update connections to remove delnode
+        prevNode.next = nextNode;
+        nextNode.prev = prevNode;
+    }
+
+    public int get(int key) {
+        if (cache.containsKey(key)) {
+            Node resNode = cache.get(key);
+            int ans = resNode.val;
+
+            // Remove node from current position
+            cache.remove(key);
+            deleteNode(resNode);
+            
+            // Add node to front (most recently used position)
+            addNode(resNode);
+
+            // Update hashmap with new node position
+            cache.put(key, head.next);
+            return ans;
+        }
+        return -1;    
+    }
+
+    public void put(int key, int value) {
+        // If key exists, remove it first
+        if (cache.containsKey(key)) {
+            Node curr = cache.get(key);
+            cache.remove(key);
+            deleteNode(curr);
+        }
+
+        // If cache is full, remove least recently used item (tail.prev)
+        if (cache.size() == cap) {
+            cache.remove(tail.prev.key);
+            deleteNode(tail.prev);
+        }
+
+        // Add new node at front (most recently used position)
+        addNode(new Node(key, value));
+        // Update hashmap with new node
+        cache.put(key, head.next);
+    }
+}
+```
+</details>
+
+
+
+
+<details id="460. LFU Cache">
+<summary> 
+<span style="color:red;font-size:16px;font-weight:bold">460. LFU Cache 
+</span>
+</summary>
+
+https://leetcode.com/problems/lfu-cache/
+
+460. LFU Cache
+Solved
+Hard
+Topics
+Companies
+Design and implement a data structure for a Least Frequently Used (LFU) cache.
+
+Implement the LFUCache class:
+
+LFUCache(int capacity) Initializes the object with the capacity of the data structure.
+int get(int key) Gets the value of the key if the key exists in the cache. Otherwise, returns -1.
+void put(int key, int value) Update the value of the key if present, or inserts the key if not already present. When the cache reaches its capacity, it should invalidate and remove the least frequently used key before inserting a new item. For this problem, when there is a tie (i.e., two or more keys with the same frequency), the least recently used key would be invalidated.
+To determine the least frequently used key, a use counter is maintained for each key in the cache. The key with the smallest use counter is the least frequently used key.
+
+When a key is first inserted into the cache, its use counter is set to 1 (due to the put operation). The use counter for a key in the cache is incremented either a get or put operation is called on it.
+
+The functions get and put must each run in O(1) average time complexity.
+
+ 
+
+Example 1:
+
+Input
+["LFUCache", "put", "put", "get", "put", "get", "get", "put", "get", "get", "get"]
+[[2], [1, 1], [2, 2], [1], [3, 3], [2], [3], [4, 4], [1], [3], [4]]
+Output
+[null, null, null, 1, null, -1, 3, null, -1, 3, 4]
+
+Explanation
+// cnt(x) = the use counter for key x
+// cache=[] will show the last used order for tiebreakers (leftmost element is  most recent)
+LFUCache lfu = new LFUCache(2);
+lfu.put(1, 1);   // cache=[1,_], cnt(1)=1
+lfu.put(2, 2);   // cache=[2,1], cnt(2)=1, cnt(1)=1
+lfu.get(1);      // return 1
+                 // cache=[1,2], cnt(2)=1, cnt(1)=2
+lfu.put(3, 3);   // 2 is the LFU key because cnt(2)=1 is the smallest, invalidate 2.
+                 // cache=[3,1], cnt(3)=1, cnt(1)=2
+lfu.get(2);      // return -1 (not found)
+lfu.get(3);      // return 3
+                 // cache=[3,1], cnt(3)=2, cnt(1)=2
+lfu.put(4, 4);   // Both 1 and 3 have the same cnt, but 1 is LRU, invalidate 1.
+                 // cache=[4,3], cnt(4)=1, cnt(3)=2
+lfu.get(1);      // return -1 (not found)
+lfu.get(3);      // return 3
+                 // cache=[3,4], cnt(4)=1, cnt(3)=3
+lfu.get(4);      // return 4
+                 // cache=[4,3], cnt(4)=2, cnt(3)=3
+ 
+
+Constraints:
+
+1 <= capacity <= 104
+0 <= key <= 105
+0 <= value <= 109
+At most 2 * 105 calls will be made to get and put.
+
+```java
+class LFUCache {
+    // Class to represent each node in the doubly linked list
+    class Node {
+        int key;
+        int value;
+        int frequency;
+        Node prev;
+        Node next;
+        
+        Node(int key, int value) {
+            this.key = key;
+            this.value = value;
+            this.frequency = 1;
+        }
+    }
+    
+    // Class to manage doubly linked list operations
+    class DLList {
+        Node head;
+        Node tail;
+        int size;
+        
+        DLList() {
+            head = new Node(-1, -1);
+            tail = new Node(-1, -1);
+            head.next = tail;
+            tail.prev = head;
+            size = 0;
+        }
+        
+        // Add node right after head
+        void addNode(Node node) {
+            Node temp = head.next;
+            node.next = temp;
+            node.prev = head;
+            head.next = node;
+            temp.prev = node;
+            size++;
+        }
+        
+        // Remove a node from the list
+        void removeNode(Node node) {
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
+            size--;
+        }
+        
+        // Remove and return the least recently used node
+        Node removeLRUNode() {
+            if (size > 0) {
+                Node node = tail.prev;
+                removeNode(node);
+                return node;
+            }
+            return null;
+        }
+    }
+    
+    int capacity;
+    int minFrequency;
+    int curSize;
+    // Map to store key to Node mapping
+    HashMap<Integer, Node> cache;
+    // Map to store frequency to DLList mapping
+    HashMap<Integer, DLList> frequencyMap;
+    
+    public LFUCache(int capacity) {
+        this.capacity = capacity;
+        this.minFrequency = 0;
+        this.curSize = 0;
+        this.cache = new HashMap<>();
+        this.frequencyMap = new HashMap<>();
+    }
+    
+    private void updateNode(Node node) {
+        // Get the current frequency list
+        DLList oldList = frequencyMap.get(node.frequency);
+        oldList.removeNode(node);
+        
+        // If this list becomes empty and was the min frequency list, increment min frequency
+        if (node.frequency == minFrequency && oldList.size == 0) {
+            minFrequency++;
+        }
+        
+        // Move node to the next frequency list
+        node.frequency++;
+        DLList newList = frequencyMap.computeIfAbsent(node.frequency, k -> new DLList());
+        newList.addNode(node);
+    }
+    
+    public int get(int key) {
+        Node node = cache.get(key);
+        if (node == null) {
+            return -1;
+        }
+        
+        updateNode(node);
+        return node.value;
+    }
+    
+    public void put(int key, int value) {
+        if (capacity == 0) {
+            return;
+        }
+        
+        Node node = cache.get(key);
+        
+        if (node != null) {
+            // Update existing node
+            node.value = value;
+            updateNode(node);
+        } else {
+            // Create new node
+            node = new Node(key, value);
+            
+            // If cache is full, remove LFU (and LRU in case of tie)
+            if (curSize == capacity) {
+                DLList minFreqList = frequencyMap.get(minFrequency);
+                Node lruNode = minFreqList.removeLRUNode();
+                cache.remove(lruNode.key);
+                curSize--;
+            }
+            
+            // Add new node
+            curSize++;
+            minFrequency = 1;
+            DLList list = frequencyMap.computeIfAbsent(1, k -> new DLList());
+            list.addNode(node);
+            cache.put(key, node);
+        }
+    }
+}
+```
+
+</details>
+
+
+
+
+<details id="2181. Merge Nodes in Between Zeros">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">2181. Merge Nodes in Between Zeros 
+</span>
+</summary>
+
+https://leetcode.com/problems/merge-nodes-in-between-zeros/description/
+
+You are given the head of a linked list, which contains a series of integers separated by 0's. The beginning and end of the linked list will have Node.val == 0.
+
+For every two consecutive 0's, merge all the nodes lying in between them into a single node whose value is the sum of all the merged nodes. The modified list should not contain any 0's.
+
+Return the head of the modified linked list.
+
+ 
+
+Example 1:
+
+
+Input: head = [0,3,1,0,4,5,2,0]
+Output: [4,11]
+Explanation: 
+The above figure represents the given linked list. The modified list contains
+- The sum of the nodes marked in green: 3 + 1 = 4.
+- The sum of the nodes marked in red: 4 + 5 + 2 = 11.
+Example 2:
+
+
+Input: head = [0,1,0,3,0,2,2,0]
+Output: [1,3,4]
+Explanation: 
+The above figure represents the given linked list. The modified list contains
+- The sum of the nodes marked in green: 1 = 1.
+- The sum of the nodes marked in red: 3 = 3.
+- The sum of the nodes marked in yellow: 2 + 2 = 4.
+ 
+
+Constraints:
+
+The number of nodes in the list is in the range [3, 2 * 105].
+0 <= Node.val <= 1000
+There are no two consecutive nodes with Node.val == 0.
+The beginning and end of the linked list have Node.val == 
+
+
+```java
+class Solution {
+    public ListNode mergeNodes(ListNode head) {
+        ListNode tempHead = head.next;
+        int sum=0;
+        ListNode modifoedList=new ListNode(-1);
+        ListNode modifiedhead=modifoedList;
+        while(tempHead != null){
+            int val=tempHead.val;
+            if(val == 0){
+                modifoedList.next = new ListNode(sum);
+                modifoedList=modifoedList.next; 
+                sum=0;
+            }else{
+                sum+=val;
+            }
+            tempHead=tempHead.next;
+        }
+        return modifiedhead.next;
+    }
+}
+
+```
+</details>
+
+
+
+
+<details id="90. Subsets II">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">90. Subsets II 
+</span>
+</summary>
+
+https://leetcode.com/problems/subsets-ii/description/
+
+Given an integer array nums that may contain duplicates, return all possible 
+subsets
+ (the power set).
+
+The solution set must not contain duplicate subsets. Return the solution in any order.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,2]
+Output: [[],[1],[1,2],[1,2,2],[2],[2,2]]
+Example 2:
+
+Input: nums = [0]
+Output: [[],[0]]
+ 
+
+Constraints:
+
+1 <= nums.length <= 10
+-10 <= nums[i] <= 10
+
+```java
+class Solution {
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        int n=nums.length;
+        Set<List<Integer>> powerSet=new HashSet<>();
+        List<Integer> subList=new ArrayList<>();
+        Arrays.sort(nums);
+        getPowerSet(nums, subList, 0, powerSet);
+        return new ArrayList<>(powerSet);
+    }
+
+    void getPowerSet(int[] nums, List<Integer> subList , int i, Set<List<Integer>>  powerSet){
+        // Base condition
+        if(i==nums.length){ 
+            powerSet.add(new ArrayList(subList)); // [[1, 2, 3],[1,2], [1,3], ]
+            return;
+        }
+
+        // Take
+        subList.add(nums[i]); // 
+        getPowerSet(nums, subList, i+1, powerSet);
+        subList.remove(subList.size()-1);
+
+        // Skip
+        getPowerSet(nums, subList, i+1, powerSet);
+    }
+}
+```
+
+</details>
+
+
+
+
+<details id="274. H-Index">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">274. H-Index 
+</span>
+</summary>
+
+https://leetcode.com/problems/h-index/description/
+
+
+Given an array of integers citations where citations[i] is the number of citations a researcher received for their ith paper, return the researcher's h-index.
+
+According to the definition of h-index on Wikipedia: The h-index is defined as the maximum value of h such that the given researcher has published at least h papers that have each been cited at least h times.
+
+ 
+
+Example 1:
+
+Input: citations = [3,0,6,1,5]
+Output: 3
+Explanation: [3,0,6,1,5] means the researcher has 5 papers in total and each of them had received 3, 0, 6, 1, 5 citations respectively.
+Since the researcher has 3 papers with at least 3 citations each and the remaining two with no more than 3 citations each, their h-index is 3.
+Example 2:
+
+Input: citations = [1,3,1]
+Output: 1
+ 
+
+Constraints:
+
+n == citations.length
+1 <= n <= 5000
+0 <= citations[i] <= 1000
+
+
+```java
+// O(n^2)
+class Solution {
+    public int hIndex(int[] citations) {
+        int n=citations.length;
+        int maxCitation=0;
+        int minCitation=0;
+        int hIndex=Integer.MIN_VALUE;
+
+        for(int c:citations){
+            maxCitation=Math.max(maxCitation, c);
+            minCitation=Math.max(minCitation, c);
+        }
+        maxCitation=Math.min(maxCitation,n);
+        minCitation=Math.min(minCitation,n);
+
+        for(int i=0; i<=maxCitation; i++){
+            int count=0;
+            for(int c:citations){
+                if(c>= i){
+                    count++;
+                }
+                if(count == i){
+                    hIndex=i;
+                }
+            }
+        }
+        return hIndex == Integer.MIN_VALUE? 0: hIndex;
+    }
+}
+
+
+
+// O(nlogn) Binary Search
+class Solution {
+    public int hIndex(int[] citations) {
+        if (citations == null || citations.length == 0) return 0;
+        if (citations.length == 1) return Math.min(citations[0], 1);
+
+        int n = citations.length;
+        int maxCitation = 0;
+        for (int c : citations) {
+            maxCitation = Math.max(maxCitation, c);
+        }
+        maxCitation = Math.min(maxCitation, n);
+
+        int l = 0, r = maxCitation, hIndex = 0;
+        while (l <= r) {
+            int mid = l + (r - l) / 2;
+            if (checkIdHIndex(citations, mid)) {
+                hIndex = mid; // Update `hIndex` to `mid`.
+                l = mid + 1;  // Look for a larger valid `hIndex`.
+            } else {
+                r = mid - 1;  // Explore smaller values.
+            }
+        }
+        return hIndex;
+    }
+
+    boolean checkIdHIndex(int[] citations, int num) {
+        int count = 0;
+        for (int c : citations) {
+            if (c >= num) {
+                count++;
+            }
+            if (count >= num) { // `count` must be at least `num` for a valid `hIndex`.
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+```
+
+
+
+</details>
+
+
+
+
+<details id="23. Merge k Sorted Lists">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">23. Merge k Sorted Lists 
+</span>
+</summary>
+
+
+
+https://leetcode.com/problems/merge-k-sorted-lists/
+
+
+
+
+Let me break down the time complexity analysis step by step:
+
+1) First, let's define our variables:
+- k = number of linked lists (length of lists array)
+- n = average length of each linked list
+
+2) The algorithm uses a divide and conquer approach:
+- It repeatedly divides the k lists into two halves until we have pairs of lists to merge
+- This creates a recursion tree of depth log k
+
+3) At each level of the recursion tree:
+- We're merging lists of approximately equal size
+- Each element from all lists needs to be compared and merged
+- Total elements at each level = O(n*k) where n is average list length
+
+4) For merging two sorted lists:
+- Time complexity is O(n1 + n2) where n1, n2 are lengths of the lists being merged
+- In this case, at each level we're processing all n*k elements
+
+5) Putting it all together:
+- We have log k levels (from divide and conquer)
+- At each level, we process n*k elements
+- Therefore, total time complexity = O(k*n * log k)
+
+The space complexity is O(log k) due to the recursion stack depth.
+
+To give an example:
+If you have 8 lists (k=8) of length 5 each (n=5):
+- Level 1: Merge 8 into 4 pairs = 40 operations
+- Level 2: Merge 4 into 2 pairs = 40 operations
+- Level 3: Merge 2 into 1 = 40 operations
+Total = O(40 * log 8) = O(40 * 3) = O(120) operations
+
+Therefore, the final time complexity is O(k*n * log k) where:
+- k is the number of lists
+- n is the average length of each list
+- log k is the number of levels in the merge process
+
+```java
+class Solution {
+    public ListNode mergeKLists(ListNode[] lists) {
+        int n = lists.length - 1;
+        return partitionAndMerge(lists, 0, n);
+    }
+
+    private ListNode partitionAndMerge(ListNode[] lists, int l, int r) { // logk n
+        if (l > r)
+            return null;
+        if (l == r)
+            return lists[l];
+
+        int mid = l + (r - l) / 2;
+        ListNode L1 = partitionAndMerge(lists, l, mid);
+        ListNode L2 = partitionAndMerge(lists, mid + 1, r);
+        return mergeTwoLinkedList(L1, L2);
+    }
+
+    private ListNode mergeTwoLinkedList(ListNode L1, ListNode L2) {
+        if (L1 == null)
+            return L2;
+        if (L2 == null)
+            return L1;
+
+        if (L1.val <= L2.val) {
+            L1.next = mergeTwoLinkedList(L1.next, L2);
+            return L1;
+        } else {
+            L2.next = mergeTwoLinkedList(L1, L2.next);
+            return L2;
+        }
+    }
+}
+
+```
+</details>
+
+
+
+
+
+
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
 <span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
 </span>
 </summary>
 </details> -->
+
+
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+
+
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
 

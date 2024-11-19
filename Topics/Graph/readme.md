@@ -512,48 +512,46 @@ All the pairs prerequisites[i] are unique.
 
 ```java
 // Used DFS to check if the cycle is present--> topological order cant be obtained or YES 
-class Solution {
-    public boolean canFinish(int numCourses, int[][] prerequisites) {
-        List<List<Integer>> adj=new ArrayList<>();
-        boolean[] visited=new boolean[numCourses];
-        boolean[] inRec=new boolean[numCourses];
-        
-        // Initializing adjcency list
-        for(int i=0;i<numCourses;i++){
-            adj.add(new ArrayList<>());
-        }
-        
-        // Making adjcency list
-        for(int[] pre:prerequisites){
-            adj.get(pre[1]).add(pre[0]);
-        } 
-
-        // For Connected Components
-        for(int i=0;i<numCourses;i++){
-            if(!visited[i]  && checkCycleDFS(adj, visited, inRec, i)){
-                return false;
+    class Solution {
+        public boolean canFinish(int numCourses, int[][] prerequisites) {
+            List<List<Integer>> adj=new ArrayList<>();
+            boolean[] visited=new boolean[numCourses];
+            boolean[] inRec=new boolean[numCourses];
+            
+            // Initializing adjcency list
+            for(int i=0;i<numCourses;i++){
+                adj.add(new ArrayList<>());
             }
-        }
-        return true;
-    }
+            
+            // Making adjcency list
+            for(int[] pre:prerequisites){
+                adj.get(pre[1]).add(pre[0]);
+            } 
 
-    public boolean checkCycleDFS(List<List<Integer>> adj, boolean[] visited, boolean[] inRec, int node){
-        // If visited --> check if it is in current Recursion 
-        if(visited[node] && inRec[node])return true;
-        if(visited[node])return false;
-        
-        visited[node]=true;
-        inRec[node]=true;
-
-        for(int neighbour: adj.get(node)){
-            if(checkCycleDFS(adj, visited, inRec, neighbour)){
-                return true;
+            // For Connected Components
+            for(int i=0;i<numCourses;i++){
+                if(!visited[i]  && checkCycleDFS(adj, visited, inRec, i)){
+                    return false;
+                }
             }
+            return true;
         }
-        inRec[node]=false;
-        return false;
+
+        public boolean checkCycleDFS(List<List<Integer>> adj, boolean[] visited, boolean[] inRec, int node){
+            visited[node]=true;
+            inRec[node]=true;
+
+            for(int neighbour: adj.get(node)){
+                if(inRec[neighbour])return true;
+                if(visited[neighbour])continue;
+                if(checkCycleDFS(adj, visited, inRec, neighbour)){
+                    return true;
+                }
+            }
+            inRec[node]=false;
+            return false;
+        }
     }
-}
 
 ```
 </details>
@@ -637,27 +635,18 @@ class Solution {
     }
 
     private boolean checkCycleDFS(List<List<Integer>> graph, boolean[] visited, boolean[] onPath, Stack<Integer> stack, int course) {
-        if (visited[course] && onPath[course]) {
-            return true; // Cycle detected
-        }
-        if (visited[course]) {
-            return false; // Already visited node
-        }
-
-        // Mark the node as visited and part of the current path
         visited[course] = true;
         onPath[course] = true;
 
-        // Visit all the neighbors
         for (int neighbor : graph.get(course)) {
+            if(onPath[neighbor])return true;
+            if(visited[neighbor])continue;
             if (checkCycleDFS(graph, visited, onPath, stack, neighbor)) {
                 return true;
             }
         }
         onPath[course] = false;
-        // Add the course to the stack
         stack.push(course);
-
         return false;
     }
 }
@@ -1133,8 +1122,6 @@ Overall, the space complexity of the algorithm is O(V).
 
 
 ```java
-import java.util.*;
-
 class DriverClass { 
     class NodeDistPair {
         int dist;
@@ -1149,7 +1136,7 @@ class DriverClass {
     class Solution {
         // Function to find the shortest distance of all the vertices from the source vertex S.
         static int[] dijkstra(int V, ArrayList<ArrayList<ArrayList<Integer>>> adj, int S) {
-            // Min Heap
+            // Min Heap <Dist_of_this_node_to_source_node, this_node>
             PriorityQueue<NodeDistPair> pq = new PriorityQueue<>((a, b) -> a.dist - b.dist);
             
             int[] dist = new int[V];
@@ -1179,6 +1166,84 @@ class DriverClass {
 }
 
 ```
+
+
+Your observation about vertices being added to the priority queue multiple times is correct in practical implementations of **Dijkstra's algorithm**, especially when we are not using an explicit check to prevent redundant entries. Let’s clarify this step-by-step:
+
+---
+
+### **Key Points About Priority Queue Behavior**
+
+1. **Inserting Duplicate Entries**
+   - When a vertex \(A\) has been updated with a new, shorter distance (e.g., \((5, A)\) updated to \((2, A)\)), the new entry \((2, A)\) is pushed into the priority queue, resulting in multiple entries for \(A\) (e.g., \((5, A)\) and \((2, A)\)).
+   - This happens because the priority queue in its default form does not replace or merge entries but simply adds the new distance.
+
+2. **Extracting Redundant Entries**
+   - When \((5, A)\) is extracted from the priority queue, the algorithm recognizes that \(5\) is not the current shortest distance to \(A\) (since \(2 < 5\)) and skips processing \(A\) for this entry.
+   - The valid distance is processed later when the correct entry \((2, A)\) is extracted.
+
+3. **Correctness**
+   - The algorithm ensures correctness because it processes only the shortest distance for each vertex due to the check:
+     ```python
+     if current_distance > distance[node]:
+         continue
+     ```
+   - This ensures that older, redundant distances (e.g., \((5, A)\)) are ignored.
+
+---
+
+### **Why Do We Say "Each Vertex Is Inserted/Extracted Once"?**
+
+The statement:
+- **"Each vertex is extracted from the priority queue once"** assumes the algorithm processes a vertex only when it extracts the **shortest distance** for that vertex.
+- This is not strictly true for **raw priority queue operations** but rather reflects the **number of times meaningful work is done** for each vertex.
+
+In practice:
+- Each vertex can be **inserted into the priority queue multiple times** (when updates to its shortest distance occur).
+- However, **each vertex is processed (its neighbors are relaxed) at most once**, which is the key operation for analyzing complexity.
+
+---
+
+### **Impact on Complexity**
+
+Let’s revisit the complexity under the assumption that vertices may be added multiple times:
+
+1. **Insertions into the Priority Queue:**
+   - There can be up to \(E\) insertions because each edge might update the distance of a vertex (and push a new entry).
+
+2. **Priority Queue Extract-Min:**
+   - Each edge may lead to a redundant entry being added. However, the meaningful extracts are at most \(V\), as each vertex is fully processed once when its shortest distance is finalized.
+
+3. **Key Complexity Observations:**
+   - Total inserts: \(O(E)\)
+   - Total Extract-Min operations: \(O(V \log V + E \log V)\) due to redundant entries.
+
+Final **time complexity** remains:
+\[
+O((V + E) \log V)
+\]
+because \(E\) dominates \(V\) in sparse graphs.
+
+---
+
+### **Can We Avoid Multiple Insertions?**
+
+If desired, the algorithm can be modified to avoid multiple insertions:
+1. **Decrease Key Optimization:**
+   - Instead of inserting a new distance, decrease the priority of the existing entry.
+   - This requires using a **decrease key operation** (supported in Fibonacci heaps), but it's not practical for many heap implementations like binary heaps.
+
+2. **Lazy Approach (Commonly Used):**
+   - Allow multiple entries and simply skip redundant ones during processing, which is simpler and efficient for most applications.
+
+---
+
+### **Conclusion**
+- The statement "each vertex is inserted once" is an **idealized view** referring to meaningful processing, not raw priority queue operations.
+- In practice, multiple insertions happen, but the algorithm's logic ensures that only the shortest distance is processed for each vertex.
+- Complexity analysis accounts for these redundant operations, which is why the overall time complexity remains \(O((V + E) \log V)\).
+
+
 </details>
 
 
@@ -1237,62 +1302,70 @@ All the pairs (ui, vi) are unique. (i.e., no multiple edges.)
 ```java
 import java.util.*;
 
-class NodeDist {
-    int weight;
-    int node;
-
-    NodeDist(int weight, int node) {
-        this.weight = weight;
-        this.node = node;
-    }
-}
-
 class Solution {
     public int networkDelayTime(int[][] times, int n, int k) {
-        int[] minTimes = new int[n + 1];
-        Arrays.fill(minTimes, Integer.MAX_VALUE);
-        List<List<NodeDist>> adj = new ArrayList<>();
+        // Time Complexity: O(n) to initialize the mintimes array
+        int[] mintimes = new int[n + 1];
+        Arrays.fill(mintimes, Integer.MAX_VALUE);
+        
+        // Time Complexity: O(n) to initialize the adjacency list
+        List<List<int[]>> adj = new ArrayList<>();
         for (int i = 0; i < n + 1; i++) {
             adj.add(new ArrayList<>());
         }
         
-        for (int[] time : times) {
-            adj.get(time[0]).add(new NodeDist(time[2], time[1]));
+        // Time Complexity: O(E) to add each edge to the adjacency list
+        for (int i = 0; i < times.length; i++) {
+            int source = times[i][0];
+            int target = times[i][1];
+            int weight = times[i][2];
+            adj.get(source).add(new int[]{weight, target});
         }
         
-        PriorityQueue<NodeDist> queue = new PriorityQueue<>((a, b) -> a.weight - b.weight);
-        queue.add(new NodeDist(0, k));
-        minTimes[k] = 0;
+        // Priority queue to process the node with the smallest distance first
+        // Time Complexity: O(V) for initial insertion into the queue in the worst case
+        PriorityQueue<int[]> queue = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        queue.add(new int[]{0, k}); // {weight, node}
+        mintimes[k] = 0;
         
+        // Main loop to process the queue
+        // Time Complexity: O((E + V) * log V) for all priority queue operations combined
         while (!queue.isEmpty()) {
-            NodeDist current = queue.poll();
-            int node = current.node;
-            int weight = current.weight;
+            int[] current = queue.poll();  // O(log V) for each poll operation
+            int weight = current[0];
+            int node = current[1];
             
-            if (weight > minTimes[node]) {
+            if (weight > mintimes[node]) {
                 continue;
             }
             
-            for (NodeDist neighbor : adj.get(node)) {
-                int newWeight = weight + neighbor.weight;
-                if (newWeight < minTimes[neighbor.node]) {
-                    minTimes[neighbor.node] = newWeight;
-                    queue.add(new NodeDist(newWeight, neighbor.node));
+            // Loop through all neighbors
+            // Time Complexity: O(E) since we process each edge at most once
+            for (int[] neighbor : adj.get(node)) {
+                int newWeight = weight + neighbor[0];
+                int neighborNode = neighbor[1];
+                
+                // Relaxation step
+                if (newWeight < mintimes[neighborNode]) {
+                    mintimes[neighborNode] = newWeight;
+                    queue.add(new int[]{newWeight, neighborNode});  // O(log V) for each insert operation
                 }
             }
         }
         
         int maxTime = Integer.MIN_VALUE;
+        // Time Complexity: O(n) to find the maximum time across all nodes
         for (int i = 1; i <= n; i++) {
-            if (minTimes[i] == Integer.MAX_VALUE) {
+            if (mintimes[i] == Integer.MAX_VALUE) {
                 return -1; // If any node is unreachable, return -1.
             }
-            maxTime = Math.max(maxTime, minTimes[i]);
+            maxTime = Math.max(maxTime, mintimes[i]);
         }
         
         return maxTime;
     }
 }
+
 
 ```
 
@@ -1407,54 +1480,7 @@ class Solution {
             System.out.println(Arrays.toString(dist[i]));
         }
     }
-
-    // Helper class to store pairs (neighbor, weight)
-    static class Pair<K, V> {
-        private K key;
-        private V value;
-
-        public Pair(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        public K getKey() {
-            return key;
-        }
-
-        public V getValue() {
-            return value;
-        }
-    }
-
-    public static void main(String[] args) {
-        int V = 4; // Number of vertices
-        List<List<Pair<Integer, Integer>>> adj = new ArrayList<>();
-        
-        // Initialize adjacency list
-        for (int i = 0; i < V; i++) {
-            adj.add(new ArrayList<>());
-        }
-
-        // Example graph with weighted edges
-        // Node 0 connects to Node 1 with weight 2, and Node 2 with weight 4
-        adj.get(0).add(new Pair<>(1, 2));
-        adj.get(0).add(new Pair<>(2, 4));
-
-        // Node 1 connects to Node 2 with weight 1
-        adj.get(1).add(new Pair<>(2, 1));
-
-        // Node 2 connects to Node 3 with weight 3
-        adj.get(2).add(new Pair<>(3, 3));
-
-        // Node 3 connects to Node 0 with weight 7
-        adj.get(3).add(new Pair<>(0, 7));
-
-        Solution solution = new Solution();
-        solution.shortest_distance(adj, V);
-    }
 }
-
 ```
 </details>
 
@@ -3451,27 +3477,355 @@ class Solution {
 </details>
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="261. Graph Valid Tree">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">261. Graph Valid Tree 
 </span>
 </summary>
-</details> -->
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+
+
+You have a graph of n nodes labeled from 0 to n - 1. You are given an integer n and a list of edges where edges[i] = [ai, bi] indicates that there is an undirected edge between nodes ai and bi in the graph.
+
+Return true if the edges of the given graph make up a valid tree, and false otherwise.
+
+
+xample 1:
+
+![alt text](image-4.png)
+
+Input: n = 5, edges = [[0,1],[0,2],[0,3],[1,4]]
+Output: true
+
+
+Example 2:
+
+![alt text](image-5.png)
+
+Input: n = 5, edges = [[0,1],[1,2],[2,3],[1,3],[1,4]]
+Output: false
+ 
+
+Constraints:
+
+1 <= n <= 2000
+0 <= edges.length <= 5000
+edges[i].length == 2
+0 <= ai, bi < n
+ai != bi
+There are no self-loops or repeated edges.
+
+
+```java
+class Solution {
+    public boolean validTree(int n, int[][] edges) {
+        // check if i have n-1 edges
+        // checking if the graph has cycles
+        // checking if all the vertex are visited (To check te connected components)
+        // n + E +  (n + E) +  O(n) => O(n + E)
+        List<List<Integer>> adj = new ArrayList<>();
+        // Make a adjcency List
+        // Initialize the ADJ List
+        for (int i = 0; i < n; i++) { // O(n)
+            adj.add(new ArrayList<>());
+        }
+
+        // Add edges to adj list
+        for (int[] edge : edges) { // O(E)
+            int vertex1 = edge[0];
+            int vertex2 = edge[1];
+            // Undirected graph
+            adj.get(vertex1).add(vertex2);
+            adj.get(vertex2).add(vertex1);
+        }
+
+        // count of edges and vertex (n)
+        // edge count should be 1 less than the vertex in order to make a tree
+        if (edges.length != n - 1) {
+            return false;
+        }
+
+        // Checking cycle in the undirected graph
+        boolean[] visited = new boolean[n];
+
+        boolean cycle = hasCycle(adj, visited, 0, -1); // (n + E)
+        if (cycle) {
+            // Have a cycle hence this cant be a valid tree
+            return false;
+        }
+
+        // If the graph does not have cycle, check the visied nodes
+
+        for (boolean i : visited) { // O(n)
+            if (i == false) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    boolean hasCycle(List<List<Integer>> adj, boolean[] visited, int node, int parent) {
+        visited[node] = true;
+
+        for (int neighbor : adj.get(node)) {
+            if (neighbor == parent) {
+                continue;
+            }
+            if (visited[neighbor]) {
+                return true;
+            }
+            if (hasCycle(adj, visited, neighbor, node)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+```
+</details>
+
+<details id="Amazon Graph Question">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">Amazon Graph Question 
 </span>
 </summary>
-</details> -->
+
+```java
+import java.util.*;
+
+class Main {
+   
+    static class Rate {
+        String to; // Target currency
+        double rate; // Conversion rate to the target currency
+
+        public Rate(String to, double rate) {
+            this.to = to;
+            this.rate = rate;
+        }
+    }
+    public static double convertCurrency(Map<String, List<Rate>> ratesMap, String from, String to) {
+        if (!ratesMap.containsKey(from) || !ratesMap.containsKey(to)) {
+            throw new IllegalArgumentException("Invalid currencies");
+        }
+
+        // BFS initialization
+        Queue<String> queue = new LinkedList<>(); // Queue for BFS traversal
+        Map<String, Double> conversionMap = new HashMap<>(); // Map to store conversion rates from the source
+
+        queue.offer(from); // Start BFS from the source currency
+        conversionMap.put(from, 1.0); // Source to itself has a rate of 1
+
+        // BFS to find the conversion rate
+        while (!queue.isEmpty()) {
+            String current = queue.poll(); // Current currency being processed
+            double currentRate = conversionMap.get(current); // Conversion rate to the current currency
+
+            for (Rate rate : ratesMap.get(current)) {
+                if (!conversionMap.containsKey(rate.to)) {
+                    // Compute the conversion rate for the neighbor
+                    conversionMap.put(rate.to, currentRate * rate.rate);
+
+                    // If the target currency is found, return the conversion rate
+                    if (rate.to.equals(to)) {
+                        System.out.print(conversionMap);
+                        return conversionMap.get(to);
+                    }
+
+                    queue.offer(rate.to); // Add the neighbor to the queue for further exploration
+                }
+            }
+        }
+
+        // If no path exists between the source and target currency
+        throw new IllegalArgumentException("No conversion path exists between " + from + " and " + to);
+    }
+
+    public static void main(String[] args) {
+        // Sample log file entries as JSON-like strings
+        List<String> logEntries = Arrays.asList(
+            "{\"from\":\"USD\", \"to\":\"EUR\", \"rate\":1.1}",
+            "{\"from\":\"EUR\", \"to\":\"GBP\", \"rate\":1.2}",
+            "{\"from\":\"GBP\", \"to\":\"INR\", \"rate\":100.0}",
+            "{\"from\":\"USD\", \"to\":\"JPY\", \"rate\":110.0}",
+            "{\"from\":\"JPY\", \"to\":\"INR\", \"rate\":0.65}"
+        );
+
+        // Step 1: Build the graph (ratesMap) from log file entries
+        Map<String, List<Rate>> ratesMap = new HashMap<>();
+        for (String log : logEntries) {
+            // Parse each log entry
+            String[] parts = log.replaceAll("[{}\"]", "").split(",");
+            String from = parts[0].split(":")[1].trim(); // Extract source currency
+            String to = parts[1].split(":")[1].trim();   // Extract target currency
+            double rate = Double.parseDouble(parts[2].split(":")[1].trim()); // Extract conversion rate
+
+            // Add the conversion rate to the graph
+            ratesMap.computeIfAbsent(from, k -> new ArrayList<>()).add(new Rate(to, rate));
+            ratesMap.computeIfAbsent(to, k -> new ArrayList<>()).add(new Rate(from, 1/rate));
+        }
+        // System.out.print(ratesMap);
+        // Step 2: Perform currency conversion
+        String fromCurrency = "USD"; // Source currency
+        String toCurrency = "INR";  // Target currency
+
+        try {
+            // Call the conversion function
+            double exchangeRate = convertCurrency(ratesMap, fromCurrency, toCurrency);
+            System.out.println("Exchange rate from " + fromCurrency + " to " + toCurrency + ": " + exchangeRate);
+        } catch (IllegalArgumentException e) {
+            // Handle invalid conversions or missing paths
+            System.out.println(e.getMessage());
+        }
+    }
+}
+```
+</details>
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="787. Cheapest Flights Within K Stops">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">787. Cheapest Flights Within K Stops 
 </span>
+
+https://leetcode.com/problems/cheapest-flights-within-k-stops/description/
+
+There are n cities connected by some number of flights. You are given an array flights where flights[i] = [fromi, toi, pricei] indicates that there is a flight from city fromi to city toi with cost pricei.
+
+You are also given three integers src, dst, and k, return the cheapest price from src to dst with at most k stops. If there is no such route, return -1.
+
+ 
+
+Example 1:
+
+
+Input: n = 4, flights = [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]], src = 0, dst = 3, k = 1
+Output: 700
+Explanation:
+The graph is shown above.
+The optimal path with at most 1 stop from city 0 to 3 is marked in red and has cost 100 + 600 = 700.
+Note that the path through cities [0,1,2,3] is cheaper but is invalid because it uses 2 stops.
+Example 2:
+
+
+Input: n = 3, flights = [[0,1,100],[1,2,100],[0,2,500]], src = 0, dst = 2, k = 1
+Output: 200
+Explanation:
+The graph is shown above.
+The optimal path with at most 1 stop from city 0 to 2 is marked in red and has cost 100 + 100 = 200.
+Example 3:
+
+
+Input: n = 3, flights = [[0,1,100],[1,2,100],[0,2,500]], src = 0, dst = 2, k = 0
+Output: 500
+Explanation:
+The graph is shown above.
+The optimal path with no stops from city 0 to 2 is marked in red and has cost 500.
+ 
+
+Constraints:
+
+1 <= n <= 100
+0 <= flights.length <= (n * (n - 1) / 2)
+flights[i].length == 3
+0 <= fromi, toi < n
+fromi != toi
+1 <= pricei <= 104
+There will not be any multiple flights between two cities.
+0 <= src, dst, k < n
+src != dst
+
+
+The time complexity of the provided BFS solution is determined by the following factors:
+
+1. **Number of Nodes Processed**:
+   - In the worst case, we can process each city multiple times for up to \(k+1\) stops.
+
+2. **Number of Edges Processed**:
+   - For each node processed, we traverse all its neighbors (edges).
+
+3. **Operations on `minPrices`**:
+   - Updating and checking values in the `minPrices` map for each stop.
+
+### Key Variables:
+- \(n\): Number of cities (nodes).
+- \(m\): Number of flights (edges).
+- \(k\): Maximum allowed stops.
+
+---
+
+To put it in perspective, while a regular BFS would be O(V + E), this modified BFS for finding cheapest paths with a constraint on the number of stops has a higher complexity of O(kE) because:
+
+We can't eliminate vertices from consideration just because we've visited them once
+Each edge might need to be processed multiple times (up to k+1 times) as we might find cheaper paths
+
+
+
+```java
+class Solution {
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {
+        // prepare adj list [to_city, price_from_src]
+        List<List<int[]>> adj = new ArrayList<>();
+
+        // Initialize adj list
+        for (int i = 0; i < n; i++) {
+            adj.add(new ArrayList<>());
+        }
+
+        // prepare adj list using flights info
+        for (int[] flight : flights) {
+            int from = flight[0];
+            int to = flight[1];
+            int price = flight[2];
+
+            adj.get(from).add(new int[] { to, price });
+        }
+
+        // Traversing cities usiing BFS
+        // [to, price]
+        Queue<int[]> queue = new LinkedList<>();
+
+        // Keep track of visited cities
+        Map<Integer, Integer> minPrice = new HashMap<>();
+        minPrice.put(src, 0);
+
+        queue.add(new int[] { src, 0 });
+        int result = Integer.MAX_VALUE;
+
+        while (!queue.isEmpty() && k >= 0) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int city = queue.peek()[0];
+                int price = queue.peek()[1];
+                queue.poll();
+
+                for (int[] neighbor : adj.get(city)) {
+                    int nextCity = neighbor[0];
+                    int newPrice = price + neighbor[1];
+
+                    // Only visit the city if current route has lesser price than than prev visited route
+                    if (newPrice < minPrice.getOrDefault(nextCity, Integer.MAX_VALUE)) {
+                        // dont return right away, maybe some flight with more stops<k will be cheaper 
+                        if (nextCity == dst) {
+                            result = Math.min(result, newPrice);
+                        }
+                        queue.add(new int[] { nextCity, newPrice });
+                        minPrice.put(nextCity, newPrice);
+                    }
+                }
+            }
+            k--;
+        }
+        return result == Integer.MAX_VALUE ? -1 : result;
+    }
+}
+```
 </summary>
-</details> -->
+
+
+</details>
 
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
