@@ -2550,6 +2550,45 @@ class Solution {
     }
 }
 ```
+
+Let's break down the time complexity analysis step by step:
+
+1. Let's define variables:
+   - N = length of wordList
+   - L = length of each word (assuming all words have same length)
+
+2. Initial operations:
+   - Creating HashSet from wordList: O(N)
+   - Checking if endWord exists in dict: O(1)
+
+3. Main BFS loop analysis:
+   - For each word, we:
+     - Try to change each character (L positions)
+     - For each position, try all 26 letters
+     - For each new word formed:
+       - Creating new word: O(L)
+       - Checking in visited and dict: O(1)
+
+4. In worst case:
+   - We might need to visit all words in dictionary
+   - For each word, we perform:
+     * L (positions) × 26 (letters) × O(L) (string operations) = O(L² × 26)
+
+Therefore, the total time complexity is:
+O(N × L² × 26) = O(N × L²)
+
+Space Complexity:
+- dict set: O(N)
+- visited set: O(N)
+- queue: O(N)
+Total Space: O(N)
+
+Key points:
+- The bottleneck is trying all possible character variations for each word
+- For each word position, we try all 26 letters
+- String operations (creating new strings) also contribute significantly to the complexity
+- The actual number of iterations might be less due to early termination when endWord is found
+
 </details>
 
 
@@ -3689,6 +3728,7 @@ class Main {
 <summary> 
 <span style="color:yellow;font-size:16px;font-weight:bold">787. Cheapest Flights Within K Stops 
 </span>
+</summary>
 
 https://leetcode.com/problems/cheapest-flights-within-k-stops/description/
 
@@ -3754,7 +3794,6 @@ The time complexity of the provided BFS solution is determined by the following 
 - \(m\): Number of flights (edges).
 - \(k\): Maximum allowed stops.
 
----
 
 To put it in perspective, while a regular BFS would be O(V + E), this modified BFS for finding cheapest paths with a constraint on the number of stops has a higher complexity of O(kE) because:
 
@@ -3822,25 +3861,324 @@ class Solution {
     }
 }
 ```
-</summary>
+
 
 
 </details>
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="815. Bus Routes">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">815. Bus Routes 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/bus-routes/description/
+
+You are given an array routes representing bus routes where routes[i] is a bus route that the ith bus repeats forever.
+
+For example, if routes[0] = [1, 5, 7], this means that the 0th bus travels in the sequence 1 -> 5 -> 7 -> 1 -> 5 -> 7 -> 1 -> ... forever.
+You will start at the bus stop source (You are not on any bus initially), and you want to go to the bus stop target. You can travel between bus stops by buses only.
+
+Return the least number of buses you must take to travel from source to target. Return -1 if it is not possible.
+
+ 
+
+Example 1:
+
+Input: routes = [[1,2,7],[3,6,7]], source = 1, target = 6
+Output: 2
+Explanation: The best strategy is take the first bus to the bus stop 7, then take the second bus to the bus stop 6.
+Example 2:
+
+Input: routes = [[7,12],[4,5,15],[6],[15,19],[9,12,13]], source = 15, target = 12
+Output: -1
+ 
+
+ 
+
+Constraints:
+
+1 <= routes.length <= 500.
+1 <= routes[i].length <= 105
+All the values of routes[i] are unique.
+sum(routes[i].length) <= 105
+0 <= routes[i][j] < 106
+0 <= source, target < 106
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+
+
+    Key improvements in the corrected solution:
+
+    Better Graph Representation: Instead of creating an adjacency list of stops, we create a map of stops to the routes that contain that stop. This makes it easier to find all possible routes from a given stop.
+    Simplified BFS: The search is now simpler and more efficient:
+
+    We track both visited stops and visited routes
+    We only need to store the stop and number of buses taken in the queue
+    We don't need a separate Journey class
+
+
+    Early Returns:
+
+    Returns 0 if source equals target
+    Returns -1 if either source or target isn't in any route
+
+
+    Correct Bus Count: The solution now correctly counts the number of buses needed:
+
+    Increments bus count when switching to a new route
+    Returns buses + 1 when target is found (as we need one more bus to reach the target)
+
+
+    Edge Cases: Properly handles all edge cases:
+
+    Source equals target
+    Unreachable target
+    Multiple routes containing the same stop
+
+
+
+    This solution will correctly handle the example cases:
+
+    For routes = [[1,2,7],[3,6,7]], source = 1, target = 6: Returns 2
+    For routes = [[7,12],[4,5,15],[6],[15,19],[9,12,13]], source = 15, target = 12: Returns -1
+
+    The time complexity is O(N * R) where N is the total number of stops across all routes and R is the number of routes. The space complexity is O(N) for storing the stop-to-routes map and visited sets.
+
+```java
+
+class Solution {
+    public int numBusesToDestination(int[][] routes, int source, int target) {
+        if (source == target)
+            return 0;
+
+        // Create a map of stop to list of bus routes that contain that stop
+        Map<Integer, List<Integer>> stopToRoutes = new HashMap<>();
+
+        // Build the map
+        for (int i = 0; i < routes.length; i++) {
+            for (int stop : routes[i]) {
+                stopToRoutes.computeIfAbsent(stop, k -> new ArrayList<>()).add(i);
+            }
+        }
+
+        // If target is not reachable, return -1
+        if (!stopToRoutes.containsKey(source) || !stopToRoutes.containsKey(target)) {
+            return -1;
+        }
+
+        // Queue will store the current stop and number of buses taken
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[] { source, 0 }); // [stop, buses taken]
+
+        // Keep track of visited stops and routes
+        Set<Integer> visitedStops = new HashSet<>();
+        Set<Integer> visitedRoutes = new HashSet<>();
+        visitedStops.add(source);
+
+        while (!queue.isEmpty()) {
+            int[] current = queue.poll();
+            int currentStop = current[0];
+            int buses = current[1];
+
+            // Get all routes that contain current stop
+            for (int routeId : stopToRoutes.get(currentStop)) {
+                if (visitedRoutes.contains(routeId))
+                    continue;
+
+                visitedRoutes.add(routeId);
+                // Check all stops in this route
+                for (int nextStop : routes[routeId]) {
+                    if (nextStop == target)
+                        return buses + 1;
+
+                    if (!visitedStops.contains(nextStop)) {
+                        visitedStops.add(nextStop);
+                        queue.offer(new int[] { nextStop, buses + 1 });
+                    }
+                }
+            }
+        }
+
+        return -1;
+    }
+}
+```
+
+
+```java
+
+// Time Limit Exceeded
+class Solution {
+    class Journey {
+        int stop;
+        int bus;
+        int busTaken;
+
+        Journey(int stop, int bus, int busTaken) {
+            this.stop = stop;
+            this.bus = bus;
+            this.busTaken = busTaken;
+        }
+    }
+
+    public int numBusesToDestination(int[][] routes, int source, int target) {
+        // Early return if source and target are the same
+        if (source == target) return 0;
+        
+        int n = routes.length;
+        int minStops = Integer.MAX_VALUE; // Change from 0 to Integer.MAX_VALUE
+        
+        // Declare adjacency List
+        Map<Integer, List<Journey>> adj = new HashMap<>();
+
+        // Create adjacency list for ALL stops in each route
+        for (int route = 0; route < n; route++) {
+            int length = routes[route].length;
+            for (int i = 0; i < length; i++) {
+                for (int j = 0; j < length; j++) {
+                    if (i != j) {
+                        int from = routes[route][i];
+                        int to = routes[route][j];
+
+                        if (!adj.containsKey(from)) {
+                            adj.put(from, new ArrayList<>());
+                        }
+                        adj.get(from).add(new Journey(to, route, 0));
+                    }
+                }
+            }
+        }
+
+        // Handle case where source or target are not in any route
+        if (!adj.containsKey(source) || !adj.containsKey(target)) return -1;
+
+        Queue<Journey> queue = new LinkedList<>();
+        queue.add(new Journey(source, -1, 0));
+
+        Map<Integer, Journey> visited = new HashMap<>();
+        visited.put(source, new Journey(source, 0, 0));
+
+        while (!queue.isEmpty()) {
+            Journey current = queue.poll();
+            int currentStop = current.stop;
+            int currentBus = current.bus;
+            int busTaken = current.busTaken;
+
+            // Skip if no routes for this stop
+            if (!adj.containsKey(currentStop)) continue;
+
+            for (Journey nextRoute : adj.get(currentStop)) {
+                int newBusCount = busTaken;
+
+                // Target Reached
+                if (nextRoute.stop == target) {
+                    minStops = Math.min(minStops, newBusCount + (currentBus == nextRoute.bus ? 0 : 1));
+                    continue;
+                }
+
+                // Unvisited Stop
+                if (!visited.containsKey(nextRoute.stop)) {
+                    newBusCount += (currentBus != nextRoute.bus) ? 1 : 0;
+                    queue.offer(new Journey(nextRoute.stop, nextRoute.bus, newBusCount));
+                    visited.put(nextRoute.stop, new Journey(nextRoute.stop, nextRoute.bus, newBusCount));
+                } else {
+                    // Potentially update if we found a better route
+                    int currentBusTaken = visited.get(nextRoute.stop).busTaken;
+                    int potentialNewBusTaken = newBusCount + (currentBus != nextRoute.bus ? 1 : 0);
+                    
+                    if (potentialNewBusTaken < currentBusTaken) {
+                        queue.offer(new Journey(nextRoute.stop, nextRoute.bus, potentialNewBusTaken));
+                        visited.put(nextRoute.stop, new Journey(nextRoute.stop, nextRoute.bus, potentialNewBusTaken));
+                    }
+                }
+            }
+        }
+
+        return minStops == Integer.MAX_VALUE ? -1 : minStops;
+    }
+}
+```
+</details>
+
+
+<details id="Bellman-Ford">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">Bellman-Ford 
 </span>
 </summary>
-</details> -->
+
+https://www.geeksforgeeks.org/problems/distance-from-the-source-bellman-ford-algorithm/1
+
+
+iven a weighted and directed graph of v vertices and edges, Find the shortest distance of all the vertex's from the source vertex, src and return a list of integers where the ith integer denotes the distance of the ith node from the source node. If a vertices can't be reach from the s then mark the distance as 10^8.
+Note: If the graph contains a negative cycle then return an array consisting of only -1.
+
+Examples:
+
+Input: edges = [[0,1,9]], src = 0
+
+Output: [0, 9]
+Explanation: Shortest distance of all nodes from source is printed.
+Input: edges = [[0,1,5], [1,0,3], [1,2,-1], [2,0,1]], src = 2
+
+Output: [1, 6, 0]
+Explanation: For nodes 2 to 0, we can follow the path: 2-0. This has a distance of 1. For nodes 2 to 1, we cam follow the path: 2-0-1, which has a distance of 1+5 = 6,
+Constraints:
+1 ≤ V ≤ 500
+1 ≤ E ≤ V*(V-1)
+-1000 ≤ data of nodes, weight ≤ 1000
+0 ≤ S < V
+
+Company Tags
+AmazonMicrosoft
+Topic Tags
+Related Articles
+
+
+```java
+
+// Relaxing edges v-1 times + 1 more time just to check for negative cycle. Relax the in the same order in all v-1 passes.
+class Solution {
+  public:
+    vector<int> bellman_ford(int V, vector<vector<int>>& edges, int S) {
+        vector<int> result(V, 1e8);
+        result[S] = 0;
+        
+        for(int c = 1; c<=V-1; c++) {
+            
+            for(auto &edge : edges) {
+                
+                int u = edge[0];
+                int v = edge[1];
+                int w = edge[2];
+                
+                if(result[u] != 1e8 && result[u] + w < result[v]) {
+                    result[v] = result[u] + w;
+                }
+                
+            }
+            
+        }
+        
+        //Now detect negative cycle
+        for(auto &edge : edges) {
+            
+            int u = edge[0];
+                int v = edge[1];
+                int w = edge[2];
+                
+                if(result[u] != 1e8 && result[u] + w < result[v]) {
+                    return {-1};
+                }
+        }
+        
+        return result;
+    }
+};
+
+```
+</details>
 
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 

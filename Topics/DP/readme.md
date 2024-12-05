@@ -2423,22 +2423,194 @@ class Solution {
 
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="139. Word Break">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">139. Word Break 
 </span>
 </summary>
-</details> -->
+
+```java
+// recursion (O(2^n))
+class Solution {
+    public boolean wordBreak(String s, List<String> wordDict) {
+        Set<String> dict = new HashSet(wordDict);
+
+        return canPartitionSubstring(0, 0, s, dict);
+    }
+
+    private boolean canPartitionSubstring(int l, int r, String s, Set<String> dict) {
+        // Base Case
+        if (l == r && l == s.length()) {
+            return true;
+        }
+        if(r>=s.length()){
+            return false;
+        }
+        boolean withPartition = false;
+        boolean withoutPartition = false;
+        // Propagation
+        if (dict.contains(s.substring(l, r + 1))) {
+            // Partition
+            withPartition = canPartitionSubstring(r + 1, r + 1, s, dict);
+        }
+        // without partition
+        withoutPartition = canPartitionSubstring(l, r + 1, s, dict);
+        return withoutPartition || withPartition;
+    }
+}
+```
+
+
+```java
+class Solution {
+    public boolean wordBreak(String s, List<String> wordDict) {
+        Set<String> dict = new HashSet(wordDict);
+        int [][] dp=new int[s.length()+1][s.length()+1];
+
+        for(int[] d:dp)Arrays.fill(d, -1);
+
+        return canPartitionSubstring(0, 0, s, dict, dp);
+    }
+
+    private boolean canPartitionSubstring(int l, int r, String s, Set<String> dict, int[][] dp) {
+        // Base Case
+        if (l == r && l == s.length()) {
+             dp[l][r]=1;
+            return true;
+        }
+        if(r>=s.length()){
+            dp[l][r]=0;
+            return false;
+        }
+        if(dp[l][r]!=-1)return dp[l][r]==1?true:false;
+
+
+        boolean withPartition = false;
+        boolean withoutPartition = false;
+        // Propagation
+        if (dict.contains(s.substring(l, r + 1))) {
+            // Partition
+            withPartition = canPartitionSubstring(r + 1, r + 1, s, dict, dp);
+        }
+        // without partition
+        withoutPartition = canPartitionSubstring(l, r + 1, s, dict, dp);
+        dp[l][r]=(withoutPartition || withPartition)?1:0 ;
+        return withoutPartition || withPartition;
+    }
+}
+
+```
+</details>
 
 
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="322. Coin Change">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">322. Coin Change 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/coin-change/description/
+
+You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money.
+
+Return the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return -1.
+
+You may assume that you have an infinite number of each kind of coin.
+
+ 
+
+Example 1:
+
+Input: coins = [1,2,5], amount = 11
+Output: 3
+Explanation: 11 = 5 + 5 + 1
+Example 2:
+
+Input: coins = [2], amount = 3
+Output: -1
+Example 3:
+
+Input: coins = [1], amount = 0
+Output: 0
+ 
+
+Constraints:
+
+1 <= coins.length <= 12
+1 <= coins[i] <= 231 - 1
+0 <= amount <= 104
+
+
+```java
+
+// Recursive O()
+class Solution {
+    int ans = Integer.MAX_VALUE;
+
+    public int coinChange(int[] coins, int amount) {
+        makeAmount(coins, amount, 0, 0);
+        return ans == Integer.MAX_VALUE ? -1 : ans;
+    }
+    // coins = [1,2,5], amount = 11
+    private void makeAmount(int[] coins, int target, int i, int coinCount) {
+        // Base Case
+        if (target < 0 || i >= coins.length)
+            return;
+
+        if (target == 0) {
+            ans = Math.min(ans, coinCount);
+            return;
+        }
+        int denomination = coins[i]; //1
+        // Take this coin
+        makeAmount(coins, target - denomination, i, 1 + coinCount);
+
+        // Skip this coin
+        makeAmount(coins, target, i + 1, coinCount);
+    }
+}
+
+
+
+=====================================================================================
+
+// Recursion + Memoization
+class Solution {
+    public int coinChange(int[] coins, int amount) {
+        int[][] dp = new int[coins.length][amount + 1];
+        for (int[] d : dp) Arrays.fill(d, -1); // Initialize dp with -1 (unvisited)
+
+        int result = makeAmount(coins, amount, 0, dp);
+        return result == Integer.MAX_VALUE ? -1 : result; // If no solution, return -1
+    }
+
+    private int makeAmount(int[] coins, int target, int i, int[][] dp) {
+        // Base Cases
+        if (target == 0) return 0; // No coins needed if the target is zero
+        if (target < 0 || i >= coins.length) return Integer.MAX_VALUE; // No solution possible
+
+        if (dp[i][target] != -1) return dp[i][target]; // Use memoized result
+
+        // Calculate minimum coins: take the current coin or skip it
+        int take = makeAmount(coins, target - coins[i], i, dp); // Take the coin
+        if (take != Integer.MAX_VALUE) take += 1; // Increment coin count if valid
+
+        int skip = makeAmount(coins, target, i + 1, dp); // Skip the coin
+
+        // Memoize the result for current i and target
+        dp[i][target] = Math.min(take, skip);
+
+        return dp[i][target];
+    }
+}
+
+```
+
+
+
+</details>
 
 
 

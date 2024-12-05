@@ -1317,20 +1317,18 @@ if at anytime nums[mid] >= nums[l] this means that mid is in 1,2,3,4. now left i
 ```java
 class Solution {
     public int findMin(int[] nums) {
-        int l = 0;
-        int r = nums.length - 1;
-        while (l <= r) {
-            if (nums[l] <= nums[r]) {
-                return nums[l];
-            }
-            int mid = (l + r) / 2;
-            if (nums[mid] >= nums[l]) {
-                l = mid + 1;
+        int left = 0;
+        int right = nums.length - 1;
+
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] < nums[right]) {
+                right = mid;
             } else {
-                r = mid;
+                left = mid + 1;
             }
         }
-        return 0;
+        return nums[left];
     }
 }
 
@@ -2294,7 +2292,7 @@ public class Codec {
         sHelper(root,arr);
         return String.join(",",arr);
     }
-    // sHelper is converting a tree into an array of preorder string token, for null->N
+    // sHelper is converting a tree into an array of preorder string token, for null -> N
     public void sHelper(TreeNode root, List<String> arr) {
         if(root==null){
             arr.add("N");
@@ -2323,7 +2321,6 @@ public class Codec {
     }
 }
 ```
-
     Time: O(n) for each function
 </details>
 
@@ -2380,37 +2377,41 @@ If 99% of all integer numbers from the stream are in the range [0, 100], how wou
 
 ![Alt text](image-25.png)
 ```java
-class MedianFinder {
-    // maxheap can have 1 more element then min heap
-        PriorityQueue<Integer> maxheap=new PriorityQueue<Integer>((a,b)->b-a);
-        PriorityQueue<Integer> minheap=new PriorityQueue<Integer>((a,b)->a-b);
-    public MedianFinder() {
+public class MedianFinder {
+    // leftMaxHep can have 1 more element ythan right min heap
+    private PriorityQueue<Integer> leftMaxHeap; // max heap
+    private PriorityQueue<Integer> rightMinHeap; // min heap
 
+    public MedianFinder() {
+        leftMaxHeap = new PriorityQueue<>(Collections.reverseOrder());
+        rightMinHeap = new PriorityQueue<>();
     }
-    
+
     public void addNum(int num) {
-        if(maxheap.isEmpty() || maxheap.peek()>=num){
-            maxheap.offer(num);
-        }else{
-            minheap.offer(num);
+        if (leftMaxHeap.isEmpty() || num < leftMaxHeap.peek()) {
+            leftMaxHeap.add(num);
+        } else {
+            rightMinHeap.add(num);
         }
-        // size adjustments| maxheap can have 1 more element then minheap
-        if(maxheap.size()>1+minheap.size()){
-            minheap.offer(maxheap.poll());
-        }else if(maxheap.size()<minheap.size()){
-            maxheap.offer(minheap.poll());
+
+        // always maintain leftMaxHeap size one greater than rightMinHeap size
+        // or both sizes equal
+        if (Math.abs(leftMaxHeap.size() - rightMinHeap.size()) > 1) {
+            rightMinHeap.add(leftMaxHeap.poll());
+        } else if (leftMaxHeap.size() < rightMinHeap.size()) {
+            leftMaxHeap.add(rightMinHeap.poll());
         }
     }
-    
+
     public double findMedian() {
-        if(maxheap.size()==minheap.size()){
+        if (leftMaxHeap.size() == rightMinHeap.size()) {
             // even number of elements
-            return maxheap.peek()/2.0 + minheap.peek()/2.0;
+            return (double) (leftMaxHeap.peek() + rightMinHeap.peek()) / 2;
         }
+
         // odd number of elements
-        return maxheap.peek();
+        return leftMaxHeap.peek();
     }
-}
 
 ```
 </details>
@@ -2498,102 +2499,6 @@ class Solution {
 </details>
 
 
-
-<details id="79. Word Search">
-<summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">79. Word Search
-</span></summary>
-Given an m x n grid of characters board and a string word, return true if word exists in the grid.
-
-The word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once.
-
- 
-
-Example 1:
-
-![Alt text](image-28.png)
-
-Input: board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCCED"
-Output: true
-
-Example 2:
-
-![Alt text](image-29.png)
-
-Input: board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "SEE"
-Output: true
-
-Example 3:
-
-![Alt text](image-30.png)
-
-Input: board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCB"
-Output: false
- 
-
-Constraints:
-
-m == board.length
-n = board[i].length
-1 <= m, n <= 6
-1 <= word.length <= 15
-board and word consists of only lowercase and uppercase English letters.
- 
-
-Follow up: Could you use search pruning to make your solution faster with a larger board?
-
-
-```java
-
-
-//This is a typical backtracking problem similar to Number of Islands.
-//In number of Isalnds, we sinked the islands. Here, we will do the same by adding changing the value of the char.
-//I added 100 because it will exceed the ascii limit for characters and will change it to some ascii value which is not an alphabet.
-class Solution {
-   public boolean check(
-        char[][] board,
-        String word,
-        int i,
-        int j,
-        int m,
-        int n,
-        int cur
-    ) {
-        if (cur >= word.length()) return true;
-        if (
-            i < 0 ||
-            j < 0 ||
-            i >= m ||
-            j >= n ||
-            board[i][j] != word.charAt(cur)
-        ) return false;
-        boolean exist = false;
-        if (board[i][j] == word.charAt(cur)) {
-            board[i][j] += 100;
-            exist =
-                check(board, word, i + 1, j, m, n, cur + 1) ||
-                check(board, word, i, j + 1, m, n, cur + 1) ||
-                check(board, word, i - 1, j, m, n, cur + 1) ||
-                check(board, word, i, j - 1, m, n, cur + 1);
-            board[i][j] -= 100;
-        }
-        return exist;
-    }
-    public boolean exist(char[][] board, String word) {
-        int m = board.length;
-        int n = board[0].length;
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (check(board, word, i, j, m, n, 0)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-}
-```
-</details>
 
 
 ## <h1 style="text-align: center;">10. Graphs </h1>
@@ -8527,312 +8432,6 @@ In summary:
 
 
 
-<details id="146. LRU Cache">
-<summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">146. LRU Cache 
-</span>
-</summary>
-
-https://leetcode.com/problems/lru-cache/
-
-```java
-// LRU Cache implementation using a doubly linked list and hashmap
-class LRUCache {
-    class Node {
-        int key;
-        int val;
-        Node prev;    
-        Node next;    
-
-        Node(int key, int val) {
-            this.key = key;
-            this.val = val;
-        }
-    }
-
-    // Dummy head and tail nodes to avoid edge cases
-    Node head = new Node(-1, -1);
-    Node tail = new Node(-1, -1);
-    int cap;  
-    HashMap<Integer, Node> cache = new HashMap<>();
-
-    public LRUCache(int capacity) {
-        cap = capacity;
-        head.next = tail;
-        tail.prev = head;
-    }
-
-
-    private void addNode(Node newnode) {
-        Node tempNext = head.next;
-
-        // Update the connections to insert newnode
-        newnode.next = tempNext;
-        newnode.prev = head;
-
-        head.next = newnode;
-        tempNext.prev = newnode;
-    }
-
-    private void deleteNode(Node delnode) {
-        Node prevNode = delnode.prev;
-        Node nextNode = delnode.next;
-
-        // Update connections to remove delnode
-        prevNode.next = nextNode;
-        nextNode.prev = prevNode;
-    }
-
-    public int get(int key) {
-        if (cache.containsKey(key)) {
-            Node resNode = cache.get(key);
-            int ans = resNode.val;
-
-            // Remove node from current position
-            cache.remove(key);
-            deleteNode(resNode);
-            
-            // Add node to front (most recently used position)
-            addNode(resNode);
-
-            // Update hashmap with new node position
-            cache.put(key, head.next);
-            return ans;
-        }
-        return -1;    
-    }
-
-    public void put(int key, int value) {
-        // If key exists, remove it first
-        if (cache.containsKey(key)) {
-            Node curr = cache.get(key);
-            cache.remove(key);
-            deleteNode(curr);
-        }
-
-        // If cache is full, remove least recently used item (tail.prev)
-        if (cache.size() == cap) {
-            cache.remove(tail.prev.key);
-            deleteNode(tail.prev);
-        }
-
-        // Add new node at front (most recently used position)
-        addNode(new Node(key, value));
-        // Update hashmap with new node
-        cache.put(key, head.next);
-    }
-}
-```
-</details>
-
-
-
-
-<details id="460. LFU Cache">
-<summary> 
-<span style="color:red;font-size:16px;font-weight:bold">460. LFU Cache 
-</span>
-</summary>
-
-https://leetcode.com/problems/lfu-cache/
-
-460. LFU Cache
-Solved
-Hard
-Topics
-Companies
-Design and implement a data structure for a Least Frequently Used (LFU) cache.
-
-Implement the LFUCache class:
-
-LFUCache(int capacity) Initializes the object with the capacity of the data structure.
-int get(int key) Gets the value of the key if the key exists in the cache. Otherwise, returns -1.
-void put(int key, int value) Update the value of the key if present, or inserts the key if not already present. When the cache reaches its capacity, it should invalidate and remove the least frequently used key before inserting a new item. For this problem, when there is a tie (i.e., two or more keys with the same frequency), the least recently used key would be invalidated.
-To determine the least frequently used key, a use counter is maintained for each key in the cache. The key with the smallest use counter is the least frequently used key.
-
-When a key is first inserted into the cache, its use counter is set to 1 (due to the put operation). The use counter for a key in the cache is incremented either a get or put operation is called on it.
-
-The functions get and put must each run in O(1) average time complexity.
-
- 
-
-Example 1:
-
-Input
-["LFUCache", "put", "put", "get", "put", "get", "get", "put", "get", "get", "get"]
-[[2], [1, 1], [2, 2], [1], [3, 3], [2], [3], [4, 4], [1], [3], [4]]
-Output
-[null, null, null, 1, null, -1, 3, null, -1, 3, 4]
-
-Explanation
-// cnt(x) = the use counter for key x
-// cache=[] will show the last used order for tiebreakers (leftmost element is  most recent)
-LFUCache lfu = new LFUCache(2);
-lfu.put(1, 1);   // cache=[1,_], cnt(1)=1
-lfu.put(2, 2);   // cache=[2,1], cnt(2)=1, cnt(1)=1
-lfu.get(1);      // return 1
-                 // cache=[1,2], cnt(2)=1, cnt(1)=2
-lfu.put(3, 3);   // 2 is the LFU key because cnt(2)=1 is the smallest, invalidate 2.
-                 // cache=[3,1], cnt(3)=1, cnt(1)=2
-lfu.get(2);      // return -1 (not found)
-lfu.get(3);      // return 3
-                 // cache=[3,1], cnt(3)=2, cnt(1)=2
-lfu.put(4, 4);   // Both 1 and 3 have the same cnt, but 1 is LRU, invalidate 1.
-                 // cache=[4,3], cnt(4)=1, cnt(3)=2
-lfu.get(1);      // return -1 (not found)
-lfu.get(3);      // return 3
-                 // cache=[3,4], cnt(4)=1, cnt(3)=3
-lfu.get(4);      // return 4
-                 // cache=[4,3], cnt(4)=2, cnt(3)=3
- 
-
-Constraints:
-
-1 <= capacity <= 104
-0 <= key <= 105
-0 <= value <= 109
-At most 2 * 105 calls will be made to get and put.
-
-```java
-class LFUCache {
-    // Class to represent each node in the doubly linked list
-    class Node {
-        int key;
-        int value;
-        int frequency;
-        Node prev;
-        Node next;
-        
-        Node(int key, int value) {
-            this.key = key;
-            this.value = value;
-            this.frequency = 1;
-        }
-    }
-    
-    // Class to manage doubly linked list operations
-    class DLList {
-        Node head;
-        Node tail;
-        int size;
-        
-        DLList() {
-            head = new Node(-1, -1);
-            tail = new Node(-1, -1);
-            head.next = tail;
-            tail.prev = head;
-            size = 0;
-        }
-        
-        // Add node right after head
-        void addNode(Node node) {
-            Node temp = head.next;
-            node.next = temp;
-            node.prev = head;
-            head.next = node;
-            temp.prev = node;
-            size++;
-        }
-        
-        // Remove a node from the list
-        void removeNode(Node node) {
-            node.prev.next = node.next;
-            node.next.prev = node.prev;
-            size--;
-        }
-        
-        // Remove and return the least recently used node
-        Node removeLRUNode() {
-            if (size > 0) {
-                Node node = tail.prev;
-                removeNode(node);
-                return node;
-            }
-            return null;
-        }
-    }
-    
-    int capacity;
-    int minFrequency;
-    int curSize;
-    // Map to store key to Node mapping
-    HashMap<Integer, Node> cache;
-    // Map to store frequency to DLList mapping
-    HashMap<Integer, DLList> frequencyMap;
-    
-    public LFUCache(int capacity) {
-        this.capacity = capacity;
-        this.minFrequency = 0;
-        this.curSize = 0;
-        this.cache = new HashMap<>();
-        this.frequencyMap = new HashMap<>();
-    }
-    
-    private void updateNode(Node node) {
-        // Get the current frequency list
-        DLList oldList = frequencyMap.get(node.frequency);
-        oldList.removeNode(node);
-        
-        // If this list becomes empty and was the min frequency list, increment min frequency
-        if (node.frequency == minFrequency && oldList.size == 0) {
-            minFrequency++;
-        }
-        
-        // Move node to the next frequency list
-        node.frequency++;
-        DLList newList = frequencyMap.computeIfAbsent(node.frequency, k -> new DLList());
-        newList.addNode(node);
-    }
-    
-    public int get(int key) {
-        Node node = cache.get(key);
-        if (node == null) {
-            return -1;
-        }
-        
-        updateNode(node);
-        return node.value;
-    }
-    
-    public void put(int key, int value) {
-        if (capacity == 0) {
-            return;
-        }
-        
-        Node node = cache.get(key);
-        
-        if (node != null) {
-            // Update existing node
-            node.value = value;
-            updateNode(node);
-        } else {
-            // Create new node
-            node = new Node(key, value);
-            
-            // If cache is full, remove LFU (and LRU in case of tie)
-            if (curSize == capacity) {
-                DLList minFreqList = frequencyMap.get(minFrequency);
-                Node lruNode = minFreqList.removeLRUNode();
-                cache.remove(lruNode.key);
-                curSize--;
-            }
-            
-            // Add new node
-            curSize++;
-            minFrequency = 1;
-            DLList list = frequencyMap.computeIfAbsent(1, k -> new DLList());
-            list.addNode(node);
-            cache.put(key, node);
-        }
-    }
-}
-```
-
-</details>
-
-
-
-
 <details id="2181. Merge Nodes in Between Zeros">
 <summary> 
 <span style="color:yellow;font-size:16px;font-weight:bold">2181. Merge Nodes in Between Zeros 
@@ -9087,89 +8686,412 @@ class Solution {
 
 
 
-<details id="23. Merge k Sorted Lists">
+
+
+
+<details id="1. Two Sum">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">23. Merge k Sorted Lists 
+<span style="color:yellow;font-size:16px;font-weight:bold">1. Two Sum 
 </span>
 </summary>
 
+https://leetcode.com/problems/two-sum/description/
+
+Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
+
+You may assume that each input would have exactly one solution, and you may not use the same element twice.
+
+You can return the answer in any order.
+
+ 
+
+Example 1:
+
+Input: nums = [2,7,11,15], target = 9
+Output: [0,1]
+Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].
+Example 2:
+
+Input: nums = [3,2,4], target = 6
+Output: [1,2]
+Example 3:
+
+Input: nums = [3,3], target = 6
+Output: [0,1]
 
 
-https://leetcode.com/problems/merge-k-sorted-lists/
+    We cannot use sotring+ 2 pointer since we need to return the index
+
+```java
+
+// O(n) Hash Map
+class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        //<value, index>
+        Map<Integer, Integer> map=new HashMap<>();
+
+        for(int i=0;i<nums.length;i++){
+            if(map.containsKey(target - nums[i])){
+                return new int[]{i,map.get(target-nums[i])};
+            }
+            map.put(nums[i], i);
+        }
+        return new int[]{};
+    }
+}
+```
+</details>
 
 
 
 
-Let me break down the time complexity analysis step by step:
+<details id="15. 3Sum">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">15. 3Sum 
+</span>
+</summary>
 
-1) First, let's define our variables:
-- k = number of linked lists (length of lists array)
-- n = average length of each linked list
+https://leetcode.com/problems/3sum/description/
 
-2) The algorithm uses a divide and conquer approach:
-- It repeatedly divides the k lists into two halves until we have pairs of lists to merge
-- This creates a recursion tree of depth log k
+Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i != j, i != k, and j != k, and nums[i] + nums[j] + nums[k] == 0.
 
-3) At each level of the recursion tree:
-- We're merging lists of approximately equal size
-- Each element from all lists needs to be compared and merged
-- Total elements at each level = O(n*k) where n is average list length
+Notice that the solution set must not contain duplicate triplets.
 
-4) For merging two sorted lists:
-- Time complexity is O(n1 + n2) where n1, n2 are lengths of the lists being merged
-- In this case, at each level we're processing all n*k elements
+ 
 
-5) Putting it all together:
-- We have log k levels (from divide and conquer)
-- At each level, we process n*k elements
-- Therefore, total time complexity = O(k*n * log k)
+Example 1:
 
-The space complexity is O(log k) due to the recursion stack depth.
+Input: nums = [-1,0,1,2,-1,-4]
+Output: [[-1,-1,2],[-1,0,1]]
+Explanation: 
+nums[0] + nums[1] + nums[2] = (-1) + 0 + 1 = 0.
+nums[1] + nums[2] + nums[4] = 0 + 1 + (-1) = 0.
+nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0.
+The distinct triplets are [-1,0,1] and [-1,-1,2].
+Notice that the order of the output and the order of the triplets does not matter.
+Example 2:
 
-To give an example:
-If you have 8 lists (k=8) of length 5 each (n=5):
-- Level 1: Merge 8 into 4 pairs = 40 operations
-- Level 2: Merge 4 into 2 pairs = 40 operations
-- Level 3: Merge 2 into 1 = 40 operations
-Total = O(40 * log 8) = O(40 * 3) = O(120) operations
+Input: nums = [0,1,1]
+Output: []
+Explanation: The only possible triplet does not sum up to 0.
+Example 3:
 
-Therefore, the final time complexity is O(k*n * log k) where:
-- k is the number of lists
-- n is the average length of each list
-- log k is the number of levels in the merge process
+Input: nums = [0,0,0]
+Output: [[0,0,0]]
+Explanation: The only possible triplet sums up to 0.
+ 
+
+Constraints:
+
+3 <= nums.length <= 3000
+-105 <= nums[i] <= 105
+
+
+```java
+
+// Bruteforce O(n^3)
+class Solution {
+    public List<List<Integer>> threeSum(int[] nums) {
+        Set<List<Integer>> triplets = new HashSet<>();
+        int n = nums.length;
+        HashSet<List<Integer>> ans = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                for (int k = j + 1; k < n; k++) {
+                    if (nums[i] + nums[j] + nums[k] == 0) {
+                        List<Integer> triplet = Arrays.asList(nums[i], nums[j], nums[k]);
+                        Collections.sort(triplet);
+                        triplets.add(triplet);
+                    }
+                }
+            }
+        }
+        return new ArrayList(triplets);
+    }
+}
+
+
+
+// O(n^2) 2 Pointer
+class Solution {
+    public List<List<Integer>> threeSum(int[] nums) {
+        if (nums.length < 3) {
+            return new ArrayList<>();
+        }
+
+        List<List<Integer>> result = new ArrayList<>();
+        Arrays.sort(nums);
+
+        for (int i = 0; i < nums.length - 2; i++) {
+            if (i != 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            twoSum(nums, i + 1, result, -nums[i]);
+        }
+
+        return result;
+    }
+
+    private void twoSum(int[] nums, int k, List<List<Integer>> result, int target) {
+        int i = k, j = nums.length - 1;
+
+        while (i < j) {
+            if (nums[i] + nums[j] > target) {
+                j--;
+            } else if (nums[i] + nums[j] < target) {
+                i++;
+            } else {
+                result.add(Arrays.asList(-target, nums[i], nums[j]));
+
+                while (i < j && nums[i] == nums[i + 1]) {
+                    i++;
+                }
+                while (i < j && nums[j] == nums[j - 1]) {
+                    j--;
+                }
+
+                i++;
+                j--;
+            }
+        }
+    }
+}
+
+// HashMap without sorting O(n^2)
+class Solution {
+    public List<List<Integer>> threeSum(int[] nums) {
+        Set<List<Integer>> triplets = new HashSet<>();
+        int n = nums.length;
+        HashSet<List<Integer>> ans = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            Set<Integer> visited = new HashSet<>();
+            for (int j = i + 1; j < n; j++) {
+                int requiredElement = -(nums[i] + nums[j]);
+                if (visited.contains(requiredElement)) {
+                    List<Integer> triplet = Arrays.asList(nums[i], nums[j], requiredElement);
+                    Collections.sort(triplet);
+                    triplets.add(triplet);
+                }
+                visited.add(nums[j]);
+            }
+        }
+        return new ArrayList(triplets);
+    }
+}
+
+// O(n^2) Sorting + HashMap
+class Solution {
+    public List<List<Integer>> threeSum(int[] nums) {
+        Arrays.sort(nums);
+        HashSet<List<Integer>> ans = new HashSet<>();
+        for (int i = 0; i < nums.length - 2; i++) {
+            int second = i + 1;
+            int third = nums.length - 1;
+            int sum = nums[i];
+            while (second < third) {
+                if (nums[second] + nums[third] + sum == 0) {
+                    ans.add(Arrays.asList(nums[i], nums[second], nums[third]));
+                    second++;
+                }
+                if (nums[second] + nums[third] + sum > 0) {
+                    third--;
+                } else {
+                    second++;
+                }
+            }
+        }
+        return new ArrayList(ans);
+    }
+}
+
+
+
+
+// O(n^2) HashMap    
+class Solution {
+    public List<List<Integer>> threeSum(int[] nums) {
+        Set<List<Integer>> res = new HashSet<>();
+        Set<Integer> dups = new HashSet<>();
+        Map<Integer, Integer> seen = new HashMap<>();
+        
+        for (int i = 0; i < nums.length; ++i) {
+            if (dups.add(nums[i])) {
+                for (int j = i + 1; j < nums.length; ++j) {
+                    int complement = -nums[i] - nums[j];
+                    if (seen.containsKey(complement) && seen.get(complement) == i) {
+                        List<Integer> triplet = Arrays.asList(
+                                nums[i],
+                                nums[j],
+                                complement);
+                        Collections.sort(triplet);
+                        res.add(triplet);
+                    }
+                    seen.put(nums[j], i);
+                }
+            }
+            
+        }return new ArrayList(res);
+    }
+}
+```
+</details>
+
+
+
+
+
+
+<details id="259. 3Sum Smaller">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">259. 3Sum Smaller 
+</span>
+</summary>
+
+https://leetcode.com/problems/3sum-smaller/description/
+
+
+Given an array of n integers nums and an integer target, find the number of index triplets i, j, k with 0 <= i < j < k < n that satisfy the condition nums[i] + nums[j] + nums[k] < target.
+
+ 
+
+Example 1:
+
+Input: nums = [-2,0,1,3], target = 2
+Output: 2
+Explanation: Because there are two triplets which sums are less than 2:
+[-2,0,1]
+[-2,0,3]
+Example 2:
+
+Input: nums = [], target = 0
+Output: 0
+Example 3:
+
+Input: nums = [0], target = 0
+Output: 0
+ 
+
+Constraints:
+
+n == nums.length
+0 <= n <= 3500
+-100 <= nums[i] <= 100
+-100 <= target <= 100
+
 
 ```java
 class Solution {
-    public ListNode mergeKLists(ListNode[] lists) {
-        int n = lists.length - 1;
-        return partitionAndMerge(lists, 0, n);
-    }
+    public int threeSumSmaller(int[] nums, int target) {
+        int n = nums.length;
+        Arrays.sort(nums);
+        int tripletCount = 0;
+        for (int i = 0; i < n - 2; i++) { // nums = [-2,0,1,3], target = 2
+            int reqSum = target - nums[i]; // 2
 
-    private ListNode partitionAndMerge(ListNode[] lists, int l, int r) { // logk n
-        if (l > r)
-            return null;
-        if (l == r)
-            return lists[l];
+            int l = i + 1;
+            int r = n - 1;
 
-        int mid = l + (r - l) / 2;
-        ListNode L1 = partitionAndMerge(lists, l, mid);
-        ListNode L2 = partitionAndMerge(lists, mid + 1, r);
-        return mergeTwoLinkedList(L1, L2);
-    }
-
-    private ListNode mergeTwoLinkedList(ListNode L1, ListNode L2) {
-        if (L1 == null)
-            return L2;
-        if (L2 == null)
-            return L1;
-
-        if (L1.val <= L2.val) {
-            L1.next = mergeTwoLinkedList(L1.next, L2);
-            return L1;
-        } else {
-            L2.next = mergeTwoLinkedList(L1, L2.next);
-            return L2;
+            while (l < r) {
+                int sum = nums[l] + nums[r];// 3
+                if (sum < reqSum) {
+                    tripletCount += r - l;
+                    l++;
+                } else {
+                    r--;
+                }
+            }
         }
+        return tripletCount;
+    }
+}
+
+```
+
+</details>
+
+
+
+
+<details id="937. Reorder Data in Log Files">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">937. Reorder Data in Log Files 
+</span>
+</summary>
+
+https://leetcode.com/problems/reorder-data-in-log-files/description/
+
+You are given an array of logs. Each log is a space-delimited string of words, where the first word is the identifier.
+
+There are two types of logs:
+
+Letter-logs: All words (except the identifier) consist of lowercase English letters.
+Digit-logs: All words (except the identifier) consist of digits.
+Reorder these logs so that:
+
+The letter-logs come before all digit-logs.
+The letter-logs are sorted lexicographically by their contents. If their contents are the same, then sort them lexicographically by their identifiers.
+The digit-logs maintain their relative ordering.
+Return the final order of the logs.
+
+ 
+
+Example 1:
+
+Input: logs = ["dig1 8 1 5 1","let1 art can","dig2 3 6","let2 own kit dig","let3 art zero"]
+Output: ["let1 art can","let3 art zero","let2 own kit dig","dig1 8 1 5 1","dig2 3 6"]
+Explanation:
+The letter-log contents are all different, so their ordering is "art can", "art zero", "own kit dig".
+The digit-logs have a relative order of "dig1 8 1 5 1", "dig2 3 6".
+Example 2:
+
+Input: logs = ["a1 9 2 3 1","g1 act car","zo4 4 7","ab1 off key dog","a8 act zoo"]
+Output: ["g1 act car","a8 act zoo","ab1 off key dog","a1 9 2 3 1","zo4 4 7"]
+ 
+
+Constraints:
+
+1 <= logs.length <= 100
+3 <= logs[i].length <= 100
+All the tokens of logs[i] are separated by a single space.
+logs[i] is guaranteed to have an identifier and at least one word after the identifier.
+
+
+```java
+class Solution {
+    public String[] reorderLogFiles(String[] logs) {
+        Arrays.sort(logs, (a, b) -> {
+            String[] achunks = a.split(" ", 2); // use regex only 1 time
+            String[] bchunks = b.split(" ", 2);
+            String aContent = achunks[1];
+            String bContent = bchunks[1];
+            boolean isALetter = isLetterLog(aContent);
+            boolean isBLetter = isLetterLog(bContent);
+
+            if (isALetter && isBLetter) {
+                int compare = aContent.compareTo(bContent);
+                if (compare != 0) {
+                    return compare;
+                }
+                return achunks[0].compareTo(bchunks[0]);
+            }
+            if (isALetter == true && isBLetter == false) {
+                return -1;
+            }
+            if (isALetter == false && isBLetter == true) {
+                return 1;
+            }
+            return 0;
+        });
+
+        return logs;
+    }
+
+    private boolean isLetterLog(String str) {
+        // Just check the 1st character 
+        if (Character.isDigit(str.charAt(0))) {
+            return false;
+        }
+        return true;
     }
 }
 
@@ -9191,6 +9113,20 @@ class Solution {
 
 
 
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+
+
+
+
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
 <span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
@@ -9209,6 +9145,32 @@ class Solution {
 </span>
 </summary>
 </details> -->
+
+
+
+
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+
+
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
 
 
 

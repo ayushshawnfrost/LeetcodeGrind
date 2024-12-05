@@ -353,6 +353,36 @@ class Solution {
 </span>
 </summary>
 
+https://leetcode.com/problems/binary-tree-maximum-path-sum/description/
+
+A path in a binary tree is a sequence of nodes where each pair of adjacent nodes in the sequence has an edge connecting them. A node can only appear in the sequence at most once. Note that the path does not need to pass through the root.
+
+The path sum of a path is the sum of the node's values in the path.
+
+Given the root of a binary tree, return the maximum path sum of any non-empty path.
+
+ 
+
+Example 1:
+
+
+Input: root = [1,2,3]
+Output: 6
+Explanation: The optimal path is 2 -> 1 -> 3 with a path sum of 2 + 1 + 3 = 6.
+Example 2:
+
+
+Input: root = [-10,9,20,null,null,15,7]
+Output: 42
+Explanation: The optimal path is 15 -> 20 -> 7 with a path sum of 15 + 20 + 7 = 42.
+ 
+
+Constraints:
+
+The number of nodes in the tree is in the range [1, 3 * 104].
+-1000 <= Node.val <= 1000
+
+
 ```java
 class Solution {
     int maxSum=Integer.MIN_VALUE;
@@ -888,17 +918,43 @@ class Solution {
 ```
 </details>
 
-<!-- 
+ 
 
 
 
-<details id="236. Lowest Common Ancestor of a Binary Tree">
+<details id="98. Validate Binary Search Tree">
 <summary> 
-<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+<span style="color:pink;font-size:16px;font-weight:bold">98. Validate Binary Search Tree
 </span>
 </summary>
 
+https://leetcode.com/problems/validate-binary-search-tree/description/
+
+Given the root of a binary tree, determine if it is a valid binary search tree (BST).
+
+A valid BST is defined as follows:
+
+The left 
+subtree
+ of a node contains only nodes with keys less than the node's key.
+The right subtree of a node contains only nodes with keys greater than the node's key.
+Both the left and right subtrees must also be binary search trees.
+
 ```java
+lass Solution {
+    public boolean isValidBST(TreeNode root) {
+        return recursivelyCheckBST(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+    private boolean recursivelyCheckBST(TreeNode root, long min, long max){
+        if(root == null) return true;
+        if(root.val>=max || root.val<=min)return false;
+
+        return recursivelyCheckBST(root.left, min, root.val) && recursivelyCheckBST(root.right, root.val, max);
+    }
+}
+
+
+
 ```
 </details>
 
@@ -907,30 +963,150 @@ class Solution {
 
 
 
-<details id="236. Lowest Common Ancestor of a Binary Tree">
+<details id="101. Symmetric Tree">
 <summary> 
-<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+<span style="color:pink;font-size:16px;font-weight:bold">101. Symmetric Tree
 </span>
 </summary>
 
+https://leetcode.com/problems/symmetric-tree/description/
+
+Given the root of a binary tree, check whether it is a mirror of itself (i.e., symmetric around its center).
+
+ 
+
+Example 1:
+
+
+Input: root = [1,2,2,3,4,4,3]
+Output: true
+Example 2:
+
+
+Input: root = [1,2,2,null,3,null,3]
+Output: false
+ 
+
+Constraints:
+
+The number of nodes in the tree is in the range [1, 1000].
+-100 <= Node.val <= 100
+ 
+
+Follow up: Could you solve it both recursively and iteratively?
+
 ```java
+
+// Recursive Solution
+class Solution {
+    public boolean isSymmetric(TreeNode root) {
+        return check(root.right, root.left);
+    }
+
+    public boolean check(TreeNode t1, TreeNode t2) {
+        if (t1 == null && t2 == null)
+            return true;
+        if ((t1 == null && t2 != null) || (t1 != null && t2 == null) || (t1.val != t2.val))
+            return false;
+        return check(t1.left, t2.right) && check(t1.right, t2.left);
+    }
+}
+
+// Iterative Solution
+class Solution {
+    public boolean isSymmetric(TreeNode root) {
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        queue.offer(root);
+
+        while (!queue.isEmpty()) {
+            TreeNode l = queue.poll();
+            TreeNode r = queue.poll();
+
+            if (l == null && r == null)
+                continue;
+            if (l ==  null || r == null||l.val != r.val)
+                return false;
+
+            queue.offer(l.left);
+            queue.offer(r.right);
+            queue.offer(l.right);
+            queue.offer(r.left);
+        }
+        return true;
+    }
+}
 ```
 </details>
 
 
 
-<details id="236. Lowest Common Ancestor of a Binary Tree">
+<details id="103. Binary Tree Zigzag Level Order Traversal">
 <summary> 
-<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+<span style="color:pink;font-size:16px;font-weight:bold">103. Binary Tree Zigzag Level Order Traversal
 </span>
 </summary>
 
+https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/description/
+
+Given the root of a binary tree, return the zigzag level order traversal of its nodes' values. (i.e., from left to right, then right to left for the next level and alternate between).
+
+ 
+
+Example 1:
+
+
+Input: root = [3,9,20,null,null,15,7]
+Output: [[3],[20,9],[15,7]]
+Example 2:
+
+Input: root = [1]
+Output: [[1]]
+Example 3:
+
+Input: root = []
+Output: []
+ 
+
+Constraints:
+
+The number of nodes in the tree is in the range [0, 2000].
+-100 <= Node.val <= 100
+
 ```java
+class Solution {
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        List<List<Integer>> ans=new ArrayList<>();
+        Queue<TreeNode> q=new LinkedList<>();
+        if(root==null)return ans;
+        q.add(root);
+        int level=1;
+        while(!q.isEmpty()){
+            List<Integer> subList=new ArrayList<>();
+            int size=q.size();
+            while(size!=0){
+                TreeNode node=q.poll();
+                subList.add(node.val);
+
+                if(node.left!=null)q.add(node.left);
+                if(node.right!=null)q.add(node.right);
+
+                size--;
+            }
+            if(level%2==0){
+                Collections.reverse(subList);
+            }
+            ans.add(subList);
+            level++;
+        }
+        return ans;
+    }
+}
 ```
 </details>
 
 
-
+<!--
 
 <details id="236. Lowest Common Ancestor of a Binary Tree">
 <summary> 
