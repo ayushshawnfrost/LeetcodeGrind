@@ -1300,6 +1300,79 @@ All the pairs (ui, vi) are unique. (i.e., no multiple edges.)
 ![alt text](image-73.png)
 
 ```java
+// MIK solution
+
+class Solution {
+    public int networkDelayTime(int[][] times, int n, int k) {
+        Map<Integer, List<int[]>> adj = new HashMap<>();
+
+        for (int i = 1; i <= n; i++) {
+            adj.put(i, new ArrayList<>());
+        }
+
+        // min dist array
+        int[] minDist = new int[n + 1];// [ 1, 0, 1, 2]
+
+        for (int i = 1; i <= n; i++) {
+            minDist[i] = Integer.MAX_VALUE;
+        }
+
+        minDist[k] = 0;
+
+        // initialize adj list
+        for (int[] t : times) {
+            int from = t[0];
+            int to = t[1];
+            int time = t[2];
+
+            adj.get(from).add(new int[] { to, time });
+            // adj.get(to).add(new int[] { from, time });
+        }
+
+        // min-heap
+        PriorityQueue<int[]> queue = new PriorityQueue<>((a, b) -> Integer.compare(a[1], b[1]));
+        queue.add(new int[]{k, 0});
+
+        while (!queue.isEmpty()) {
+            int to = queue.peek()[0];
+            int time = queue.peek()[1];
+            queue.poll(); // log n
+
+            for (int[] neighbor : adj.get(to)) { 
+
+                int toNeighbor = neighbor[0];
+                int additionalTime = neighbor[1] + time;
+
+                if (additionalTime < minDist[toNeighbor]) {
+                    minDist[toNeighbor] = additionalTime;
+                    queue.offer(new int[] { toNeighbor, additionalTime });
+                }
+            }
+        }
+
+        int mintime = -1;
+        for (int i : minDist) {
+            System.out.println(i);
+            if (i == Integer.MAX_VALUE)
+                return -1;
+            mintime = Math.max(mintime, i);
+        }
+        return mintime;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 import java.util.*;
 
 class Solution {

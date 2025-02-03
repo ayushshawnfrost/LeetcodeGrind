@@ -2613,34 +2613,332 @@ class Solution {
 </details>
 
 
+# Grid based DP
 
-
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="62. Unique Paths">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">62. Unique Paths 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/unique-paths/description/
+
+There is a robot on an m x n grid. The robot is initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time.
+
+Given the two integers m and n, return the number of possible unique paths that the robot can take to reach the bottom-right corner.
+
+The test cases are generated so that the answer will be less than or equal to 2 * 109.
+
+ 
+
+```java
+//Approach-1 - Recursion + Memoization
+//T.C : O(m*n)
+//S.C : O(m*n)
+class Solution {
+    public int solve(int i, int j, int m, int n, int[][] t) {
+        // Base case: Reached the bottom-right cell
+        if (i == m - 1 && j == n - 1) {
+            return 1;
+        }
+
+        // Out of bounds
+        if (i < 0 || i >= m || j < 0 || j >= n) {
+            return 0;
+        }
+
+        // If already computed, return the stored result
+        if (t[i][j] != -1) {
+            return t[i][j];
+        }
+
+        // Calculate the number of paths by going right and down
+        int right = solve(i, j + 1, m, n, t);
+        int down = solve(i + 1, j, m, n, t);
+
+        // Store the result in the memoization table
+        return t[i][j] = right + down;
+    }
+
+    public int uniquePaths(int m, int n) {
+        // Create a memoization table initialized with -1
+        int[][] t = new int[m][n];
+        for (int[] row : t) {
+            Arrays.fill(row, -1);
+        }
+
+        // Start the recursive computation from the top-left cell
+        return solve(0, 0, m, n, t);
+    }
+}
+
+//Approach-2 (using Bottom Up)
+//T.C : O(m*n)
+//S.C : O(m*n)
+//Note : You can write C++ code above as simple as this one but I commented the code above for clarity and added some extra line of code for clarity
+class Solution {
+    public int uniquePaths(int m, int n) {
+        // Create a 2D array for storing the number of ways to reach each cell
+        int[][] t = new int[m][n];
+
+        // Initialize the first row
+        for (int col = 0; col < n; col++) {
+            t[0][col] = 1; // Only one way to reach any cell in the first row
+        }
+
+        // Initialize the first column
+        for (int row = 0; row < m; row++) {
+            t[row][0] = 1; // Only one way to reach any cell in the first column
+        }
+
+        // Fill the rest of the table using the relation:
+        // t[i][j] = t[i-1][j] + t[i][j-1]
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                t[i][j] = t[i - 1][j] + t[i][j - 1];
+            }
+        }
+
+        // The bottom-right cell contains the total number of unique paths
+        return t[m - 1][n - 1];
+    }
+}
+
+```
+</details>
 
 
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="63. Unique Paths II">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">63. Unique Paths II 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/unique-paths-ii/description/
+
+You are given an m x n integer array grid. There is a robot initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time.
+
+An obstacle and space are marked as 1 or 0 respectively in grid. A path that the robot takes cannot include any square that is an obstacle.
+
+Return the number of possible unique paths that the robot can take to reach the bottom-right corner.
+
+The testcases are generated so that the answer will be less than or equal to 2 * 109.
+
+
+```java
+//Approach-1 (Recursion + Memo)
+//Recursion T.C : O(m*n)
+//Memo T.C      : O(m*n)
+class Solution {
+    Integer t[][]=new Integer[101][101];
+    int m, n;
+    
+    public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+        m = obstacleGrid.length;
+        n = obstacleGrid[0].length;
+        
+        return solve(obstacleGrid, 0, 0);
+    }
+    int solve(int[][]obstacleGrid, int i, int j){
+         if(i < 0 || i >= m || j < 0 || j >= n || obstacleGrid[i][j] != 0) {
+            return 0;
+        }
+        
+        if(t[i][j] != null)
+            return t[i][j];
+        
+        if(i == m-1 && j == n-1)
+            return 1;
+        
+        //Why we are not making [i][j] visited ?
+        //Because robot can only move down or right so it will never visit any visited cell again
+        //int temp = obstacleGrid[i][j];
+        //obstacleGrid[i][j] = -1;
+        
+        int right = solve(obstacleGrid, i, j+1);
+        int down  = solve(obstacleGrid, i+1, j);
+        
+        //obstacleGrid[i][j] = temp;
+        
+        return t[i][j] = right + down;
+    }
+}
+
+class Solution {
+    public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+        int r = obstacleGrid.length;
+        int c = obstacleGrid[0].length;
+        if (obstacleGrid[0][0] == 1 || obstacleGrid[r - 1][c - 1] == 1) {
+            return 0;
+        }
+        int[][] dp = new int[r][c];
+        dp[0][0] = 1;
+
+        for (int i = 1; i < c; i++) {
+            if (obstacleGrid[0][i] == 0) {
+                dp[0][i] = 1;
+            } else {
+                break;
+            }
+        }
+        for (int i = 1; i < r; i++) {
+            if (obstacleGrid[i][0] == 0) {
+                dp[i][0] = 1;
+            } else {
+               break;
+            }
+        }
+
+        for (int i = 1; i < r; i++) {
+            for (int j = 1; j < c; j++) {
+                if (obstacleGrid[i][j] == 0) {
+                    dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+                }
+            }
+        }
+        return dp[r - 1][c - 1];
+    }
+}
+
+```
+</details>
 
 
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="1594. Maximum Non Negative Product in a Matrix">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">1594. Maximum Non Negative Product in a Matrix 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/maximum-non-negative-product-in-a-matrix/description/
+
+
+You are given a m x n matrix grid. Initially, you are located at the top-left corner (0, 0), and in each step, you can only move right or down in the matrix.
+
+Among all possible paths starting from the top-left corner (0, 0) and ending in the bottom-right corner (m - 1, n - 1), find the path with the maximum non-negative product. The product of a path is the product of all integers in the grid cells visited along the path.
+
+Return the maximum non-negative product modulo 109 + 7. If the maximum product is negative, return -1.
+
+Notice that the modulo is performed after getting the maximum product.
+
+```java
+
+//Approach - 1 (Recursion + Memoization)
+//T.C : O(m*n)
+//S.C : O(m*n)
+class Solution {
+    int m, n;
+    final int MOD = 1000000007;
+
+    // Memoization table for storing (max, min) pairs
+    Pair<Long, Long>[][] t;
+
+    public Pair<Long, Long> solve(int i, int j, int[][] grid) {
+        // Base case: If we're at the bottom-right corner, return the value
+        if (i == m - 1 && j == n - 1) {
+            return new Pair<>((long) grid[i][j], (long) grid[i][j]);
+        }
+
+        long maxVal = Long.MIN_VALUE;
+        long minVal = Long.MAX_VALUE;
+
+        // If already computed, return the memoized result
+        if (t[i][j] != null) {
+            return t[i][j];
+        }
+
+        // Move down
+        if (i + 1 < m) {
+            Pair<Long, Long> down = solve(i + 1, j, grid);
+            maxVal = Math.max(maxVal, Math.max(grid[i][j] * down.getKey(), grid[i][j] * down.getValue()));
+            minVal = Math.min(minVal, Math.min(grid[i][j] * down.getKey(), grid[i][j] * down.getValue()));
+        }
+
+        // Move right
+        if (j + 1 < n) {
+            Pair<Long, Long> right = solve(i, j + 1, grid);
+            maxVal = Math.max(maxVal, Math.max(grid[i][j] * right.getKey(), grid[i][j] * right.getValue()));
+            minVal = Math.min(minVal, Math.min(grid[i][j] * right.getKey(), grid[i][j] * right.getValue()));
+        }
+
+        // Memoize results
+        t[i][j] = new Pair<>(maxVal, minVal);
+
+        return t[i][j];
+    }
+
+    public int maxProductPath(int[][] grid) {
+        m = grid.length;
+        n = grid[0].length;
+
+        // Initialize the memoization table
+        t = new Pair[m][n];
+
+        // Get the result from the top-left corner
+        Pair<Long, Long> result = solve(0, 0, grid);
+
+        // If the result is negative, return -1, otherwise return the result modulo MOD
+        return result.getKey() < 0 ? -1 : (int) (result.getKey() % MOD);
+    }
+}
+
+
+//Approach - 2 (Bottom Up)
+//T.C : O(m*n)
+//S.C : O(m*n)
+class Solution {
+    final int MOD = 1000000007;
+
+    public int maxProductPath(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+
+        // Initialize the DP table
+        Pair<Long, Long>[][] t = new Pair[m][n];
+
+        // Base case: starting point
+        t[0][0] = new Pair<>((long) grid[0][0], (long) grid[0][0]);
+
+        // Fill the first row
+        for (int j = 1; j < n; j++) {
+            t[0][j] = new Pair<>(t[0][j - 1].getKey() * grid[0][j], t[0][j - 1].getValue() * grid[0][j]);
+        }
+
+        // Fill the first column
+        for (int i = 1; i < m; i++) {
+            t[i][0] = new Pair<>(t[i - 1][0].getKey() * grid[i][0], t[i - 1][0].getValue() * grid[i][0]);
+        }
+
+        // Fill the rest of the DP table
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                long upMax = t[i - 1][j].getKey();
+                long upMin = t[i - 1][j].getValue();
+
+                long leftMax = t[i][j - 1].getKey();
+                long leftMin = t[i][j - 1].getValue();
+
+                t[i][j] = new Pair<>(
+                    Math.max(Math.max(upMax * grid[i][j], upMin * grid[i][j]), Math.max(leftMax * grid[i][j], leftMin * grid[i][j])),
+                    Math.min(Math.min(upMax * grid[i][j], upMin * grid[i][j]), Math.min(leftMax * grid[i][j], leftMin * grid[i][j]))
+                );
+            }
+        }
+
+        // Get the result from the bottom-right corner
+        long maxProd = t[m - 1][n - 1].getKey();
+
+        // If the result is negative, return -1, otherwise return the result modulo MOD
+        return maxProd < 0 ? -1 : (int) (maxProd % MOD);
+    }
+}
+```
+ 
+</details>
 
 
 
