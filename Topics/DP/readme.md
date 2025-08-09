@@ -28,6 +28,10 @@ DP
 <summary> 
 <span style="color:green;font-size:16px;font-weight:bold">70. Climbing Stairs 
 </span></summary>
+
+https://leetcode.com/problems/climbing-stairs/
+
+
 You are climbing a staircase. It takes n steps to reach the top.
 
 Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
@@ -76,30 +80,89 @@ class Solution {
 ```java
 // Top down with memo[]
 class Solution {
-
     public int climbStairs(int n) {
-        int[] memo = new int[n + 1];
-        Arrays.fill(memo, -1);
-        // To reach n we can take 1 step from n-1 or 2 steps from n-2.
-        return climbStairs(n - 1, memo) + climbStairs(n - 2, memo);
+        int[] dp = new int[n + 1];
+        Arrays.fill(dp, -1);
+        return recursivelyClimb(0, 0, n, dp);
     }
 
-    private int climbStairs(int n, int[] memo) {
-        if (n < 0) return 0;
-        if (n == 0 || n == 1) {
-            memo[n] = 1;
-            return memo[n];
-        }
-        if (memo[n] != -1) return memo[n];
+    private int recursivelyClimb(int currStep, int totalSteps, int target, int[] dp) {
+        // base
+        if (currStep == target)
+            return 1;
+        if (currStep > target)
+            return 0;
+        if (dp[currStep] != -1)
+            return dp[currStep];
 
-        memo[n] = climbStairs(n - 1, memo) + climbStairs(n - 2, memo);
-        return memo[n];
+        int singleStep = recursivelyClimb(currStep + 1, totalSteps + 1, target, dp);
+        int doubleStep = recursivelyClimb(currStep + 2, totalSteps + 2, target, dp);
+
+        return dp[currStep] = singleStep + doubleStep;
     }
 }
 ```
 </details>
 
 
+
+<details id="198. House Robber">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">198. House Robber 
+</span>
+</summary>
+
+https://leetcode.com/problems/house-robber/description/
+
+You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
+
+Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,3,1]
+Output: 4
+Explanation: Rob house 1 (money = 1) and then rob house 3 (money = 3).
+Total amount you can rob = 1 + 3 = 4.
+Example 2:
+
+Input: nums = [2,7,9,3,1]
+Output: 12
+Explanation: Rob house 1 (money = 2), rob house 3 (money = 9) and rob house 5 (money = 1).
+Total amount you can rob = 2 + 9 + 1 = 12.
+ 
+
+Constraints:
+
+1 <= nums.length <= 100
+0 <= nums[i] <= 400
+
+
+```java
+// Recursion + memo
+
+class Solution {
+    public int rob(int[] nums) {
+        int[] dp = new int[nums.length];
+        Arrays.fill(dp, -1);
+        return houserRobber(nums, 0, dp);
+    }
+
+    private int houserRobber(int[] nums, int index, int[] dp) {
+        if (index >= nums.length)
+            return 0;
+        if (dp[index] != -1)
+            return dp[index];
+
+        int rob = nums[index] + houserRobber(nums, index + 2, dp);
+        int skip = houserRobber(nums, index + 1, dp);
+        return dp[index] = Math.max(rob, skip);
+    }
+}
+```
+</details>
 
 <details id="300. Longest Increasing Subsequence">
 <summary> 

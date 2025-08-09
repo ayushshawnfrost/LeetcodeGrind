@@ -6,32 +6,32 @@
  
   <details>
     <summary style="color:pink;font-size:16px;font-weight:bold"><strong>Lec 1: Sorting-I </strong></summary>
-  
-    **Topics:**
-    - **Selection Sort** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Implement Selection Sort in Java
-        ```
-    - **Bubble Sort** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Implement Bubble Sort in Java
-        ```
-    - **Insertion Sort** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Implement Insertion Sort in Java
-        ```
-  
-    **Resources:**
-    - [Problem](https://www.example.com/lec1-sorting-i/problem)
-    - [Article](https://www.example.com/lec1-sorting-i/article)
-    - [Youtube](https://www.example.com/lec1-sorting-i/youtube)
-    - [Practice](https://www.example.com/lec1-sorting-i/practice)
-    - [Note](https://www.example.com/lec1-sorting-i/note)
-    - [Difficulty](https://www.example.com/lec1-sorting-i/difficulty)
-    - [Revision](https://www.example.com/lec1-sorting-i/revision)
+
+**Topics:**
+- **Selection Sort** – *Easy*
+    - **Java Code Snippet:**
+    ```java
+    
+    ```
+- **Bubble Sort** – *Easy*
+    - **Java Code Snippet:**
+    ```java
+    // TODO: Implement Bubble Sort in Java
+    ```
+- **Insertion Sort** – *Easy*
+    - **Java Code Snippet:**
+    ```java
+    // TODO: Implement Insertion Sort in Java
+    ```
+
+**Resources:**
+- [Problem](https://www.example.com/lec1-sorting-i/problem)
+- [Article](https://www.example.com/lec1-sorting-i/article)
+- [Youtube](https://www.example.com/lec1-sorting-i/youtube)
+- [Practice](https://www.example.com/lec1-sorting-i/practice)
+- [Note](https://www.example.com/lec1-sorting-i/note)
+- [Difficulty](https://www.example.com/lec1-sorting-i/difficulty)
+- [Revision](https://www.example.com/lec1-sorting-i/revision)
   
   </details>
   
@@ -82,86 +82,86 @@
   <details>
     <summary style="color:pink;font-size:16px;font-weight:bold"><strong>Lec 1: Easy </strong></summary>
   
-    **Topics:**
-    - **Largest Element in an Array** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Find the largest element in an array
-        ```
-    - **Second Largest Element in an Array without sorting** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Find the second largest element without sorting
-        ```
-    - **Check if the array is sorted** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Check if the array is sorted
-        ```
-    - **Remove duplicates from Sorted array** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Remove duplicates from a sorted array
-        ```
-    - **Left Rotate an array by one place** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Left rotate an array by one place
-        ```
-    - **Left rotate an array by D places** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Left rotate an array by D places
-        ```
-    - **Move Zeros to end** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Move zeros to the end of an array
-        ```
-    - **Linear Search** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Implement linear search
-        ```
-    - **Find the Union** – *Medium*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Find the union of two arrays
-        ```
-    - **Find missing number in an array** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Find the missing number in an array
-        ```
-    - **Maximum Consecutive Ones** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Count maximum consecutive ones
-        ```
-    - **Find the number that appears once, and other numbers twice** – *Medium*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Find the unique element in an array where others appear twice
-        ```
-    - **Longest subarray with given sum K (positives)** – *Medium*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Find the longest subarray with sum K for positive numbers
-        ```
-    - **Longest subarray with sum K (Positives + Negatives)** – *Medium*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Find the longest subarray with sum K for both positives and negatives
-        ```
+**Topics:**
+- **Largest Element in an Array** – *Easy*
+    - **Java Code Snippet:**
+    ```java
+    // TODO: Find the largest element in an array
+    ```
+- **Second Largest Element in an Array without sorting** – *Easy*
+    - **Java Code Snippet:**
+    ```java
+    // TODO: Find the second largest element without sorting
+    ```
+- **Check if the array is sorted** – *Easy*
+    - **Java Code Snippet:**
+    ```java
+    // TODO: Check if the array is sorted
+    ```
+- **Remove duplicates from Sorted array** – *Easy*
+    - **Java Code Snippet:**
+    ```java
+    // TODO: Remove duplicates from a sorted array
+    ```
+- **Left Rotate an array by one place** – *Easy*
+    - **Java Code Snippet:**
+    ```java
+    // TODO: Left rotate an array by one place
+    ```
+- **Left rotate an array by D places** – *Easy*
+    - **Java Code Snippet:**
+    ```java
+    // TODO: Left rotate an array by D places
+    ```
+- **Move Zeros to end** – *Easy*
+    - **Java Code Snippet:**
+    ```java
+    // TODO: Move zeros to the end of an array
+    ```
+- **Linear Search** – *Easy*
+    - **Java Code Snippet:**
+    ```java
+    // TODO: Implement linear search
+    ```
+- **Find the Union** – *Medium*
+    - **Java Code Snippet:**
+    ```java
+    // TODO: Find the union of two arrays
+    ```
+- **Find missing number in an array** – *Easy*
+    - **Java Code Snippet:**
+    ```java
+    // TODO: Find the missing number in an array
+    ```
+- **Maximum Consecutive Ones** – *Easy*
+    - **Java Code Snippet:**
+    ```java
+    // TODO: Count maximum consecutive ones
+    ```
+- **Find the number that appears once, and other numbers twice** – *Medium*
+    - **Java Code Snippet:**
+    ```java
+    // TODO: Find the unique element in an array where others appear twice
+    ```
+- **Longest subarray with given sum K (positives)** – *Medium*
+    - **Java Code Snippet:**
+    ```java
+    // TODO: Find the longest subarray with sum K for positive numbers
+    ```
+- **Longest subarray with sum K (Positives + Negatives)** – *Medium*
+    - **Java Code Snippet:**
+    ```java
+    // TODO: Find the longest subarray with sum K for both positives and negatives
+    ```
 
-    **Resources:**
-    - [Problem](https://www.example.com/arrays-easy/problem)
-    - [Article](https://www.example.com/arrays-easy/article)
-    - [Youtube](https://www.example.com/arrays-easy/youtube)
-    - [Practice](https://www.example.com/arrays-easy/practice)
-    - [Note](https://www.example.com/arrays-easy/note)
-    - [Difficulty](https://www.example.com/arrays-easy/difficulty)
-    - [Revision](https://www.example.com/arrays-easy/revision)
+**Resources:**
+- [Problem](https://www.example.com/arrays-easy/problem)
+- [Article](https://www.example.com/arrays-easy/article)
+- [Youtube](https://www.example.com/arrays-easy/youtube)
+- [Practice](https://www.example.com/arrays-easy/practice)
+- [Note](https://www.example.com/arrays-easy/note)
+- [Difficulty](https://www.example.com/arrays-easy/difficulty)
+- [Revision](https://www.example.com/arrays-easy/revision)
   
   </details>
 
@@ -339,72 +339,146 @@
   <details>
     <summary style="color:pink;font-size:16px;font-weight:bold"><strong>Lec 1: BS on 1D Arrays </strong></summary>
   
-    **Topics:**
-    - **Binary Search to find X in sorted array** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Implement binary search to find X in a sorted array
-        ```
-    - **Implement Lower Bound** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Implement lower bound function
-        ```
-    - **Implement Upper Bound** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Implement upper bound function
-        ```
-    - **Search Insert Position** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Implement search insert position logic
-        ```
-    - **Floor/Ceil in Sorted Array** – *Medium*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Implement floor and ceil functions in a sorted array
-        ```
-    - **Find the first or last occurrence of a given number in a sorted array** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Find first/last occurrence of a number in a sorted array
-        ```
-    - **Count occurrences of a number in a sorted array with duplicates** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Count occurrences of a number in a sorted array with duplicates
-        ```
-    - **Search in Rotated Sorted Array I** – *Medium*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Implement search in rotated sorted array (Case I)
-        ```
-    - **Search in Rotated Sorted Array II** – *Medium*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Implement search in rotated sorted array (Case II)
-        ```
-    - **Find minimum in Rotated Sorted Array** – *Medium*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Find the minimum element in a rotated sorted array
-        ```
-    - **Find out how many times has an array been rotated** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Determine the number of rotations in a rotated sorted array
-        ```
-    - **Single element in a Sorted Array** – *Easy*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Find the single element in a sorted array where every other element appears twice
-        ```
-    - **Find peak element** – *Hard*
-      - **Java Code Snippet:**
-        ```java
-        // TODO: Find a peak element in an array
-        ```
+**Topics:**
+- **Binary Search to find X in sorted array** – *Easy*
+    - **Java Code Snippet:**
+    ```java
+    // TODO: Implement binary search to find X in a sorted array
+    ```
+  - **Implement Lower Bound** – *Easy*
+    - **Java Code Snippet:**
+```java
+
+class Solution {
+
+  static int findFloor(int[] arr, int k) {
+      int len=arr.length;
+      int l=0;
+      int r= len-1;
+      int lowerBound = Integer.MAX_VALUE;
+      
+      while(l<=r){
+          int mid= l + (r-l)/2 ;
+          
+          if(arr[mid] == k){
+              return mid;
+          }
+          if(arr[mid] < k){
+              lowerBound = mid;
+              l = mid+1;
+          }else{
+              r = mid-1;
+          }
+      }
+      return lowerBound == Integer.MAX_VALUE?-1:lowerBound;
+  }
+}
+
+
+
+```
+  - **Implement Upper Bound** – *Easy*
+    - **Java Code Snippet:**
+```java
+
+class Solution {
+    public int[] getFloorAndCeil(int x, int[] arr) {
+        Arrays.sort(arr);
+        int len= arr.length;
+        int l=0;
+        int r=len-1;
+        int upperBound = Integer.MIN_VALUE;
+        int lowerBound = Integer.MAX_VALUE;
+        
+        while(l<=r){
+            int mid = l +(r-l)/2;
+            
+            if(arr[mid] == x){
+               upperBound=arr[mid];break;
+            }
+            if(arr[mid] > x){
+                upperBound=arr[mid];
+                r=mid-1;
+            }else{
+                l=mid+1;
+            }
+        }
+        
+        l=0;
+        r=len-1;
+        
+        while(l<=r){
+            int mid = l +(r-l)/2;
+            
+            if(arr[mid] == x){
+                lowerBound=arr[mid];break;
+            }
+            if(arr[mid] < x){
+                lowerBound=arr[mid];
+                l=mid+1;
+            }else{
+                r=mid-1;
+            }
+        }
+        return new int[]{
+            lowerBound == Integer.MAX_VALUE? -1:lowerBound,
+            upperBound == Integer.MIN_VALUE? -1:upperBound
+            
+        };
+    }
+}
+
+```
+  - **Search Insert Position** – *Easy*
+    - **Java Code Snippet:**
+      ```java
+      // TODO: Implement search insert position logic
+      ```
+  - **Floor/Ceil in Sorted Array** – *Medium*
+    - **Java Code Snippet:**
+      ```java
+      // TODO: Implement floor and ceil functions in a sorted array
+      ```
+  - **Find the first or last occurrence of a given number in a sorted array** – *Easy*
+    - **Java Code Snippet:**
+      ```java
+      // TODO: Find first/last occurrence of a number in a sorted array
+      ```
+  - **Count occurrences of a number in a sorted array with duplicates** – *Easy*
+    - **Java Code Snippet:**
+      ```java
+      // TODO: Count occurrences of a number in a sorted array with duplicates
+      ```
+  - **Search in Rotated Sorted Array I** – *Medium*
+    - **Java Code Snippet:**
+      ```java
+      // TODO: Implement search in rotated sorted array (Case I)
+      ```
+  - **Search in Rotated Sorted Array II** – *Medium*
+    - **Java Code Snippet:**
+      ```java
+      // TODO: Implement search in rotated sorted array (Case II)
+      ```
+  - **Find minimum in Rotated Sorted Array** – *Medium*
+    - **Java Code Snippet:**
+      ```java
+      // TODO: Find the minimum element in a rotated sorted array
+      ```
+  - **Find out how many times has an array been rotated** – *Easy*
+    - **Java Code Snippet:**
+      ```java
+      // TODO: Determine the number of rotations in a rotated sorted array
+      ```
+  - **Single element in a Sorted Array** – *Easy*
+    - **Java Code Snippet:**
+      ```java
+      // TODO: Find the single element in a sorted array where every other element appears twice
+      ```
+  - **Find peak element** – *Hard*
+    - **Java Code Snippet:**
+      ```java
+      // TODO: Find a peak element in an array
+      ```
 
     **Resources:**
     - [Problem](https://www.example.com/bs-1d/problem)
