@@ -1,6 +1,6 @@
 # 2 POINTERS
 
-## ON ARRAYS
+### ON ARRAYS
 
 <details id="31. Next Permutation">
 <summary> 
@@ -157,7 +157,7 @@ class Solution {
 ```
 </details> 
 
-## ON STRING
+### ON STRING
 
 <details id="151. Reverse Words in a String">
 <summary> 
@@ -309,87 +309,832 @@ class Solution {
 ```
 </details> 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="2825. Make String a Subsequence Using Cyclic Increments">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">2825. Make String a Subsequence Using Cyclic Increments 
 </span>
 </summary>
-</details> -->
+
+You are given two 0-indexed strings str1 and str2.
+
+In an operation, you select a set of indices in str1, and for each index i in the set, increment str1[i] to the next character cyclically. That is 'a' becomes 'b', 'b' becomes 'c', and so on, and 'z' becomes 'a'.
+
+Return true if it is possible to make str2 a subsequence of str1 by performing the operation at most once, and false otherwise.
+
+Note: A subsequence of a string is a new string that is formed from the original string by deleting some (possibly none) of the characters without disturbing the relative positions of the remaining characters.
+
+ 
+
+Example 1:
+
+Input: str1 = "abc", str2 = "ad"
+Output: true
+Explanation: Select index 2 in str1.
+Increment str1[2] to become 'd'. 
+Hence, str1 becomes "abd" and str2 is now a subsequence. Therefore, true is returned.
+Example 2:
+
+Input: str1 = "zc", str2 = "ad"
+Output: true
+Explanation: Select indices 0 and 1 in str1. 
+Increment str1[0] to become 'a'. 
+Increment str1[1] to become 'd'. 
+Hence, str1 becomes "ad" and str2 is now a subsequence. Therefore, true is returned.
+Example 3:
+
+Input: str1 = "ab", str2 = "d"
+Output: false
+Explanation: In this example, it can be shown that it is impossible to make str2 a subsequence of str1 using the operation at most once. 
+Therefore, false is returned.
+ 
+
+Constraints:
+
+1 <= str1.length <= 105
+1 <= str2.length <= 105
+str1 and str2 consist of only lowercase English letters.
+
+```java
+class Solution {
+    public boolean canMakeSubsequence(String str1, String str2) {
+        int i=0;
+        int j=0;
+
+        while(i<str1.length() && j<str2.length()){
+            if(str1.charAt(i) == str2.charAt(j)){
+                j++;
+            }else if((str1.charAt(i)+1 == str2.charAt(j)) || (str1.charAt(i)-25 == str2.charAt(j)) ){
+                j++;
+            }
+            i++;
+        }
+        return j == str2.length();
+    }
+}
+
+ TC= O(m+n)
+```
+</details>
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="696. Count Binary Substrings">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">696. Count Binary Substrings 
 </span>
 </summary>
-</details> -->
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+Given a binary string s, return the number of non-empty substrings that have the same number of 0's and 1's, and all the 0's and all the 1's in these substrings are grouped consecutively.
+
+Substrings that occur multiple times are counted the number of times they occur.
+
+ 
+
+Example 1:
+
+Input: s = "00110011"
+Output: 6
+Explanation: There are 6 substrings that have equal number of consecutive 1's and 0's: "0011", "01", "1100", "10", "0011", and "01".
+Notice that some of these substrings repeat and are counted the number of times they occur.
+Also, "00110011" is not a valid substring because all the 0's (and 1's) are not grouped together.
+Example 2:
+
+Input: s = "10101"
+Output: 4
+Explanation: There are 4 substrings: "10", "01", "10", "01" that have equal number of consecutive 1's and 0's.
+ 
+
+Constraints:
+
+1 <= s.length <= 105
+s[i] is either '0' or '1'.
+
+```java
+class Solution {
+    public int countBinarySubstrings(String s) {
+        List<Integer> contigiusCnt = new ArrayList<>();
+        int count = 1; // start with 1 for the first char
+
+        for (int i = 1; i < s.length(); i++) {
+            if (s.charAt(i) == s.charAt(i - 1)) {
+                count++;
+            } else {
+                contigiusCnt.add(count);
+                count = 1;
+            }
+        }
+        contigiusCnt.add(count); // add the last group
+
+        int substrings = 0;
+        for (int j = 1; j < contigiusCnt.size(); j++) {
+            substrings += Math.min(contigiusCnt.get(j - 1), contigiusCnt.get(j));
+        }
+        return substrings;
+    }
+}
+
+```
+</details>
+
+<details id="1750. Minimum Length of String After Deleting Similar Ends">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">1750. Minimum Length of String After Deleting Similar Ends 
 </span>
 </summary>
-</details> -->
+
+Medium
+Topics
+premium lock icon
+Companies
+Hint
+Given a string s consisting only of characters 'a', 'b', and 'c'. You are asked to apply the following algorithm on the string any number of times:
+
+Pick a non-empty prefix from the string s where all the characters in the prefix are equal.
+Pick a non-empty suffix from the string s where all the characters in this suffix are equal.
+The prefix and the suffix should not intersect at any index.
+The characters from the prefix and suffix must be the same.
+Delete both the prefix and the suffix.
+Return the minimum length of s after performing the above operation any number of times (possibly zero times).
+
+ 
+
+Example 1:
+
+Input: s = "ca"
+Output: 2
+Explanation: You can't remove any characters, so the string stays as is.
+Example 2:
+
+Input: s = "cabaabac"
+Output: 0
+Explanation: An optimal sequence of operations is:
+- Take prefix = "c" and suffix = "c" and remove them, s = "abaaba".
+- Take prefix = "a" and suffix = "a" and remove them, s = "baab".
+- Take prefix = "b" and suffix = "b" and remove them, s = "aa".
+- Take prefix = "a" and suffix = "a" and remove them, s = "".
+Example 3:
+
+Input: s = "aabccabba"
+Output: 3
+Explanation: An optimal sequence of operations is:
+- Take prefix = "aa" and suffix = "a" and remove them, s = "bccabb".
+- Take prefix = "b" and suffix = "bb" and remove them, s = "cca".
+ 
+
+Constraints:
+
+1 <= s.length <= 105
+s only consists of characters 'a', 'b', and 'c'.
+
+```java
+class Solution {
+    public int minimumLength(String s) {
+        int l = 0, r = s.length() - 1;
+        while (l < r && s.charAt(l) == s.charAt(r)) {
+            char sameChar = s.charAt(l);
+            while (l <= r && s.charAt(l) == sameChar) {
+                l++;
+            }
+            while (l <= r && s.charAt(r) == sameChar) {
+                r--;
+            }
+        }
+        return r - l + 1;
+    }
+}
+
+```
+</details>
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="443. String Compression">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">443. String Compression 
 </span>
 </summary>
-</details> -->
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+Medium
+Topics
+premium lock icon
+Companies
+Hint
+Given an array of characters chars, compress it using the following algorithm:
+
+Begin with an empty string s. For each group of consecutive repeating characters in chars:
+
+If the group's length is 1, append the character to s.
+Otherwise, append the character followed by the group's length.
+The compressed string s should not be returned separately, but instead, be stored in the input character array chars. Note that group lengths that are 10 or longer will be split into multiple characters in chars.
+
+After you are done modifying the input array, return the new length of the array.
+
+You must write an algorithm that uses only constant extra space.
+
+ 
+
+Example 1:
+
+Input: chars = ["a","a","b","b","c","c","c"]
+Output: Return 6, and the first 6 characters of the input array should be: ["a","2","b","2","c","3"]
+Explanation: The groups are "aa", "bb", and "ccc". This compresses to "a2b2c3".
+Example 2:
+
+Input: chars = ["a"]
+Output: Return 1, and the first character of the input array should be: ["a"]
+Explanation: The only group is "a", which remains uncompressed since it's a single character.
+Example 3:
+
+Input: chars = ["a","b","b","b","b","b","b","b","b","b","b","b","b"]
+Output: Return 4, and the first 4 characters of the input array should be: ["a","b","1","2"].
+Explanation: The groups are "a" and "bbbbbbbbbbbb". This compresses to "ab12".
+ 
+
+Constraints:
+
+1 <= chars.length <= 2000
+chars[i] is a lowercase English letter, uppercase English letter, digit, or symbol.
+
+```java
+class Solution {
+    public int compress(char[] chars) {
+        int write_index = 0;
+        int read_left_index = 0;
+        int len = chars.length;
+
+        while (read_left_index < len) {
+            int read_right_index = read_left_index;
+            char curr_char = chars[read_left_index];
+
+            // Count group length
+            while (read_right_index < len && chars[read_right_index] == curr_char) {
+                read_right_index++;
+            }
+
+            int count = read_right_index - read_left_index;
+
+            // Write the character
+            chars[write_index++] = curr_char;
+
+            // Write the count if > 1
+            if (count > 1) {
+                String countStr = String.valueOf(count);
+                for (char c : countStr.toCharArray()) {
+                    chars[write_index++] = c;
+                }
+            }
+
+            read_left_index = read_right_index;
+        }
+        return write_index;
+    }
+}
+
+```
+</details>
+
+<details id="2938. Separate Black and White Balls">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">2938. Separate Black and White Balls 
 </span>
 </summary>
-</details> -->
+
+Medium
+Topics
+premium lock icon
+Companies
+Hint
+There are n balls on a table, each ball has a color black or white.
+
+You are given a 0-indexed binary string s of length n, where 1 and 0 represent black and white balls, respectively.
+
+In each step, you can choose two adjacent balls and swap them.
+
+Return the minimum number of steps to group all the black balls to the right and all the white balls to the left.
+
+ 
+
+Example 1:
+
+Input: s = "101"
+Output: 1
+Explanation: We can group all the black balls to the right in the following way:
+- Swap s[0] and s[1], s = "011".
+Initially, 1s are not grouped together, requiring at least 1 step to group them to the right.
+Example 2:
+
+Input: s = "100"
+Output: 2
+Explanation: We can group all the black balls to the right in the following way:
+- Swap s[0] and s[1], s = "010".
+- Swap s[1] and s[2], s = "001".
+It can be proven that the minimum number of steps needed is 2.
+Example 3:
+
+Input: s = "0111"
+Output: 0
+Explanation: All the black balls are already grouped to the right.
+ 
+
+Constraints:
+
+1 <= n == s.length <= 105
+s[i] is either '0' or '1'.
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+
+
+```java
+class Solution {
+    public long minimumSteps(String s) {
+        long steps = 0;
+        long ones_seen = 0;
+
+        for (char c : s.toCharArray()) {
+            if (c == '1') {
+                ones_seen++;
+            } else { // c == '0'
+                steps += ones_seen;
+            }
+        }
+        return steps;
+    }
+}
+
+```
+</details>
+
+
+<details id="2337. Move Pieces to Obtain a String">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">2337. Move Pieces to Obtain a String 
 </span>
 </summary>
-</details> -->
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+Medium
+Topics
+premium lock icon
+Companies
+Hint
+You are given two strings start and target, both of length n. Each string consists only of the characters 'L', 'R', and '_' where:
+
+The characters 'L' and 'R' represent pieces, where a piece 'L' can move to the left only if there is a blank space directly to its left, and a piece 'R' can move to the right only if there is a blank space directly to its right.
+The character '_' represents a blank space that can be occupied by any of the 'L' or 'R' pieces.
+Return true if it is possible to obtain the string target by moving the pieces of the string start any number of times. Otherwise, return false.
+
+ 
+
+Example 1:
+
+Input: start = "_L__R__R_", target = "L______RR"
+Output: true
+Explanation: We can obtain the string target from start by doing the following moves:
+- Move the first piece one step to the left, start becomes equal to "L___R__R_".
+- Move the last piece one step to the right, start becomes equal to "L___R___R".
+- Move the second piece three steps to the right, start becomes equal to "L______RR".
+Since it is possible to get the string target from start, we return true.
+Example 2:
+
+Input: start = "R_L_", target = "__LR"
+Output: false
+Explanation: The 'R' piece in the string start can move one step to the right to obtain "_RL_".
+After that, no pieces can move anymore, so it is impossible to obtain the string target from start.
+Example 3:
+
+Input: start = "_R", target = "R_"
+Output: false
+Explanation: The piece in the string start can move only to the right, so it is impossible to obtain the string target from start.
+ 
+
+Constraints:
+
+n == start.length == target.length
+1 <= n <= 105
+start and target consist of the characters 'L', 'R', and '_'.
+
+```java
+class Solution {
+    public boolean canChange(String start, String target) {
+        int i=0, j=0;
+        int len=target.length();
+        while(i<len || j<len){
+            while(i<len && start.charAt(i)=='_')i++;
+            while(j<len && target.charAt(j)=='_')j++;
+
+            if(i == len || j==len){
+                return i==len && j==len;
+            }
+
+            if(target.charAt(j)!=start.charAt(i))return false;
+
+            if(target.charAt(j)=='R' && i>j)return false;
+
+            if(target.charAt(j)=='L' && i<j)return false;
+            i++;j++;
+        }
+        return true;
+    }
+}
+```
+</details>
+
+<details id="1813. Sentence Similarity III">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">1813. Sentence Similarity III 
 </span>
 </summary>
-</details> -->
+
+Medium
+Topics
+premium lock icon
+Companies
+Hint
+You are given two strings sentence1 and sentence2, each representing a sentence composed of words. A sentence is a list of words that are separated by a single space with no leading or trailing spaces. Each word consists of only uppercase and lowercase English characters.
+
+Two sentences s1 and s2 are considered similar if it is possible to insert an arbitrary sentence (possibly empty) inside one of these sentences such that the two sentences become equal. Note that the inserted sentence must be separated from existing words by spaces.
+
+For example,
+
+s1 = "Hello Jane" and s2 = "Hello my name is Jane" can be made equal by inserting "my name is" between "Hello" and "Jane" in s1.
+s1 = "Frog cool" and s2 = "Frogs are cool" are not similar, since although there is a sentence "s are" inserted into s1, it is not separated from "Frog" by a space.
+Given two sentences sentence1 and sentence2, return true if sentence1 and sentence2 are similar. Otherwise, return false.
+
+ 
+
+Example 1:
+
+Input: sentence1 = "My name is Haley", sentence2 = "My Haley"
+
+Output: true
+
+Explanation:
+
+sentence2 can be turned to sentence1 by inserting "name is" between "My" and "Haley".
+
+Example 2:
+
+Input: sentence1 = "of", sentence2 = "A lot of words"
+
+Output: false
+
+Explanation:
+
+No single sentence can be inserted inside one of the sentences to make it equal to the other.
+
+Example 3:
+
+Input: sentence1 = "Eating right now", sentence2 = "Eating"
+
+Output: true
+
+Explanation:
+
+sentence2 can be turned to sentence1 by inserting "right now" at the end of the sentence.
+
+ 
+
+Constraints:
+
+1 <= sentence1.length, sentence2.length <= 100
+sentence1 and sentence2 consist of lowercase and uppercase English letters and spaces.
+The words in sentence1 and sentence2 are separated by a single space.
+
+```java
+
+class Solution {
+    public boolean areSentencesSimilar(String sentence1, String sentence2) {
+        if(sentence1.length() < sentence2.length())return areSentencesSimilar(sentence2,sentence1);
+
+        String[] s1=sentence1.split(" ");
+        String[] s2=sentence2.split(" ");
+        int i=0, j=s1.length-1;
+        int k=0, l=s2.length-1;
+
+        while(k<=l){
+            if(s1[i].equals(s2[k])){
+                i++;k++;
+            }else if(s1[j].equals(s2[l])){
+                j--;l--;
+            }else return false;
+        }
+        return true;
+    }
+}
+```
+</details>
+
+# Prefix Sum
+
+### Prefix Sum
+
+### Line Sweep
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="238. Product of Array Except Self">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">238. Product of Array Except Self 
 </span>
 </summary>
-</details> -->
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+Medium
+Topics
+premium lock icon
+Companies
+Hint
+Given an integer array nums, return an array answer such that answer[i] is equal to the product of all the elements of nums except nums[i].
+
+The product of any prefix or suffix of nums is guaranteed to fit in a 32-bit integer.
+
+You must write an algorithm that runs in O(n) time and without using the division operation.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,3,4]
+Output: [24,12,8,6]
+Example 2:
+
+Input: nums = [-1,1,0,-3,3]
+Output: [0,0,9,0,0]
+ 
+
+Constraints:
+
+2 <= nums.length <= 105
+-30 <= nums[i] <= 30
+The input is generated such that answer[i] is guaranteed to fit in a 32-bit integer.
+ 
+
+Follow up: Can you solve the problem in O(1) extra space complexity? (The output array does not count as extra space for space complexity analysis.)
+
+```java
+class Solution {
+    public int[] productExceptSelf(int[] nums) {
+        int[] prefix=new int[nums.length];
+        int[] postfix=new int[nums.length];
+        int[] ans=new int[nums.length];
+        int prod=1;
+        for(int i=0;i<nums.length;i++){
+            prod*=nums[i];
+            prefix[i]=prod;
+        }
+        prod=1;
+        for(int i=nums.length-1;i>=0;i--){
+            prod*=nums[i];
+            postfix[i]=prod;
+        }
+        for(int i=0;i<ans.length;i++){
+            if(i==0){
+                ans[i]=postfix[i+1];
+            }else if(i==ans.length-1){
+                ans[i]=prefix[i-1];
+            }else{
+                ans[i]=prefix[i-1]*postfix[i+1];
+            }
+        }
+        return ans;
+    }
+}
+```
+</details>
+
+<details id="303. Range Sum Query - Immutable">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">303. Range Sum Query - Immutable 
 </span>
 </summary>
-</details> -->
+
+Easy
+Topics
+premium lock icon
+Companies
+Given an integer array nums, handle multiple queries of the following type:
+
+Calculate the sum of the elements of nums between indices left and right inclusive where left <= right.
+Implement the NumArray class:
+
+NumArray(int[] nums) Initializes the object with the integer array nums.
+int sumRange(int left, int right) Returns the sum of the elements of nums between indices left and right inclusive (i.e. nums[left] + nums[left + 1] + ... + nums[right]).
+ 
+
+Example 1:
+
+Input
+["NumArray", "sumRange", "sumRange", "sumRange"]
+[[[-2, 0, 3, -5, 2, -1]], [0, 2], [2, 5], [0, 5]]
+Output
+[null, 1, -1, -3]
+
+Explanation
+NumArray numArray = new NumArray([-2, 0, 3, -5, 2, -1]);
+numArray.sumRange(0, 2); // return (-2) + 0 + 3 = 1
+numArray.sumRange(2, 5); // return 3 + (-5) + 2 + (-1) = -1
+numArray.sumRange(0, 5); // return (-2) + 0 + 3 + (-5) + 2 + (-1) = -3
+ 
+
+Constraints:
+
+1 <= nums.length <= 104
+-105 <= nums[i] <= 105
+0 <= left <= right < nums.length
+At most 104 calls will be made to sumRange.
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+```java
+class NumArray {
+    int[] nums;
+    int[] prefixSum;
+    public NumArray(int[] nums) {
+        this.nums=nums;
+        this.prefixSum=new int[nums.length];
+        int sum=0;
+        int index=0;
+        for(int i:nums){
+            sum+=i;
+            prefixSum[index]=sum;
+            index++;
+        }
+
+    }
+    
+    public int sumRange(int left, int right) {
+        return left ==0 ? prefixSum[right]: prefixSum[right]-prefixSum[left-1];
+    }
+}
+
+/**
+ * Your NumArray object will be instantiated and called as such:
+ * NumArray obj = new NumArray(nums);
+ * int param_1 = obj.sumRange(left,right);
+ */
+```
+</details>
+
+
+<details id="1352. Product of the Last K Numbers">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">1352. Product of the Last K Numbers 
 </span>
 </summary>
-</details> -->
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+Medium
+Topics
+premium lock icon
+Companies
+Hint
+Design an algorithm that accepts a stream of integers and retrieves the product of the last k integers of the stream.
+
+Implement the ProductOfNumbers class:
+
+ProductOfNumbers() Initializes the object with an empty stream.
+void add(int num) Appends the integer num to the stream.
+int getProduct(int k) Returns the product of the last k numbers in the current list. You can assume that always the current list has at least k numbers.
+The test cases are generated so that, at any time, the product of any contiguous sequence of numbers will fit into a single 32-bit integer without overflowing.
+
+ 
+
+Example:
+
+Input
+["ProductOfNumbers","add","add","add","add","add","getProduct","getProduct","getProduct","add","getProduct"]
+[[],[3],[0],[2],[5],[4],[2],[3],[4],[8],[2]]
+
+Output
+[null,null,null,null,null,null,20,40,0,null,32]
+
+Explanation
+ProductOfNumbers productOfNumbers = new ProductOfNumbers();
+productOfNumbers.add(3);        // [3]
+productOfNumbers.add(0);        // [3,0]
+productOfNumbers.add(2);        // [3,0,2]
+productOfNumbers.add(5);        // [3,0,2,5]
+productOfNumbers.add(4);        // [3,0,2,5,4]
+productOfNumbers.getProduct(2); // return 20. The product of the last 2 numbers is 5 * 4 = 20
+productOfNumbers.getProduct(3); // return 40. The product of the last 3 numbers is 2 * 5 * 4 = 40
+productOfNumbers.getProduct(4); // return 0. The product of the last 4 numbers is 0 * 2 * 5 * 4 = 0
+productOfNumbers.add(8);        // [3,0,2,5,4,8]
+productOfNumbers.getProduct(2); // return 32. The product of the last 2 numbers is 4 * 8 = 32 
+ 
+
+Constraints:
+
+0 <= num <= 100
+1 <= k <= 4 * 104
+At most 4 * 104 calls will be made to add and getProduct.
+The product of the stream at any point in time will fit in a 32-bit integer.
+ 
+
+Follow-up: Can you implement both GetProduct and Add to work in O(1) time complexity instead of O(k) time complexity?
+
+```java
+class ProductOfNumbers {
+    List<Integer> prefixProd;
+    public ProductOfNumbers() {
+        prefixProd = new ArrayList<>();
+    }
+
+    public void add(int num) {
+        if (num == 0) {
+            prefixProd.clear();
+        }else if (prefixProd.isEmpty()) {
+            prefixProd.add(num);
+        } else {
+            prefixProd.add(prefixProd.get(prefixProd.size() - 1) * num);
+        }
+    }
+
+    public int getProduct(int k) {
+        if(k == prefixProd.size())return prefixProd.get(prefixProd.size()-1);
+        if(k > prefixProd.size())return 0;
+        return prefixProd.get(prefixProd.size()-1)/prefixProd.get(prefixProd.size()-1-k);
+    }
+}
+
+/**
+ * Your ProductOfNumbers object will be instantiated and called as such:
+ * ProductOfNumbers obj = new ProductOfNumbers();
+ * obj.add(num);
+ * int param_2 = obj.getProduct(k);
+ */
+
+```
+</details>
+
+<details id="304. Range Sum Query 2D - Immutable">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">304. Range Sum Query 2D - Immutable 
 </span>
 </summary>
-</details> -->
+
+Medium
+Topics
+premium lock icon
+Companies
+Given a 2D matrix matrix, handle multiple queries of the following type:
+
+Calculate the sum of the elements of matrix inside the rectangle defined by its upper left corner (row1, col1) and lower right corner (row2, col2).
+Implement the NumMatrix class:
+
+NumMatrix(int[][] matrix) Initializes the object with the integer matrix matrix.
+int sumRegion(int row1, int col1, int row2, int col2) Returns the sum of the elements of matrix inside the rectangle defined by its upper left corner (row1, col1) and lower right corner (row2, col2).
+You must design an algorithm where sumRegion works on O(1) time complexity.
+
+ 
+
+Example 1:
+
+
+Input
+["NumMatrix", "sumRegion", "sumRegion", "sumRegion"]
+[[[[3, 0, 1, 4, 2], [5, 6, 3, 2, 1], [1, 2, 0, 1, 5], [4, 1, 0, 1, 7], [1, 0, 3, 0, 5]]], [2, 1, 4, 3], [1, 1, 2, 2], [1, 2, 2, 4]]
+Output
+[null, 8, 11, 12]
+
+Explanation
+NumMatrix numMatrix = new NumMatrix([[3, 0, 1, 4, 2], [5, 6, 3, 2, 1], [1, 2, 0, 1, 5], [4, 1, 0, 1, 7], [1, 0, 3, 0, 5]]);
+numMatrix.sumRegion(2, 1, 4, 3); // return 8 (i.e sum of the red rectangle)
+numMatrix.sumRegion(1, 1, 2, 2); // return 11 (i.e sum of the green rectangle)
+numMatrix.sumRegion(1, 2, 2, 4); // return 12 (i.e sum of the blue rectangle)
+ 
+
+Constraints:
+
+m == matrix.length
+n == matrix[i].length
+1 <= m, n <= 200
+-104 <= matrix[i][j] <= 104
+0 <= row1 <= row2 < m
+0 <= col1 <= col2 < n
+At most 104 calls will be made to sumRegion.
+
+```java
+class NumMatrix {
+    int[][] pmatrix;
+
+    public NumMatrix(int[][] matrix) {
+        int m = matrix.length;
+        int n = matrix[0].length;
+        pmatrix = new int[m + 1][n + 1]; // 1-indexed to simplify logic
+
+        for (int i = 0; i < m; i++) {
+            int rowPrefix = 0; // resets every row
+            for (int j = 0; j < n; j++) {
+                rowPrefix += matrix[i][j]; 
+                pmatrix[i + 1][j + 1] = pmatrix[i][j + 1] + rowPrefix;
+            }
+        }
+    }
+
+    public int sumRegion(int row1, int col1, int row2, int col2) {
+        return pmatrix[row2 + 1][col2 + 1]
+             - pmatrix[row1][col2 + 1]
+             - pmatrix[row2 + 1][col1]
+             + pmatrix[row1][col1];
+    }
+}
+
+
+```
+</details>
 
 
 <!-- <details id="1584. Min Cost to Connect All Points">
