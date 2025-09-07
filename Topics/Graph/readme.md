@@ -459,6 +459,470 @@ public class DirectedGraph {
 
 </details>
 
+<details id="Find all possible length cycle | undirected graph | DFS">
+<summary> 
+<span style="color:red;font-size:16px;font-weight:bold">Find all possible length cycle | undirected graph | DFS
+</span>
+</summary>
+
+### Find all possible length cycle in undirected graph
+
+    
+    Note: Simpliy running a normal DFS with a global visited array will not traverse all possible cycles, This prevents revisiting nodes from different starting points, but in cycle detection with shortest cycle, you must allow revisiting because the shortest cycle could involve nodes discovered later.
+    
+    EXAMPLE: 
+    0 -- 1 -- 2 -- 3 -- 4
+     \        |         /
+      ------- 5 -------
+    Cycle A: 0 → 1 → 2 → 3 → 4 → 5 → 0 (length 6)
+
+    Cycle B: 2 → 3 → 4 → 5 → 2 (length 4)
+
+    If you start DFS at 0:
+
+    You’ll discover the big cycle (6).
+
+    But since all nodes are now visited = true, you’ll never re-explore from 2 to discover the shorter cycle (4).
+
+    👉 That’s exactly why global visited[] is wrong for shortest cycle.
+
+```java
+// This code dosent work. It will not iterate over all the possible cycles
+
+class Solution {
+    int minLengthCycle = Integer.MAX_VALUE;
+
+    public int findShortestCycle(int n, int[][] edges) {
+        boolean[] visited=new boolean[n];
+        
+        List<List<Integer>> adj=new ArrayList<>();
+        // make adj list
+        for(int i=0;i<n;i++){
+            adj.add(new ArrayList<>());
+        }
+
+        for(int[] edge:edges){
+            adj.get(edge[0]).add(edge[1]);
+            adj.get(edge[1]).add(edge[0]);
+        }
+        // traverse the graph and find the cycle, also make sure to traverse conected components
+        for(int i=0;i<n;i++){
+            if(!visited[i]){
+                traverseGraph(adj, i, -1, 1, visited);
+            }
+        }
+        return minLengthCycle == Integer.MAX_VALUE? -1: minLengthCycle;
+    }
+
+    private void traverseGraph(List<List<Integer>> adj, int node, int parent, int cycleLen, boolean[] visited) {
+        visited[node] = true;
+
+        for (int neighbor : adj.get(node)) {
+            if (neighbor == parent)
+                continue;
+            if (visited[neighbor]) {
+                minLengthCycle = Math.min(minLengthCycle, cycleLen);
+                return;
+            }
+            if (!visited[neighbor]) {
+                traverseGraph(adj, neighbor, node, cycleLen + 1, visited);
+            }
+        }
+        visited[node]=false;
+    }
+}
+```
+
+```java
+// This is correct code that will iterate over all possible cycles
+
+import java.util.*;
+
+class Solution {
+    private List<List<Integer>> adj;
+    private Set<String> seenCycles; // to avoid duplicates
+    private List<Integer> cycleLengths;
+
+    public List<Integer> findAllCycleLengths(int n, int[][] edges) {
+        adj = new ArrayList<>();
+        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());
+        for (int[] edge : edges) {
+            adj.get(edge[0]).add(edge[1]);
+            adj.get(edge[1]).add(edge[0]); // undirected
+        }
+
+        seenCycles = new HashSet<>();
+        cycleLengths = new ArrayList<>();
+
+        boolean[] visited = new boolean[n];
+
+        for (int i = 0; i < n; i++) {
+            dfs(i, -1, visited, new ArrayList<>());
+        }
+
+        return cycleLengths;
+    }
+
+    private void dfs(int node, int parent, boolean[] visited, List<Integer> path) {
+        visited[node] = true;
+        path.add(node);
+
+        for (int neighbor : adj.get(node)) {
+            if (neighbor == parent) continue;
+
+            if (!visited[neighbor]) {
+                dfs(neighbor, node, visited, path);
+            } else {
+                // cycle detected → extract cycle length
+                int idx = path.indexOf(neighbor);
+                if (idx != -1) {
+                    List<Integer> cycle = path.subList(idx, path.size());
+                    String key = normalize(cycle);
+                    if (!seenCycles.contains(key)) {
+                        seenCycles.add(key);
+                        cycleLengths.add(cycle.size());
+                    }
+                }
+            }
+        }
+
+        path.remove(path.size() - 1);
+        visited[node] = false; // important for backtracking
+    }
+
+    // Normalize cycle to avoid duplicates (store as sorted string)
+    private String normalize(List<Integer> cycle) {
+        List<Integer> sorted = new ArrayList<>(cycle);
+        Collections.sort(sorted);
+        return sorted.toString();
+    }
+
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+
+        int n = 5;
+        int[][] edges = {
+            {0, 1}, {1, 2}, {2, 0}, // cycle of length 3
+            {1, 3}, {3, 4}, {4, 1}  // cycle of length 3
+        };
+
+        List<Integer> cycles = sol.findAllCycleLengths(n, edges);
+        System.out.println("Cycle lengths: " + cycles);
+    }
+}
+
+```
+🔹 Time Complexity
+
+DFS traversal
+
+We run DFS starting from each node.
+
+Standard DFS is O(V + E) for a graph with V vertices and E edges.
+
+Since we allow backtracking (visited[node] = false after recursion), each node can appear in multiple DFS calls, so worst-case is higher.
+
+Cycle detection (subList + indexOf)
+
+path.indexOf(neighbor) → O(L) where L is the current path length (≤ V).
+
+path.subList(idx, path.size()) → O(1) (it’s a view, not a copy).
+
+But later we may normalize the cycle:
+
+List<Integer> sorted = new ArrayList<>(cycle);  // O(L)
+Collections.sort(sorted);                       // O(L log L)
+
+
+So processing each cycle costs up to O(L log L).
+
+Number of cycles
+
+In the worst case (dense graphs), the number of simple cycles can be exponential in V.
+
+Example: a complete graph K_n has an enormous number of cycles (~2^n).
+
+So in the absolute worst case, the algorithm is exponential.
+
+👉 Practical bound:
+
+For sparse graphs with relatively few cycles, the algorithm runs in roughly O(V * (V + E) + C * L log L)
+where C = number of distinct cycles found, and L = average cycle length.
+
+🔹 Space Complexity
+
+Adjacency list: O(V + E)
+
+DFS recursion stack: O(V) in the worst case (deep path).
+
+Path list: O(V)
+
+Cycle storage: If you store all cycles explicitly, space can blow up to O(C * L) (again exponential in worst-case).
+
+👉 Total space: O(V + E + C * L).
+
+🔑 Summary
+
+Time complexity:
+
+Worst case: Exponential (because the number of cycles in a graph can be exponential).
+
+Practical graphs: ~O(V * (V + E)) + cycle-processing overhead.
+
+Space complexity:
+
+O(V + E + C * L) (depends on how many cycles are stored).
+</details>
+
+<details id="Find all possible length cycle | undirected graph | BFS">
+<summary> 
+<span style="color:red;font-size:16px;font-weight:bold">Find all possible length cycle | undirected graph | BFS
+</span>
+</summary>
+
+### "Find all possible length cycle
+
+🔹 1. DFS vs BFS for cycle detection
+
+    *DFS
+
+        -Naturally explores deep paths.
+
+        -Good for existence of a cycle (directed or undirected).
+
+        -But harder to track the shortest cycle, because you only know about cycles after you backtrack, and computing exact cycle length means looking at path indices, etc.
+
+        -If you want to list all cycles, DFS works, but it can get messy and duplicates are common.
+
+
+    
+    *BFS
+
+        -Naturally explores layer by layer.
+
+        -Every time BFS discovers an already visited node (that is not the parent), you immediately know the shortest cycle that includes that edge.
+
+        -BFS gives you distances directly (dist[] array).
+
+        -Much more convenient for shortest cycle problems.
+
+    
+    
+    
+    
+🔹 2. BFS Approach to Find Cycle Lengths
+
+    For undirected graphs:
+
+    1. For each node u:
+
+        -Run BFS starting at u.
+
+        -Track dist[v] = distance from u to v.
+
+        -Track parent[v] to avoid trivial 2-length cycles (edge back to parent).
+
+    2. During BFS:
+
+        -If you encounter an edge (v, w) where w is already visited and w != parent[v], you’ve found a cycle.
+
+        -Its length = dist[v] + dist[w] + 1.
+
+    3. Collect all such cycle lengths.
+
+```java
+import java.util.*;
+
+class Solution {
+    public List<Integer> findAllCycleLengths(int n, int[][] edges) {
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());
+        for (int[] e : edges) {
+            adj.get(e[0]).add(e[1]);
+            adj.get(e[1]).add(e[0]); // undirected
+        }
+
+        List<Integer> cycleLengths = new ArrayList<>();
+
+        for (int start = 0; start < n; start++) {
+            int[] dist = new int[n];
+            Arrays.fill(dist, -1);
+            int[] parent = new int[n];
+            Arrays.fill(parent, -1);
+
+            Queue<Integer> q = new LinkedList<>();
+            q.offer(start);
+            dist[start] = 0;
+
+            while (!q.isEmpty()) {
+                int node = q.poll();
+                for (int neighbor : adj.get(node)) {
+                    if (dist[neighbor] == -1) {
+                        dist[neighbor] = dist[node] + 1;
+                        parent[neighbor] = node;
+                        q.offer(neighbor);
+                    } else if (parent[node] != neighbor) {
+                        // Found a cycle
+                        int cycleLen = dist[node] + dist[neighbor] + 1;
+                        cycleLengths.add(cycleLen);
+                    }
+                }
+            }
+        }
+
+        return cycleLengths.isEmpty() ? List.of() : cycleLengths;
+    }
+
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+
+        int n = 5;
+        int[][] edges = {
+            {0, 1}, {1, 2}, {2, 0},   // cycle length 3
+            {1, 3}, {3, 4}, {4, 1}    // cycle length 3
+        };
+
+        List<Integer> cycles = sol.findAllCycleLengths(n, edges);
+        System.out.println("Cycle lengths: " + cycles);
+    }
+}
+
+
+```
+
+🔹 4. Why BFS is More Convenient
+
+    Cycle length comes “for free” from dist[].
+
+    In DFS, you’d have to manually track depth and search the path list for repeats (indexOf → O(n) each time).
+
+    BFS avoids backtracking complexity; once you hit a visited node that isn’t your parent, you instantly know the cycle length.
+
+    For shortest cycle problems, BFS is always the preferred approach.
+
+🔹 Problem: Finding all cycles in a graph
+
+    We’re talking about simple cycles (no repeated vertices within a cycle).
+
+    1. Number of simple cycles
+
+    In a graph with n vertices:
+
+    The maximum number of simple cycles is exponential.
+
+    Specifically, in a complete graph K_n, the number of distinct simple cycles is:
+
+    Θ(2^n/ n​)
+
+    So, even before considering the algorithm, the output size itself is exponential.
+
+    
+    2. BFS to enumerate all cycles
+
+    BFS per root is O(n + m) (linear).
+
+    To enumerate all cycles, BFS has to:
+
+    Store all possible paths.
+
+    Detect cycles when a node is revisited.
+
+    Copy/store those cycles.
+
+    Each path extension is like branching in a tree, and the branching factor can be up to O(n) in dense graphs.
+
+    
+    3. Exact complexity
+
+    Time Complexity:
+
+    Each cycle takes at least O(length of cycle) to output.
+
+    With up to Θ(2^n / n) cycles possible, the time complexity is:
+
+    O(2^n)
+
+    Space Complexity:
+
+    To store paths and cycles, worst case also requires:
+
+    O(2n)
+
+</details>
+
+
+<details id="Find smallest length cycle | undirected graph | BFS">
+<summary> 
+<span style="color:red;font-size:16px;font-weight:bold">Find smallest length cycle | undirected graph | BFS
+</span>
+</summary>
+
+### Find smallest cycle in undirected graph
+
+```java
+import java.util.*;
+
+class Solution {
+    public int findShortestCycle(int n, int[][] edges) {
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());
+        for (int[] e : edges) {
+            adj.get(e[0]).add(e[1]);
+            adj.get(e[1]).add(e[0]); // undirected
+        }
+
+        int ans = Integer.MAX_VALUE;
+
+        // Run BFS from each node
+        for (int start = 0; start < n; start++) {
+            int[] dist = new int[n];
+            Arrays.fill(dist, -1);
+            int[] parent = new int[n];
+            Arrays.fill(parent, -1);
+
+            Queue<Integer> q = new LinkedList<>();
+            q.offer(start);
+            dist[start] = 0;
+
+            while (!q.isEmpty()) {
+                int node = q.poll();
+                for (int neighbor : adj.get(node)) {
+                    if (dist[neighbor] == -1) {
+                        dist[neighbor] = dist[node] + 1;
+                        parent[neighbor] = node;
+                        q.offer(neighbor);
+                    } else if (parent[node] != neighbor) {
+                        // Found a cycle
+                        int cycleLen = dist[node] + dist[neighbor] + 1;
+                        ans = Math.min(ans, cycleLen);
+                    }
+                }
+            }
+        }
+
+        return ans == Integer.MAX_VALUE ? -1 : ans;
+    }
+
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+
+        int n = 5;
+        int[][] edges = {
+            {0, 1}, {1, 2}, {2, 0},   // cycle of length 3
+            {1, 3}, {3, 4}, {4, 1}    // another cycle of length 3
+        };
+
+        int shortest = sol.findShortestCycle(n, edges);
+        System.out.println("Shortest cycle length: " + shortest);
+    }
+}
+
+```
+
+</details>
+
+### Find largest cycle in undirected graph
+
 
 ### Topological Sort (DAG)
 
@@ -4257,12 +4721,145 @@ class Solution {
 ```
 </details>
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="CHEET SHEET">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:cyan;font-size:16px;font-weight:bold">CHEET SHEET 
 </span>
 </summary>
-</details> -->
+
+# Graph Classes, Properties, and Problem-Solving Guide
+
+---
+
+## 1. General Graphs
+- **Definition**: Graphs with no structural restrictions. They may be:
+  - **Directed (digraphs)** or **Undirected**
+  - **Weighted** or **Unweighted**
+  - **Cyclic** or **Acyclic**
+  - **Dense** or **Sparse**
+- **Properties**:
+  - Can contain any number of edges between vertices (except self-loops depending on definition).
+  - Algorithms must assume worst-case (many NP-hard problems).
+- **Examples**: Road networks, social networks.
+
+---
+
+## 2. Functional Graphs
+- **Definition**: A **directed graph** where each node has at most one outgoing edge.
+- **Special Properties**:
+  - Every connected component looks like:
+    - A **cycle** with trees pointing into it, or
+    - Just a **chain** (if no cycle).
+  - Each node belongs to exactly one such structure.
+- **Why useful**:
+  - Cycle detection is trivial (DFS or BFS with timestamps).
+  - Longest cycle problem can be solved in **O(n)**.
+- **Examples**:
+  - Each user follows exactly one other user (toy social network).
+  - Each city teleports to exactly one other city.
+
+---
+
+## 3. Other Important Classes of Graphs
+
+### (a) Trees
+- **Acyclic, connected, undirected graphs** with `n-1` edges.
+- **Properties**:
+  - Unique path between any two nodes.
+  - Many problems simplify (DFS or BFS works).
+  - Concepts: LCA, Diameter, DP on trees.
+
+### (b) DAGs (Directed Acyclic Graphs)
+- Directed graphs with **no cycles**.
+- **Properties**:
+  - **Topological order** exists.
+  - DP works well (e.g., longest path in DAG).
+- **Use cases**: Scheduling, dependency resolution.
+
+### (c) Bipartite Graphs
+- Vertices split into 2 disjoint sets, edges only between sets.
+- **Properties**:
+  - No odd-length cycles.
+  - Useful for **matching problems** (e.g., job assignment).
+  - Detectable with BFS/DFS 2-coloring.
+
+### (d) Planar Graphs
+- Can be drawn on a plane without edge crossings.
+- **Properties**:
+  - Obeys Euler’s formula: `V - E + F = 2`.
+- Less common in coding interviews (mostly geometry-heavy).
+
+### (e) Complete Graphs (Kn)
+- Every node connected to every other.
+- **Properties**:
+  - Dense, `O(n^2)` edges.
+  - Exponential number of cycles.
+  - Good for worst-case analysis.
+
+### (f) Weighted Graphs
+- Edges have weights (distances, costs).
+- **Algorithms**:
+  - Dijkstra, Bellman-Ford, Floyd-Warshall
+  - Kruskal/Prim (for MST).
+
+### (g) Unweighted Graphs
+- All edges weight = 1 (or no weights).
+- **Algorithms**:
+  - BFS = shortest path.
+
+---
+
+## 4. What Properties to Keep in Mind (Cheat Sheet)
+
+When solving **graph-based questions**, check:
+
+1. **Directed vs Undirected**
+   - Cycle detection, topological sort only for directed.
+   - Bipartite easier on undirected.
+
+2. **Weighted vs Unweighted**
+   - Unweighted → BFS for shortest path.  
+   - Weighted → Dijkstra (non-negative), Bellman-Ford (negative allowed), Floyd-Warshall (all-pairs).
+
+3. **Sparse vs Dense**
+   - Sparse: `E ~ O(V)` → adjacency list + Dijkstra with heap.  
+   - Dense: `E ~ O(V^2)` → adjacency matrix + Floyd-Warshall.
+
+4. **Acyclic vs Cyclic**
+   - DAG → DP/topological sort.  
+   - General → may require cycle detection.
+
+5. **Special Class (Tree, DAG, Bipartite, Functional, etc.)**
+   - Recognize special cases → unlock faster algorithms.
+
+6. **Output Requirements**
+   - Are we finding **existence** (e.g., does a cycle exist?) → `O(V+E)`.  
+   - Or **enumerating all cycles/paths** → often exponential.
+
+---
+
+## 5. TL;DR
+
+👉 To **solve graph problems efficiently**, always ask:
+- Is it **directed or undirected**?  
+- Is it **weighted or unweighted**?  
+- Is it **acyclic (tree/DAG)** or **cyclic**?  
+- Is it a **special class** (functional, bipartite, planar)?  
+- Do I need to **detect, count, find shortest/longest, or enumerate**?
+
+---
+
+## 6. Algorithm Mapping (Cheat Sheet)
+
+- **DFS / BFS** → traversal, connected components, bipartite, cycle detection.  
+- **Topological sort + DP** → DAG problems.  
+- **Dijkstra / Bellman-Ford / Floyd-Warshall** → shortest paths.  
+- **Kruskal / Prim** → Minimum Spanning Tree.  
+- **Backtracking / DP on bitmask** → Hamiltonian / longest cycle problems.  
+
+---
+
+</details>
 
 
 <!-- <details id="1584. Min Cost to Connect All Points">
