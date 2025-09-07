@@ -528,7 +528,6 @@ class Solution {
                 traverseGraph(adj, neighbor, node, cycleLen + 1, visited);
             }
         }
-        visited[node]=false;
     }
 }
 ```

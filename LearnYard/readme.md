@@ -1920,19 +1920,213 @@ class Solution {
 </details>
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="2608. Shortest Cycle in a Graph">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">2608. Shortest Cycle in a Graph 
 </span>
 </summary>
-</details> -->
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+Hard
+Topics
+premium lock icon
+Companies
+Hint
+There is a bi-directional graph with n vertices, where each vertex is labeled from 0 to n - 1. The edges in the graph are represented by a given 2D integer array edges, where edges[i] = [ui, vi] denotes an edge between vertex ui and vertex vi. Every vertex pair is connected by at most one edge, and no vertex has an edge to itself.
+
+Return the length of the shortest cycle in the graph. If no cycle exists, return -1.
+
+A cycle is a path that starts and ends at the same node, and each edge in the path is used only once.
+
+ 
+
+Example 1:
+
+
+Input: n = 7, edges = [[0,1],[1,2],[2,0],[3,4],[4,5],[5,6],[6,3]]
+Output: 3
+Explanation: The cycle with the smallest length is : 0 -> 1 -> 2 -> 0 
+Example 2:
+
+
+Input: n = 4, edges = [[0,1],[0,2]]
+Output: -1
+Explanation: There are no cycles in this graph.
+ 
+
+Constraints:
+
+2 <= n <= 1000
+1 <= edges.length <= 1000
+edges[i].length == 2
+0 <= ui, vi < n
+ui != vi
+There are no repeated edges.
+
+```java
+class Solution {
+    public int findShortestCycle(int n, int[][] edges) {
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());
+        for (int[] e : edges) {
+            adj.get(e[0]).add(e[1]);
+            adj.get(e[1]).add(e[0]);
+        }
+
+        int ans = Integer.MAX_VALUE;
+
+        for (int start = 0; start < n; start++) {
+            int[] dist = new int[n];
+            Arrays.fill(dist, -1);
+            Queue<Integer> q = new LinkedList<>();
+
+            dist[start] = 0;
+            q.offer(start);
+
+            while (!q.isEmpty()) {
+                int u = q.poll();
+                for (int v : adj.get(u)) {
+                    if (dist[v] == -1) { // not visited
+                        dist[v] = dist[u] + 1; // 
+                        q.offer(v);
+                    } else if (dist[v] >= dist[u]) { // smaller values dipicts that node was visited earlier than v
+                        // found a cycle
+                        ans = Math.min(ans, dist[v] + dist[u] + 1); // dist[v]-> dist between root node and v similarly dist[u] + dist between u-v which is 1
+                    }
+                }
+            }
+        }
+
+        return ans == Integer.MAX_VALUE ? -1 : ans;
+    }
+}
+
+```
+
+✅ How it works
+
+    For each node, run BFS to compute shortest distances.
+
+    If an edge leads to an already visited node (but not the direct parent), it forms a cycle.
+
+    Cycle length = dist[u] + dist[v] + 1.
+
+    Keep track of the minimum across all BFS runs.
+
+⚡ Complexity:
+
+    Time: O(V * (V + E))
+
+    Space: O(V + E)
+</details>
+
+<details id="785. Is Graph Bipartite?">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">785. Is Graph Bipartite? 
 </span>
 </summary>
-</details> -->
+
+Medium
+Topics
+premium lock icon
+Companies
+There is an undirected graph with n nodes, where each node is numbered between 0 and n - 1. You are given a 2D array graph, where graph[u] is an array of nodes that node u is adjacent to. More formally, for each v in graph[u], there is an undirected edge between node u and node v. The graph has the following properties:
+
+There are no self-edges (graph[u] does not contain u).
+There are no parallel edges (graph[u] does not contain duplicate values).
+If v is in graph[u], then u is in graph[v] (the graph is undirected).
+The graph may not be connected, meaning there may be two nodes u and v such that there is no path between them.
+A graph is bipartite if the nodes can be partitioned into two independent sets A and B such that every edge in the graph connects a node in set A and a node in set B.
+
+Return true if and only if it is bipartite.
+
+ 
+
+Example 1:
+
+
+Input: graph = [[1,2,3],[0,2],[0,1,3],[0,2]]
+Output: false
+Explanation: There is no way to partition the nodes into two independent sets such that every edge connects a node in one and a node in the other.
+Example 2:
+
+
+Input: graph = [[1,3],[0,2],[1,3],[0,2]]
+Output: true
+Explanation: We can partition the nodes into two sets: {0, 2} and {1, 3}.
+ 
+
+Constraints:
+
+graph.length == n
+1 <= n <= 100
+0 <= graph[u].length < n
+0 <= graph[u][i] <= n - 1
+graph[u] does not contain u.
+All the values of graph[u] are unique.
+If graph[u] contains v, then graph[v] contains u.
+
+```java
+class Solution {
+    public boolean isBipartite(int[][] graph) {
+        int v=graph.length;
+        int[] colors=new int[v];
+        Arrays.fill(colors, -1);
+
+        for(int i=0;i<v;i++){
+            if(colors[i] == -1 & isGraphBipertite(graph, i, -1, colors, 0)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isGraphBipertite(int[][] graph, int node, int parent, int[] colors, int color){
+        colors[node]=color;
+
+        for(int neighbor: graph[node]){
+            if(neighbor == parent)continue;
+            if(colors[neighbor] == -1 && isGraphBipertite(graph, neighbor, node, colors, 1-color)){
+                return true;
+            }
+            if(colors[neighbor] == color){
+                return true;
+            }
+        }
+        return false;
+    }
+}
+```
+
+
+🔹 Total Time Complexity
+
+    Let:
+
+    V = number of vertices
+
+    E = number of edges
+
+    Visiting all vertices: O(V)
+
+    Traversing all edges in adjacency lists: O(E)
+
+    ✅ So total time complexity:
+
+    O(V+E)
+	​
+
+🔹 Space Complexity
+
+    colors[] → O(V)
+
+    Recursion stack in DFS → O(V) in worst case (linear chain)
+
+    ✅ So space complexity:
+
+    O(V)
+	​
+
+</details>
 
 
 <!-- <details id="1584. Min Cost to Connect All Points">
