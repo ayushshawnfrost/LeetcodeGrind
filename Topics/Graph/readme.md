@@ -726,7 +726,8 @@ class Solution {
 </span>
 </summary>
 
-    Can you color a graph in 2 colors, such that no 2 adjcent nodes have same color
+    Can you color a graph in 2 colors, such that no 2 adjcent nodes have same color.
+    IF ANY ODD LENGTH CYCLE IS PRESENT IN A GRAPH ---> GRAPH CAN'T BE BIPARTITE
 </details>
 
 <details id="Bipartite Graph | DFS">

@@ -1137,63 +1137,787 @@ class NumMatrix {
 </details>
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+
+
+# Graphs
+
+### BFS/DFS
+
+<details id="841. Keys and Rooms">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">841. Keys and Rooms 
+</span>
+</summary>
+
+Medium
+Topics
+premium lock icon
+Companies
+There are n rooms labeled from 0 to n - 1 and all the rooms are locked except for room 0. Your goal is to visit all the rooms. However, you cannot enter a locked room without having its key.
+
+When you visit a room, you may find a set of distinct keys in it. Each key has a number on it, denoting which room it unlocks, and you can take all of them with you to unlock the other rooms.
+
+Given an array rooms where rooms[i] is the set of keys that you can obtain if you visited room i, return true if you can visit all the rooms, or false otherwise.
+
+ 
+
+Example 1:
+
+Input: rooms = [[1],[2],[3],[]]
+Output: true
+Explanation: 
+We visit room 0 and pick up key 1.
+We then visit room 1 and pick up key 2.
+We then visit room 2 and pick up key 3.
+We then visit room 3.
+Since we were able to visit every room, we return true.
+Example 2:
+
+Input: rooms = [[1,3],[3,0,1],[2],[0]]
+Output: false
+Explanation: We can not enter room number 2 since the only key that unlocks it is in that room.
+ 
+
+Constraints:
+
+n == rooms.length
+2 <= n <= 1000
+0 <= rooms[i].length <= 1000
+1 <= sum(rooms[i].length) <= 3000
+0 <= rooms[i][j] < n
+All the values of rooms[i] are unique.
+
+```java
+class Solution {
+    public boolean canVisitAllRooms(List<List<Integer>> rooms) {
+        int n = rooms.size();
+        boolean[] visited = new boolean[n];
+        dfs(rooms, visited, 0);
+        for (boolean v : visited) {
+            if (!v)return false; 
+        }
+        return true;
+    }
+    private void dfs(List<List<Integer>> rooms, boolean[] visited, int node){
+        if(visited[node])return;
+        visited[node]=true;
+        for (Integer neighbor : rooms.get(node)) {
+            if (visited[neighbor] != true) {
+                dfs(rooms, visited, neighbor);
+            }
+        }
+    }
+}
+
+```
+</details>
+
+<details id="547. Number of Provinces">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">547. Number of Provinces 
+</span>
+</summary>
+
+Medium
+Topics
+premium lock icon
+Companies
+There are n cities. Some of them are connected, while some are not. If city a is connected directly with city b, and city b is connected directly with city c, then city a is connected indirectly with city c.
+
+A province is a group of directly or indirectly connected cities and no other cities outside of the group.
+
+You are given an n x n matrix isConnected where isConnected[i][j] = 1 if the ith city and the jth city are directly connected, and isConnected[i][j] = 0 otherwise.
+
+Return the total number of provinces.
+
+
+```java
+class Solution {
+    public int findCircleNum(int[][] isConnected) {
+        //make an adj list
+        List<List<Integer>> adj = new ArrayList<>();
+        int r = isConnected.length;
+        int c = isConnected[0].length;
+
+        for (int i = 0; i < r; i++) {
+            adj.add(new ArrayList<>());
+        }
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                if (isConnected[i][j] == 1) {
+                    adj.get(i).add(j);
+                }
+            }
+        }
+        boolean[] visited = new boolean[r];
+        int province = 0;
+        for (int i = 0; i < r; i++) {
+            if (!visited[i]) {
+                province++;
+                bfs(adj, i, visited);
+            }
+        }
+        return province;
+    }
+
+    private void bfs(List<List<Integer>> adj, int node, boolean[] visited) {
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(node);
+        visited[node] = true;
+
+        while (!queue.isEmpty()) {
+            int parent = queue.poll();
+
+            for (Integer neighbor : adj.get(parent)) {
+                if (!visited[neighbor]) {
+                    visited[neighbor] = true;
+                    queue.add(neighbor);
+                }
+            }
+        }
+    }
+}
+
+```
+</details>
+
+
+<details id="1466. Reorder Routes to Make All Paths Lead to the City Zero">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1466. Reorder Routes to Make All Paths Lead to the City Zero 
+</span>
+</summary>
+
+Medium
+Topics
+premium lock icon
+Companies
+Hint
+There are n cities numbered from 0 to n - 1 and n - 1 roads such that there is only one way to travel between two different cities (this network form a tree). Last year, The ministry of transport decided to orient the roads in one direction because they are too narrow.
+
+Roads are represented by connections where connections[i] = [ai, bi] represents a road from city ai to city bi.
+
+This year, there will be a big event in the capital (city 0), and many people want to travel to this city.
+
+Your task consists of reorienting some roads such that each city can visit the city 0. Return the minimum number of edges changed.
+
+It's guaranteed that each city can reach city 0 after reorder.
+
+    **Observation**: When they say that there are n nodes and n-1 edges and there only one path between any 2 nodes that tells that the graph does not have any loops and we have a connected graph (n nodes + n-1 edges + no loops = connected graph)
+
+    **Why this ensures minimum flips**:
+    1. We visit each city exactly once (DFS/BFS), we count each edge exactly once.
+
+    2. We only flip edges that directly violate the “point to 0” condition.
+
+    3. This gives the minimum flips, since flipping any fewer would leave at least one city unreachable from 0.
+
+
+ ```java
+// BFS
+class Solution {
+    public int minReorder(int n, int[][] connections) {
+        //make adjcencey
+        List<List<int[]>> adj = new ArrayList<>();
+        int r = connections.length;
+        int c = connections[0].length;
+
+        for (int i = 0; i < n; i++) {
+            adj.add(new ArrayList<>());
+        }
+        // Build adjacency list with direction info
+        for (int[] edge : connections) {
+            int from = edge[0];
+            int to = edge[1];
+            adj.get(from).add(new int[] { to, 1 }); // 1 means needs reversal (from -> to)
+            adj.get(to).add(new int[] { from, 0 }); // 0 means correct direction (to -> from)
+        }
+
+        // bfs traversal
+        Queue<Integer> queue = new LinkedList<>();
+        boolean[] visited = new boolean[n];
+        queue.add(0);
+        visited[0] = true;
+        int reversal = 0;
+
+        while (!queue.isEmpty()) {
+            int node = queue.poll();
+            for (int[] next : adj.get(node)) {
+                int neigh = next[0];
+                int needsReverse = next[1];
+                if (!visited[neigh]) {
+                    visited[neigh] = true;
+                    reversal += needsReverse;
+                    queue.add(neigh);
+                }
+            }
+        }
+
+        return reversal;
+    }
+}
+
+ ```
+
+
+ ```java
+// DFS
+
+class Solution {
+    int changes = 0;
+
+    public int minReorder(int n, int[][] connections) {
+        List<List<int[]>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) graph.add(new ArrayList<>());
+
+        // Build graph: store neighbor + direction
+        for (int[] edge : connections) {
+            graph.get(edge[0]).add(new int[]{edge[1], 1}); // original direction u->v
+            graph.get(edge[1]).add(new int[]{edge[0], 0}); // reverse direction v->u
+        }
+
+        dfs(0, -1, graph);
+        return changes;
+    }
+
+    private void dfs(int node, int parent, List<List<int[]>> graph) {
+        for (int[] neighbor : graph.get(node)) {
+            if (neighbor[0] == parent) continue; // don't revisit parent
+            if (neighbor[1] == 1) changes++; // edge needs reversing
+            dfs(neighbor[0], node, graph);
+        }
+    }
+}
+
+ ```
+</details>
+
+<details id="127. Word Ladder">
+<summary> 
+<span style="color:red;font-size:16px;font-weight:bold">127. Word Ladder 
+</span>
+</summary>
+
+Hard
+Topics
+premium lock icon
+Companies
+A transformation sequence from word beginWord to word endWord using a dictionary wordList is a sequence of words beginWord -> s1 -> s2 -> ... -> sk such that:
+
+Every adjacent pair of words differs by a single letter.
+Every si for 1 <= i <= k is in wordList. Note that beginWord does not need to be in wordList.
+sk == endWord
+Given two words, beginWord and endWord, and a dictionary wordList, return the number of words in the shortest transformation sequence from beginWord to endWord, or 0 if no such sequence exists.
+
+ 
+
+Example 1:
+
+Input: beginWord = "hit", endWord = "cog", wordList = ["hot","dot","dog","lot","log","cog"]
+Output: 5
+Explanation: One shortest transformation sequence is "hit" -> "hot" -> "dot" -> "dog" -> cog", which is 5 words long.
+Example 2:
+
+Input: beginWord = "hit", endWord = "cog", wordList = ["hot","dot","dog","lot","log"]
+Output: 0
+Explanation: The endWord "cog" is not in wordList, therefore there is no valid transformation sequence.
+ 
+
+Constraints:
+
+1 <= beginWord.length <= 10
+endWord.length == beginWord.length
+1 <= wordList.length <= 5000
+wordList[i].length == beginWord.length
+beginWord, endWord, and wordList[i] consist of lowercase English letters.
+beginWord != endWord
+All the words in wordList are unique.
+
+
+    Takeaways:
+    1. Trying out all possible character: make a loop using  **for (char c = 'a'; c <= 'z'; c++)** and also usea character array to replace the chars like **chars[j] = c**
+    2. Different positions for transations.
+
+```java
+class Solution {
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        Set<String> wordSet = new HashSet<>(wordList);
+        if (!wordSet.contains(endWord)) return 0; // endWord must be in wordList
+
+        Queue<String> queue = new LinkedList<>();
+        queue.add(beginWord);
+
+        Set<String> visited = new HashSet<>();
+        visited.add(beginWord);
+
+        int transitions = 0; // starting from beginWord
+
+        while (!queue.isEmpty()) {
+            int levelSize = queue.size(); 
+            transitions++;
+            for (int i = 0; i < levelSize; i++) {
+                String word = queue.poll();
+
+                if (word.equals(endWord)) {
+                    return transitions;
+                }
+
+                char[] chars = word.toCharArray();
+                for (int j = 0; j < chars.length; j++) {
+                    char original = chars[j];
+                    for (char c = 'a'; c <= 'z'; c++) {
+                        if (c == original) continue;
+
+                        chars[j] = c;
+                        String newWord = new String(chars);
+
+                        if (wordSet.contains(newWord) && !visited.contains(newWord)) {
+                            queue.add(newWord);
+                            visited.add(newWord);
+                        }
+                    }
+                    chars[j] = original; // restore
+                }
+            }
+           
+        }
+
+        return 0; // no path found
+    }
+}
+```
+```java
+changed positions of transition stills works fine
+
+class Solution {
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        Set<String> wordSet = new HashSet<>(wordList);
+        if (!wordSet.contains(endWord))
+            return 0; // endWord must be in wordList
+
+        Queue<String> queue = new LinkedList<>();
+        queue.add(beginWord);
+
+        Set<String> visited = new HashSet<>();
+        visited.add(beginWord);
+
+        int transitions = 0; // starting from beginWord
+
+        while (!queue.isEmpty()) {
+            int levelSize = queue.size();
+            transitions++;
+            for (int i = 0; i < levelSize; i++) {
+                String word = queue.poll();
+
+                char[] chars = word.toCharArray();
+                for (int j = 0; j < chars.length; j++) {
+                    char original = chars[j];
+                    for (char c = 'a'; c <= 'z'; c++) {
+                        if (c == original)
+                            continue;
+
+                        chars[j] = c;
+                        String newWord = new String(chars);
+                        if (newWord.equals(endWord)) {
+                            return transitions+1;
+                        }
+                        if (wordSet.contains(newWord) && !visited.contains(newWord)) {
+                            queue.add(newWord);
+                            visited.add(newWord);
+                        }
+                    }
+                    chars[j] = original; // restore
+                }
+            }
+
+        }
+
+        return 0; // no path found
+    }
+}
+```
+```java
+//this also works
+
+class Solution {
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        Set<String> wordSet = new HashSet<>(wordList);
+        if (!wordSet.contains(endWord)) return 0; // endWord must be in wordList
+
+        Queue<String> queue = new LinkedList<>();
+        queue.add(beginWord);
+
+        Set<String> visited = new HashSet<>();
+        visited.add(beginWord);
+
+        int transitions = 1; // starting from beginWord
+
+        while (!queue.isEmpty()) {
+            int levelSize = queue.size();
+            for (int i = 0; i < levelSize; i++) {
+                String word = queue.poll();
+
+                if (word.equals(endWord)) {
+                    return transitions;
+                }
+
+                char[] chars = word.toCharArray();
+                for (int j = 0; j < chars.length; j++) {
+                    char original = chars[j];
+                    for (char c = 'a'; c <= 'z'; c++) {
+                        if (c == original) continue;
+
+                        chars[j] = c;
+                        String newWord = new String(chars);
+
+                        if (wordSet.contains(newWord) && !visited.contains(newWord)) {
+                            queue.add(newWord);
+                            visited.add(newWord);
+                        }
+                    }
+                    chars[j] = original; // restore
+                }
+            }
+            transitions++;
+        }
+
+        return 0; // no path found
+    }
+}
+
+
+```
+</details>
+
+
+<details id="2998. Minimum Number of Operations to Make X and Y Equal">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">2998. Minimum Number of Operations to Make X and Y Equal 
+</span>
+</summary>
+Medium
+Topics
+premium lock icon
+Companies
+Hint
+You are given two positive integers x and y.
+
+In one operation, you can do one of the four following operations:
+
+Divide x by 11 if x is a multiple of 11.
+Divide x by 5 if x is a multiple of 5.
+Decrement x by 1.
+Increment x by 1.
+Return the minimum number of operations required to make x and y equal.
+
+ 
+
+Example 1:
+
+Input: x = 26, y = 1
+Output: 3
+Explanation: We can make 26 equal to 1 by applying the following operations: 
+1. Decrement x by 1
+2. Divide x by 5
+3. Divide x by 5
+It can be shown that 3 is the minimum number of operations required to make 26 equal to 1.
+Example 2:
+
+Input: x = 54, y = 2
+Output: 4
+Explanation: We can make 54 equal to 2 by applying the following operations: 
+1. Increment x by 1
+2. Divide x by 11 
+3. Divide x by 5
+4. Increment x by 1
+It can be shown that 4 is the minimum number of operations required to make 54 equal to 2.
+Example 3:
+
+Input: x = 25, y = 30
+Output: 5
+Explanation: We can make 25 equal to 30 by applying the following operations: 
+1. Increment x by 1
+2. Increment x by 1
+3. Increment x by 1
+4. Increment x by 1
+5. Increment x by 1
+It can be shown that 5 is the minimum number of operations required to make 25 equal to 30.
+ 
+
+Constraints:
+
+1 <= x, y <= 104
+
+
+```java
+class Solution {
+    public int minimumOperationsToMakeEqual(int x, int y) {
+        if (x <= y) {
+            return y - x;  // We can reach y simply by incrementing
+        }
+
+        Queue<Integer> queue = new ArrayDeque<>();
+        Set<Integer> seen = new HashSet<>();
+        queue.offer(x);
+
+        int ans = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            
+            for (int i = 0; i < size; i++) {
+                int cur = queue.poll();
+                if (cur == y) {
+                    return ans;
+                }
+                if (seen.contains(cur)) continue;
+                seen.add(cur);
+
+                if (cur % 11 == 0) {
+                    queue.offer(cur / 11);
+                }
+                if (cur % 5 == 0) {
+                    queue.offer(cur / 5);
+                }
+                queue.offer(cur - 1);
+                queue.offer(cur + 1);
+            }
+            ans++;
+        }return -1;
+    }
+}
+
+```
+
+
+</details>
+
+<details id="1584. Min Cost to Connect All Points">
 <summary> 
 <span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
 </span>
 </summary>
-</details> -->
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+https://www.geeksforgeeks.org/problems/detect-cycle-in-an-undirected-graph/0
+
+Undirected Graph Cycle
+Difficulty: MediumAccuracy: 30.13%Submissions: 628K+Points: 4Average Time: 20m
+Given an undirected graph with V vertices and E edges, represented as a 2D vector edges[][], where each entry edges[i] = [u, v] denotes an edge between vertices u and v, determine whether the graph contains a cycle or not. The graph can have multiple component.
+
+Examples:
+
+Input: V = 4, E = 4, edges[][] = [[0, 1], [0, 2], [1, 2], [2, 3]]
+Output: true
+Explanation: 
+ 
+1 -> 2 -> 0 -> 1 is a cycle.
+Input: V = 4, E = 3, edges[][] = [[0, 1], [1, 2], [2, 3]]
+Output: false
+Explanation: 
+ 
+No cycle in the graph.
+Constraints:
+1 ≤ V ≤ 105
+1 ≤ E = edges.size() ≤ 105
+
+Expected Complexities
+
+    Note: Here we dont need inRecursion to detect the back edge, since it is allowed in bi directional graph
+
+```java
+//correct code
+
+class Solution {
+    public boolean isCycle(int V, int[][] edges) {
+        List<List<Integer>> adj=new ArrayList<>();
+        boolean[] visited=new boolean[V];
+        
+        for(int i=0;i<V;i++){
+            adj.add(new ArrayList<>());
+        }
+        
+        for(int[] edge:edges){
+            adj.get(edge[0]).add(edge[1]);
+            adj.get(edge[1]).add(edge[0]);
+        }
+        
+        // checking cycle with connected components
+        for(int i=0;i<V;i++){
+            if(!visited[i]){
+
+                // return dfs(adj, visited,-1, i); // This is wrong because this will return false once it check 1st node, we need to keep on checking as we get false
+                if(dfs(adj, visited,-1, i)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private boolean dfs(List<List<Integer>> adj, boolean[] visited, int parent, int node){
+        visited[node]=true;
+        
+        for(int neighbor: adj.get(node)){
+            if(neighbor == parent)continue;
+            if(visited[neighbor])return true;
+            if(dfs(adj, visited, inRecursion,node, neighbor)){
+                return true;
+            }
+        }
+        return false;
+    }
+}
+```
+</details>
+
+<details id="Directed Graph Cycle">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">Directed Graph Cycle 
 </span>
 </summary>
-</details> -->
 
+```java
+class Solution {
+    public boolean isCyclic(int V, int[][] edges) {
+        // code here
+        List<List<Integer>> adj=new ArrayList<>();
+        
+        for(int i=0;i<V;i++){
+            adj.add(new ArrayList<>());
+        }
+        
+        for(int[] edge:edges){
+            adj.get(edge[0]).add(edge[1]);
+        }
+        
+        boolean[] visited=new boolean[V];
+        boolean[] inRecursion=new boolean[V];
+        
+        
+        for(int i=0;i<V;i++){
+            if(!visited[i]){
+                if(dfs(adj, i, visited, inRecursion)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private boolean dfs(List<List<Integer>> adj, int node, boolean[] visited, boolean[] inRecursion){
+        visited[node]=true;
+        inRecursion[node]=true;
+        
+        for(int neighbor:adj.get(node)){
+            if(!visited[neighbor]){
+                if(dfs(adj, neighbor, visited, inRecursion)){
+                    return true;
+                }
+            }else{
+                if(inRecursion[neighbor]){
+                    return true;
+                }
+            }
+        }
+        inRecursion[node]=false;
+        return false;
+    }
+}
+```
+</details>
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="1559. Detect Cycles in 2D Grid">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">1559. Detect Cycles in 2D Grid 
 </span>
 </summary>
-</details> -->
 
-<!-- <details id="1584. Min Cost to Connect All Points">
-<summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
-</span>
-</summary>
-</details> -->
+Medium
+Topics
+premium lock icon
+Companies
+Hint
+Given a 2D array of characters grid of size m x n, you need to find if there exists any cycle consisting of the same value in grid.
+
+A cycle is a path of length 4 or more in the grid that starts and ends at the same cell. From a given cell, you can move to one of the cells adjacent to it - in one of the four directions (up, down, left, or right), if it has the same value of the current cell.
+
+Also, you cannot move to the cell that you visited in your last move. For example, the cycle (1, 1) -> (1, 2) -> (1, 1) is invalid because from (1, 2) we visited (1, 1) which was the last visited cell.
+
+Return true if any cycle of the same value exists in grid, otherwise, return false.
+
+ 
+
+Example 1:
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
-<summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
-</span>
-</summary>
-</details> -->
 
-<!-- <details id="1584. Min Cost to Connect All Points">
-<summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
-</span>
-</summary>
-</details> -->
+Input: grid = [["a","a","a","a"],["a","b","b","a"],["a","b","b","a"],["a","a","a","a"]]
+Output: true
+Explanation: There are two valid cycles shown in different colors in the image below:
 
-<!-- <details id="1584. Min Cost to Connect All Points">
-<summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
-</span>
-</summary>
-</details> -->
+Example 2:
 
-<!-- <details id="1584. Min Cost to Connect All Points">
-<summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
-</span>
-</summary>
-</details> -->
+
+
+Input: grid = [["c","c","c","a"],["c","d","c","c"],["c","c","e","c"],["f","c","c","c"]]
+Output: true
+Explanation: There is only one valid cycle highlighted in the image below:
+
+Example 3:
+
+
+
+Input: grid = [["a","b","b"],["b","z","b"],["b","b","a"]]
+Output: false
+ 
+
+Constraints:
+
+m == grid.length
+n == grid[i].length
+1 <= m, n <= 500
+grid consists only of lowercase English letters.
+
+```java
+class Solution {
+    public boolean containsCycle(char[][] grid) {
+        int row = grid.length;
+        int col = grid[0].length;
+        boolean[][] visited = new boolean[row][col];
+
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (!visited[i][j]) {
+                    if (dfs(grid, i, j, -1, -1, visited, row, col)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean dfs(char[][] grid, int i, int j, int pi, int pj, boolean[][] visited, int row, int col) {
+        visited[i][j] = true;
+        int[][] directions = new int[][] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
+
+        for (int[] dir : directions) {
+            int x = i + dir[0];
+            int y = j + dir[1];
+            if (x < row && y < col && x >= 0 && y >= 0 && grid[x][y] == grid[i][j]) {
+                if (x == pi && y == pj)
+                    continue;
+                if (visited[x][y])
+                    return true;
+                if (dfs(grid, x, y, i, j, visited, row, col)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+}
+```
+</details>
 
 
 <!-- <details id="1584. Min Cost to Connect All Points">
