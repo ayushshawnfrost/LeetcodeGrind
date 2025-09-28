@@ -1691,9 +1691,11 @@ class Solution {
 
 </details>
 
-<details id="1584. Min Cost to Connect All Points">
+### Cycle Detection
+
+<details id="Detect Cycle in an Undirected Graph (GeeksforGeeks)">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">Detect Cycle in an Undirected Graph (GeeksforGeeks) 
 </span>
 </summary>
 
@@ -1769,9 +1771,9 @@ class Solution {
 ```
 </details>
 
-<details id="Directed Graph Cycle">
+<details id="Detect Cycle in a Directed Graph (GeeksforGeeks)">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">Directed Graph Cycle 
+<span style="color:yellow;font-size:16px;font-weight:bold">Detect Cycle in a Directed Graph (GeeksforGeeks) 
 </span>
 </summary>
 
@@ -1922,7 +1924,7 @@ class Solution {
 
 <details id="2608. Shortest Cycle in a Graph">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">2608. Shortest Cycle in a Graph 
+<span style="color:red;font-size:16px;font-weight:bold">2608. Shortest Cycle in a Graph 
 </span>
 </summary>
 
@@ -2128,6 +2130,329 @@ class Solution {
 
 </details>
 
+### Topological Sort
+
+<details id="210. Course Schedule II">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">210. Course Schedule II 
+</span>
+</summary>
+
+Medium
+Topics
+premium lock icon
+Companies
+Hint
+There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
+
+For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.
+Return the ordering of courses you should take to finish all courses. If there are many valid answers, return any of them. If it is impossible to finish all courses, return an empty array.
+
+ 
+
+Example 1:
+
+Input: numCourses = 2, prerequisites = [[1,0]]
+Output: [0,1]
+Explanation: There are a total of 2 courses to take. To take course 1 you should have finished course 0. So the correct course order is [0,1].
+Example 2:
+
+Input: numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]
+Output: [0,2,1,3]
+Explanation: There are a total of 4 courses to take. To take course 3 you should have finished both courses 1 and 2. Both courses 1 and 2 should be taken after you finished course 0.
+So one correct course order is [0,1,2,3]. Another correct ordering is [0,2,1,3].
+Example 3:
+
+Input: numCourses = 1, prerequisites = []
+Output: [0]
+ 
+
+Constraints:
+
+1 <= numCourses <= 2000
+0 <= prerequisites.length <= numCourses * (numCourses - 1)
+prerequisites[i].length == 2
+0 <= ai, bi < numCourses
+ai != bi
+All the pairs [ai, bi] are distinct.
+
+
+```java
+class Solution {
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        List<List<Integer>> adj=new ArrayList<>();
+        boolean[] visited=new boolean[numCourses];
+        boolean[] inRecursion=new boolean[numCourses];
+        Stack<Integer> stack=new Stack<>();
+
+        for(int i=0;i<numCourses;i++){
+            adj.add(new ArrayList<>());
+        }
+
+        for(int[] pre:prerequisites){
+            adj.get(pre[1]).add(pre[0]);
+        }
+
+        for(int i=0;i<numCourses;i++){
+            if(!visited[i] && checkDependency(adj, stack, visited, inRecursion, i, numCourses)){
+                return new int[]{};
+            }
+        }
+        if(stack.size() != numCourses)return new int[]{};
+        int[] sequence=new int[stack.size()];
+        
+        for(int i=0;i<sequence.length;i++){
+            sequence[i]=stack.pop();
+        }
+        return sequence;
+    }
+
+    private boolean checkDependency(List<List<Integer>> adj, Stack<Integer> stack, boolean[] visited, boolean[] inRecursion, int node, int numCourses){
+        visited[node]=true;
+        inRecursion[node]=true;
+
+        for(int neighbor:adj.get(node)){
+            if(!visited[neighbor] && checkDependency(adj, stack, visited, inRecursion, neighbor, numCourses)){
+                return true;
+            }
+            if(visited[neighbor] && inRecursion[neighbor]){
+                return true;
+            }
+        }
+        stack.add(node);
+        inRecursion[node]=false;
+        return false;
+    }
+}
+```
+✅ Total Time Complexity = O(V + E)
+
+    Space Complexity
+
+    Adjacency list → O(V + E)
+
+    Visited & recursion arrays → O(V)
+
+    Recursion stack (call stack) → worst case O(V)
+
+    Stack for topological order → O(V)
+
+✅ Total Space Complexity = O(V + E)
+
+
+</details>
+
+<details id="802. Find Eventual Safe States">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">802. Find Eventual Safe States 
+</span>
+</summary>
+
+Medium
+Topics
+premium lock icon
+Companies
+There is a directed graph of n nodes with each node labeled from 0 to n - 1. The graph is represented by a 0-indexed 2D integer array graph where graph[i] is an integer array of nodes adjacent to node i, meaning there is an edge from node i to each node in graph[i].
+
+A node is a terminal node if there are no outgoing edges. A node is a safe node if every possible path starting from that node leads to a terminal node (or another safe node).
+
+Return an array containing all the safe nodes of the graph. The answer should be sorted in ascending order.
+
+ 
+
+Example 1:
+
+Illustration of graph
+Input: graph = [[1,2],[2,3],[5],[0],[5],[],[]]
+Output: [2,4,5,6]
+Explanation: The given graph is shown above.
+Nodes 5 and 6 are terminal nodes as there are no outgoing edges from either of them.
+Every path starting at nodes 2, 4, 5, and 6 all lead to either node 5 or 6.
+Example 2:
+
+Input: graph = [[1,2,3,4],[1,2],[3,4],[0,4],[]]
+Output: [4]
+Explanation:
+Only node 4 is a terminal node, and every path starting at node 4 leads to node 4.
+ 
+
+Constraints:
+
+n == graph.length
+1 <= n <= 104
+0 <= graph[i].length <= n
+0 <= graph[i][j] <= n - 1
+graph[i] is sorted in a strictly increasing order.
+The graph may contain self-loops.
+The number of edges in the graph will be in the range [1, 4 * 104].
+
+
+    Observation: In the cycle detection algo for directedgraph, the vertex which form a cycle didnt got chance 
+    to make |inRecursion[vertex]=false|. We can leverage this observation and say that the vertex for which
+    |inRecursion[vertex]==true| that means those nodes were involved in some kind of cycle.
+
+    in this question we need to find the safe nodes. The safe nodes are defined as A node for which
+    every possible path starting from that node leads to a terminal node (or another safe node). Any node
+    involved in a cycle can't be a terminal node, since it will definetly have a outgoing edge hence it can't be
+    a safe node. So find all those nodes involved in a cycle and complement of these will be the safe nodes. 
+
+```java
+class Solution {
+    public List<Integer> eventualSafeNodes(int[][] graph) {
+        int v=graph.length;
+        boolean[] inRecursion=new boolean[v];
+        boolean[] visited=new boolean[v];
+        List<Integer> safeNodes=new ArrayList<>();
+
+        for(int i=0;i<v;i++){
+            if(!visited[i]){
+                ifSafeStateExist(graph, visited, inRecursion, i);
+            }
+        }
+        for(int i=0;i<v;i++){
+            if(!inRecursion[i])safeNodes.add(i);
+        }
+        return safeNodes;
+    }
+
+    private boolean ifSafeStateExist(int[][] graph, boolean[] visited, boolean[] inRecursion, int node){
+        visited[node]=true;
+        inRecursion[node]=true;
+
+        for(int neighbor:graph[node]){
+            if(!visited[neighbor] && ifSafeStateExist(graph, visited, inRecursion, neighbor)){
+                return true;
+            }
+            if(visited[neighbor] && inRecursion[neighbor]){
+                return true;
+            }
+        }
+        inRecursion[node]=false;
+        return false;
+    }
+}
+
+```
+</details>
+
+
+<details id="2192. All Ancestors of a Node in a Directed Acyclic Graph">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">2192. All Ancestors of a Node in a Directed Acyclic Graph 
+</span>
+</summary>
+
+Medium
+Topics
+premium lock icon
+Companies
+Hint
+You are given a positive integer n representing the number of nodes of a Directed Acyclic Graph (DAG). The nodes are numbered from 0 to n - 1 (inclusive).
+
+You are also given a 2D integer array edges, where edges[i] = [fromi, toi] denotes that there is a unidirectional edge from fromi to toi in the graph.
+
+Return a list answer, where answer[i] is the list of ancestors of the ith node, sorted in ascending order.
+
+A node u is an ancestor of another node v if u can reach v via a set of edges.
+
+ 
+
+Example 1:
+
+
+Input: n = 8, edgeList = [[0,3],[0,4],[1,3],[2,4],[2,7],[3,5],[3,6],[3,7],[4,6]]
+Output: [[],[],[],[0,1],[0,2],[0,1,3],[0,1,2,3,4],[0,1,2,3]]
+Explanation:
+The above diagram represents the input graph.
+- Nodes 0, 1, and 2 do not have any ancestors.
+- Node 3 has two ancestors 0 and 1.
+- Node 4 has two ancestors 0 and 2.
+- Node 5 has three ancestors 0, 1, and 3.
+- Node 6 has five ancestors 0, 1, 2, 3, and 4.
+- Node 7 has four ancestors 0, 1, 2, and 3.
+Example 2:
+
+
+Input: n = 5, edgeList = [[0,1],[0,2],[0,3],[0,4],[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]
+Output: [[],[0],[0,1],[0,1,2],[0,1,2,3]]
+Explanation:
+The above diagram represents the input graph.
+- Node 0 does not have any ancestor.
+- Node 1 has one ancestor 0.
+- Node 2 has two ancestors 0 and 1.
+- Node 3 has three ancestors 0, 1, and 2.
+- Node 4 has four ancestors 0, 1, 2, and 3.
+ 
+
+Constraints:
+
+1 <= n <= 1000
+0 <= edges.length <= min(2000, n * (n - 1) / 2)
+edges[i].length == 2
+0 <= fromi, toi <= n - 1
+fromi != toi
+There are no duplicate edges.
+The graph is directed and acyclic.
+
+
+```java
+// DFS (TLE)
+class Solution {
+    public List<List<Integer>> getAncestors(int n, int[][] edges) {
+        List<List<Integer>> adj=new ArrayList<>();
+        List<List<Integer>> uniqueAncestors=new ArrayList<>();
+        List<Set<Integer>> ancestors=new ArrayList<>();
+        boolean[] visited=new boolean[n];
+        
+        for(int i=0;i<n;i++){
+            adj.add(new ArrayList<>());
+            ancestors.add(new HashSet<>());
+        }
+
+        for(int[] edge:edges){
+            adj.get(edge[0]).add(edge[1]);
+        }
+
+        for(int i=0;i<n;i++){
+            if(!visited[i]){
+                dfs(adj, ancestors, visited, i, new ArrayList<>());
+            }
+        }
+        for(Set<Integer> uniqueAnc:ancestors){
+            uniqueAncestors.add(new ArrayList(uniqueAnc));
+        }
+        for(List<Integer> list:uniqueAncestors){
+            Collections.sort(list);
+        }
+        return uniqueAncestors;
+    }
+
+    private void dfs(List<List<Integer>> adj, List<Set<Integer>> ancestors, boolean[] visited, int node, List<Integer> ans){
+        visited[node]=true;
+        ans.add(node);
+        for(int neighbor: adj.get(node)){
+            if(!visited[neighbor]){
+                for(int nodes:ans)ancestors.get(neighbor).add(nodes);
+                dfs(adj, ancestors, visited, neighbor, ans);
+            }
+        }
+        ans.remove(ans.size()-1);
+        visited[node]=false;
+    }
+}
+
+```
+
+
+</details>
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
 
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
@@ -2143,6 +2468,210 @@ class Solution {
 </summary>
 </details> -->
 
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
 
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
