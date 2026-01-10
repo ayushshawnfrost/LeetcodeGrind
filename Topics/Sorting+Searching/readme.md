@@ -1,6 +1,100 @@
-
-
 # Sorting
+
+Sorting algorithms can be categorized based on various criteria such as their approach, stability, time complexity, and space complexity. Here's a structured way to categorize them:
+
+---
+
+## **1. Based on Sorting Technique**
+
+### **Comparison-Based Sorting Algorithms**
+These algorithms compare elements to determine their order:
+- **Bubble Sort**
+- **Selection Sort**
+- **Insertion Sort**
+- **Merge Sort**
+- **Quick Sort**
+- **Heap Sort**
+- **Shell Sort**
+
+### **Non-Comparison-Based Sorting Algorithms**
+These algorithms use techniques like counting or hashing instead of comparisons:
+- **Counting Sort**
+- **Radix Sort**
+- **Bucket Sort**
+
+---
+
+## **2. Based on Stability**
+
+### **Stable Sorting Algorithms**
+Stable algorithms maintain the relative order of equal elements:
+- **Bubble Sort**
+- **Insertion Sort**
+- **Merge Sort**
+- **Counting Sort**
+- **Radix Sort**
+
+### **Unstable Sorting Algorithms**
+Unstable algorithms may not maintain the relative order of equal elements:
+- **Selection Sort**
+- **Quick Sort**
+- **Heap Sort**
+
+---
+
+## **3. Based on Time Complexity**
+
+### **O(n²) Time Complexity**
+- **Bubble Sort**
+- **Selection Sort**
+- **Insertion Sort**
+
+### **O(n log n) Time Complexity**
+- **Merge Sort**
+- **Quick Sort**
+- **Heap Sort**
+
+### **O(n) Time Complexity (for specific cases)**
+- **Counting Sort**
+- **Radix Sort**
+- **Bucket Sort**
+
+---
+
+## **4. Based on Space Complexity**
+
+### **In-Place Sorting Algorithms**
+These algorithms require constant or minimal extra space:
+- **Bubble Sort**
+- **Selection Sort**
+- **Insertion Sort**
+- **Quick Sort**
+- **Heap Sort**
+
+### **Not In-Place Sorting Algorithms**
+These algorithms require additional space proportional to the input size:
+- **Merge Sort**
+- **Counting Sort**
+- **Radix Sort**
+- **Bucket Sort**
+
+---
+
+## **5. Based on Recursion**
+
+### **Recursive Sorting Algorithms**
+- **Merge Sort**
+- **Quick Sort**
+
+### **Non-Recursive Sorting Algorithms**
+- **Bubble Sort**
+- **Selection Sort**
+- **Insertion Sort**
+- **Counting Sort**
+
+---
+
+This categorization can help you choose the right sorting algorithm based on the problem requirements.
 
 ## Selection Sort
 
@@ -17,6 +111,19 @@ It repeatedly selects the smallest (or largest) element from the unsorted part a
         1. Sort from left to right
         2. O(n^2)
         3. Not Stable
+
+
+Why is it not stable?
+
+    Example:
+    
+    Consider the array: [4a, 3, 4b, 1]
+    Here, 4a and 4b are equal but distinct elements.
+
+    First Pass:
+
+    The smallest element 1 is selected and swapped with 4a.
+    Array becomes: [1, 3, 4b, 4a]
 
 ```java
 int[] selectionSort(int[] nums){
@@ -316,8 +423,6 @@ However, comparing with nums[r] always gives us a definite answer:
 If nums[mid] > nums[r]: pivot MUST be to the right
 If nums[mid] ≤ nums[r]: pivot MUST be at mid or to the left
 
-
-
 Here's a visualization of different cases:
 CopyCase 1: [4,5,6,7,0,1,2]  // Rotated array
             ↑     ↑     ↑
@@ -388,8 +493,6 @@ nums[mid] >= nums[l] (6 >= 2)
 - So we do l = mid
 The key difference between finding minimum (pivot) and maximum:
 
-For minimum (pivot):
-
 javaCopyif (nums[mid] > nums[r]) {
     l = mid + 1;  // pivot is to the right
 } else {
@@ -407,8 +510,8 @@ This pattern emerges because:
 
 The minimum (pivot) element is where the descending step happens in the array
 The maximum element is right before the descending step
-By comparing with left for maximum, we can tell if we're still in the ascending sequence
-By comparing with right for minimum, we can tell if we've passed the descending step
+By comparing with nums[r] for minimum, we can tell if we've passed the descending step
+By comparing with nums[l] for maximum, we can tell if we're still in the ascending sequence
 
 So you're absolutely correct - the comparison point (left vs right) changes based on whether we're looking for the maximum or minimum element in the rotated sorted array!
 
@@ -976,3 +1079,1868 @@ public class tUf {
 -->
 
 
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">236. Lowest Common Ancestor of a Binary Tree
+</span>
+</summary>
+
+```java
+```
+</details> 
+-->
+
+
+<!--
+
+<details id="236. Lowest Common Ancestor of a Binary Tree">

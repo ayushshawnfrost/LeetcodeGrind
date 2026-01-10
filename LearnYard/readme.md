@@ -40,11 +40,11 @@ Constraints:
 1 <= nums.length <= 100
 0 <= nums[i] <= 100
 
-```java
+```java []
 class Solution {
     public void nextPermutation(int[] nums) {
         int swapIndex=-1;
-        // find a position where a next greater digit can be placed
+        // find a position where a next greater digit can be placed. Here start from the right most corner and keep chceking 2>5. index position of 2 will be the swap position. Now find a first number greeater than 2 in right to left fashion. swap both of them. reverse the right half.  
         for(int i=nums.length-2;i>=0;i--){
             if(nums[i]<nums[i+1]){
                 swapIndex=i;
@@ -820,6 +820,334 @@ class Solution {
 }
 ```
 </details>
+
+# Sliding Window
+
+### Fixed Window
+
+    Fixed Window questions can be solved mostly in 2 ways:
+
+    1. For loop solution : Here we calculate the first window and then one more loop for checking all the other windows by inclusing the right element and exclusing the left element of the window.
+
+    2. While loop solution: We keep on updating the window, once the window size is k, we updat the count and increment the left pointer.
+
+<details id="1456. Maximum Number of Vowels in a Substring of Given Length">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1456. Maximum Number of Vowels in a Substring of Given Length 
+</span>
+</summary>
+
+https://leetcode.com/problems/maximum-number-of-vowels-in-a-substring-of-given-length/description/
+
+Medium
+Topics
+premium lock icon
+Companies
+Hint
+Given a string s and an integer k, return the maximum number of vowel letters in any substring of s with length k.
+
+Vowel letters in English are 'a', 'e', 'i', 'o', and 'u'.
+
+ 
+
+Example 1:
+
+Input: s = "abciiidef", k = 3
+Output: 3
+Explanation: The substring "iii" contains 3 vowel letters.
+Example 2:
+
+Input: s = "aeiou", k = 2
+Output: 2
+Explanation: Any substring of length 2 contains 2 vowels.
+Example 3:
+
+Input: s = "leetcode", k = 3
+Output: 2
+Explanation: "lee", "eet" and "ode" contain 2 vowels.
+ 
+
+Constraints:
+
+1 <= s.length <= 105
+s consists of lowercase English letters.
+1 <= k <= s.length
+
+
+```java
+class Solution {
+    public int maxVowels(String s, int k) {
+        int maxVowels=0;
+        // check number of vowels in the first window
+        for(int i=0;i<k;i++){
+            if(isVowel(s.charAt(i))){
+                maxVowels++;
+            }
+        } 
+
+        int vCount=maxVowels;
+        for(int i=1;i<=s.length()-k;i++){
+            if(isVowel(s.charAt(i-1))){
+                vCount--;
+            }
+            if(isVowel(s.charAt(i+k-1))){
+                vCount++;
+            }
+            maxVowels=Math.max(maxVowels, vCount);
+        }
+        return maxVowels;
+    }
+
+    private boolean isVowel(char c){
+        if(c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u')return true;
+        return false;
+    }
+}
+```
+```java
+
+// Keep incrementing j and update the count untill you reach the window length k
+// at window len k update the maxV and increment i
+class Solution {
+    public int maxVowels(String s, int k) {
+        int n = s.length();
+        int maxV  = 0;
+        int count = 0;
+        int i = 0, j = 0;
+        
+        while(j < n) {
+            if(isVowel(s.charAt(j)))
+                count++;
+            
+            if(j-i+1 == k) {
+                maxV = Math.max(maxV, count);
+                if(isVowel(s.charAt(i)))
+                    count--;
+                i++;
+            }
+            j++;
+        }
+        
+        return maxV;
+    }
+
+    private boolean isVowel(char c){
+        if(c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u')return true;
+        return false;
+    }
+}
+```
+    Points to remember
+
+
+    Time and space is O(n)
+
+
+</details>
+
+<details id="1343. Number of Sub-arrays of Size K and Average Greater than or Equal to Threshold">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1343. Number of Sub-arrays of Size K and Average Greater than or Equal to Threshold 
+</span>
+</summary>
+
+https://leetcode.com/problems/number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold/description/
+
+Given an array of integers arr and two integers k and threshold, return the number of sub-arrays of size k and average greater than or equal to threshold.
+
+ 
+
+Example 1:
+
+Input: arr = [2,2,2,2,5,5,5,8], k = 3, threshold = 4
+Output: 3
+Explanation: Sub-arrays [2,5,5],[5,5,5] and [5,5,8] have averages 4, 5 and 6 respectively. All other sub-arrays of size 3 have averages less than 4 (the threshold).
+Example 2:
+
+Input: arr = [11,13,17,23,29,31,7,5,2,3], k = 3, threshold = 5
+Output: 6
+Explanation: The first 6 sub-arrays of size 3 have averages greater than 5. Note that averages are not integers.
+ 
+
+Constraints:
+
+1 <= arr.length <= 105
+1 <= arr[i] <= 104
+1 <= k <= arr.length
+0 <= threshold <= 104
+
+```java
+class Solution {
+    public int numOfSubarrays(int[] arr, int k, int threshold) {
+        int count=0;
+        int sum=0;
+        int avg=0;
+        // find sum and average of the first window of size k
+        for(int i=0;i<k;i++){
+            sum+=arr[i];
+        }
+        avg=sum/k;
+        if(avg>=threshold)count++;
+
+        for(int i=1;i<=arr.length - k;i++){
+            sum-=arr[i-1];
+            sum+=arr[i+k-1];
+            avg=sum/k;
+            if(avg>=threshold)count++;
+        }
+        return count;
+    }
+}
+
+```
+
+```java
+
+class Solution {
+    public int numOfSubarrays(int[] arr, int k, int threshold) {
+        int len = arr.length;
+        int count = 0;
+        int sum = 0;
+
+        int l = 0;
+        int r = 0;
+
+        while (r < len) {
+            sum += arr[r];
+
+            // Only check once window size reaches k
+            if (r - l + 1 == k) {
+                if (sum/k >= threshold) {
+                    count++;
+                }
+                // Slide the window
+                sum -= arr[l];
+                l++;
+            }
+            r++;
+        }
+        return count;
+    }
+}
+```
+
+
+    Things To Remember
+
+    for loop solution is sometimes strainght forward
+
+    Time and Space --> O(n)
+</details>
+
+
+<details id="1423. Maximum Points You Can Obtain from Cards">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1423. Maximum Points You Can Obtain from Cards 
+</span>
+</summary>
+
+https://leetcode.com/problems/maximum-points-you-can-obtain-from-cards/description/
+
+There are several cards arranged in a row, and each card has an associated number of points. The points are given in the integer array cardPoints.
+
+In one step, you can take one card from the beginning or from the end of the row. You have to take exactly k cards.
+
+Your score is the sum of the points of the cards you have taken.
+
+Given the integer array cardPoints and the integer k, return the maximum score you can obtain.
+
+ 
+
+Example 1:
+
+Input: cardPoints = [1,2,3,4,5,6,1], k = 3
+Output: 12
+Explanation: After the first step, your score will always be 1. However, choosing the rightmost card first will maximize your total score. The optimal strategy is to take the three cards on the right, giving a final score of 1 + 6 + 5 = 12.
+Example 2:
+
+Input: cardPoints = [2,2,2], k = 2
+Output: 4
+Explanation: Regardless of which two cards you take, your score will always be 4.
+Example 3:
+
+Input: cardPoints = [9,7,7,9,7,7,9], k = 7
+Output: 55
+Explanation: You have to take all the cards. Your score is the sum of points of all cards.
+ 
+
+Constraints:
+
+1 <= cardPoints.length <= 105
+1 <= cardPoints[i] <= 104
+1 <= k <= cardPoints.length
+
+```java
+class Solution {
+    public int maxScore(int[] cardPoints, int k) {
+        int totalSum=Arrays.stream(cardPoints).sum();
+        if(k == cardPoints.length)return totalSum;
+
+        int sum=0;
+        // Calculte the first window
+        for(int i=0;i<=cardPoints.length-k-1;i++){
+            sum+=cardPoints[i];
+        }
+        int maxPoints=0;
+        maxPoints=Math.max(maxPoints, totalSum-sum);
+        int windowLength = cardPoints.length - k ; 
+        
+        // Calculate subsequent windows
+        for(int i=1;i<k+1;i++){
+            sum-=cardPoints[i-1];
+            sum+=cardPoints[i+windowLength-1];
+            maxPoints=Math.max(maxPoints, totalSum-sum);
+        }
+        return maxPoints;
+    }
+}
+
+```
+
+</details>
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+### Dynamic WIndow
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
 
 # Prefix Sum
 
