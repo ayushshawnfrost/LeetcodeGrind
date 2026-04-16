@@ -20,17 +20,17 @@ Given an array of integers nums, find the next permutation of nums.
 The replacement must be in place and use only constant extra memory.
 
  
+[1,4,2,5,3]->[1,4,3,2,5]->[1,4,3,5,2]->[]
 
 Example 1:
-
 Input: nums = [1,2,3]
 Output: [1,3,2]
-Example 2:
 
+Example 2:
 Input: nums = [3,2,1]
 Output: [1,2,3]
-Example 3:
 
+Example 3:
 Input: nums = [1,1,5]
 Output: [1,5,1]
  
@@ -44,7 +44,7 @@ Constraints:
 class Solution {
     public void nextPermutation(int[] nums) {
         int swapIndex=-1;
-        // find a position where a next greater digit can be placed. Here start from the right most corner and keep chceking 2>5. index position of 2 will be the swap position. Now find a first number greeater than 2 in right to left fashion. swap both of them. reverse the right half.  
+        // find a position where a next greater digit can be placed. Here start from the right most corner and keep chceking adjcent element [i-1]>i. if this condition satisfies then mark the [i-1] element and it will be the swap position. Now find a first number greeater than [i-1]th element in right to left fashion. swap both of them. reverse the right half (after the [i-1] position).  
         for(int i=nums.length-2;i>=0;i--){
             if(nums[i]<nums[i+1]){
                 swapIndex=i;
@@ -307,6 +307,9 @@ class Solution {
     }
 }
 ```
+
+    This is a 2 pass algorithm. In first pass we are going left to right and updating the distance of each index to the nearest seen target character on its left side. 
+    In the 2ns pass we are going from right to left and updating the distance by comparing the previous and new distances.
 </details> 
 
 <details id="2825. Make String a Subsequence Using Cyclic Increments">
@@ -371,9 +374,11 @@ class Solution {
         return j == str2.length();
     }
 }
-
- TC= O(m+n)
 ```
+
+    This solution has 2 pointers, one on str1 (here we need to make substring) and one with str2. str1 pointer will keep on checking and once it/ +-str1 charater matches  with char at j we increment str2 pointer to match with next char.
+    There will never be scanerio where we need to reset the str1 pointer back to start
+    TC= O(m+n)
 </details>
 
 
@@ -433,6 +438,9 @@ class Solution {
 }
 
 ```
+
+    This algorithm counts the contigious equal elements, we dont care which element it is we just know that this is a different element than previous since the only possibility is 0/1.
+    once we have the a count of contigious elements in an array. we can take the min of (i,i+1) this will be the number of subarrays with equal contigious 0s and 1s.
 </details>
 
 <details id="1750. Minimum Length of String After Deleting Similar Ends">
@@ -503,6 +511,7 @@ class Solution {
 }
 
 ```
+    Simple 2 pointer solution
 </details>
 
 
@@ -513,10 +522,7 @@ class Solution {
 </summary>
 
 Medium
-Topics
-premium lock icon
-Companies
-Hint
+
 Given an array of characters chars, compress it using the following algorithm:
 
 Begin with an empty string s. For each group of consecutive repeating characters in chars:
@@ -660,6 +666,8 @@ class Solution {
 }
 
 ```
+
+    An eligant solution where we count the number of 1s (black balls) and when we see a white ball, we will need swaps=black_ball_count to move the white ball to the left of black ball.
 </details>
 
 
@@ -820,6 +828,8 @@ class Solution {
 }
 ```
 </details>
+
+====
 
 # Sliding Window
 
@@ -1110,50 +1120,582 @@ class Solution {
 
 </details>
 
-<!-- <details id="1584. Min Cost to Connect All Points">
-<summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
-</span>
-</summary>
-</details> -->
 
 ### Dynamic WIndow
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="3. Longest Substring Without Repeating Characters">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">3. Longest Substring Without Repeating Characters 
 </span>
 </summary>
-</details> -->
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+https://leetcode.com/problems/longest-substring-without-repeating-characters/description/
+
+Given a string s, find the length of the longest substring without duplicate characters.
+
+ 
+
+Example 1:
+
+Input: s = "abcabcbb"
+Output: 3
+Explanation: The answer is "abc", with the length of 3. Note that "bca" and "cab" are also correct answers.
+Example 2:
+
+Input: s = "bbbbb"
+Output: 1
+Explanation: The answer is "b", with the length of 1.
+Example 3:
+
+Input: s = "pwwkew"
+Output: 3
+Explanation: The answer is "wke", with the length of 3.
+Notice that the answer must be a substring, "pwke" is a subsequence and not a substring.
+ 
+
+Constraints:
+
+0 <= s.length <= 5 * 104
+s consists of English letters, digits, symbols and spaces.
+
+```java
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        // Early return
+        int len=s.length();
+        if(len <= 1)return len;
+
+        // Sliding window
+        int l=0;
+        int r=0;
+        int longestSubstring=0;
+        HashSet<Character> set=new HashSet<>();
+        
+        while(r<len){
+            if(!set.contains(s.charAt(r))){
+                longestSubstring=Math.max(longestSubstring, r-l+1);
+                set.add(s.charAt(r));
+                r++;
+                continue;
+            }
+            while(set.contains(s.charAt(r))){
+                set.remove(s.charAt(l));
+                l++;
+            }
+        }
+        return longestSubstring;
+    }
+}
+```
+
+    Things to remember
+
+    Time and Space -> O(n)
+
+
+</details>
+
+
+<details id="1297. Maximum Number of Occurrences of a Substring">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">1297. Maximum Number of Occurrences of a Substring 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/maximum-number-of-occurrences-of-a-substring/description/
+
+Given a string s, return the maximum number of occurrences of any substring under the following rules:
+
+The number of unique characters in the substring must be less than or equal to maxLetters.
+The substring size must be between minSize and maxSize inclusive.
+ 
+
+Example 1:
+
+Input: s = "aababcaab", maxLetters = 2, minSize = 3, maxSize = 4
+Output: 2
+Explanation: Substring "aab" has 2 occurrences in the original string.
+It satisfies the conditions, 2 unique letters and size 3 (between minSize and maxSize).
+Example 2:
+
+Input: s = "aaaa", maxLetters = 1, minSize = 3, maxSize = 3
+Output: 2
+Explanation: Substring "aaa" occur 2 times in the string. It can overlap.
+ 
+
+Constraints:
+
+1 <= s.length <= 105
+1 <= maxLetters <= 26
+1 <= minSize <= maxSize <= min(26, s.length)
+s consists of only lowercase English letters.
+
+```java
+class Solution {
+    public int maxFreq(String s, int maxLetters, int minSize, int maxSize) {
+        int len=s.length();
+        HashMap<String, Integer> frequency=new HashMap<>();
+        int[] set=new int[26];
+        for(int j=0;j<minSize;j++){
+            set[s.charAt(j)-'a']++;
+        }
+        if(isCompliant(set,maxLetters)){
+            String substring=s.substring(0, minSize);
+            frequency.put(substring, frequency.getOrDefault(substring, 0)+1);
+        }
+        for(int j=1;j<=len - minSize;j++){
+            set[s.charAt(j-1)- 'a' ]--;
+            set[s.charAt(j+minSize-1)- 'a' ]++;
+        
+            if(isCompliant(set,maxLetters)){
+                String substring=s.substring(j, j+minSize);
+                frequency.put(substring, frequency.getOrDefault(substring, 0)+1);
+            }
+        }
+        int maxFreq=0;
+        for(Map.Entry<String, Integer> entry:frequency.entrySet()){
+            maxFreq=Math.max(maxFreq, entry.getValue());
+        }
+        return maxFreq;
+    }
+    private boolean isCompliant(int[] set, int maxLetters){
+        int count=0;
+        for(int i=0;i<26;i++){
+            if(set[i]>0)count++;
+        }
+        return count<=maxLetters;
+    }
+}
+```
+
+    Things to remember 
+    Everything hinges on one observation that the maxLength is irrelevant here. Substrings of minLength will always have the maximum number of occerances hence this problem will be converted to a basic Fixed length Sliding window with windowsize = minLength
+
+    Tiame ans Space complexity: O(n) 
+
+</details>
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="713. Subarray Product Less Than K">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">713. Subarray Product Less Than K 
 </span>
 </summary>
-</details> -->
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+https://leetcode.com/problems/subarray-product-less-than-k/description/
+
+Given an array of integers nums and an integer k, return the number of contiguous subarrays where the product of all the elements in the subarray is strictly less than k.
+
+ 
+
+Example 1:
+
+Input: nums = [10,5,2,6], k = 100
+Output: 8
+Explanation: The 8 subarrays that have product less than 100 are:
+[10], [5], [2], [6], [10, 5], [5, 2], [2, 6], [5, 2, 6]
+Note that [10, 5, 2] is not included as the product of 100 is not strictly less than k.
+Example 2:
+
+Input: nums = [1,2,3], k = 0
+Output: 0
+ 
+
+Constraints:
+
+1 <= nums.length <= 3 * 104
+1 <= nums[i] <= 1000
+0 <= k <= 106
+
+```java
+class Solution {
+    public int numSubarrayProductLessThanK(int[] nums, int k) {
+        if(k<=1)return 0;
+        int prod=1;
+        int l=0;
+        int r=0;
+        int count=0;
+        
+        while(r< nums.length){
+            prod*=nums[r];
+            while(prod>=k){
+                prod/=nums[l];
+                l++;
+            }
+            count+=r-l+1;
+            r++;
+        }
+        return count;
+    }
+}
+
+```
+
+    Things to remember
+    
+    r-l+1 will give the total number of subarrays ending at index r
+    You are always forgetting to count the total subarrays.
+    [1, 3, 4]
+    from 1->4 there are 2-0+1=3 subarrays
+
+    Time and space complexity: O(n)
+
+</details>
+
+<details id="795. Number of Subarrays with Bounded Maximum">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">795. Number of Subarrays with Bounded Maximum 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/number-of-subarrays-with-bounded-maximum/description/
+
+Given an integer array nums and two integers left and right, return the number of contiguous non-empty subarrays such that the value of the maximum array element in that subarray is in the range [left, right].
+
+The test cases are generated so that the answer will fit in a 32-bit integer.
+
+ 
+
+Example 1:
+
+Input: nums = [2,1,4,3], left = 2, right = 3
+Output: 3
+Explanation: There are three subarrays that meet the requirements: [2], [2, 1], [3].
+Example 2:
+
+Input: nums = [2,9,2,5,6], left = 2, right = 8
+Output: 7
+ 
+
+Constraints:
+
+1 <= nums.length <= 105
+0 <= nums[i] <= 109
+0 <= left <= right <= 109
+
+
+```java
+class Solution {
+    public int numSubarrayBoundedMax(int[] nums, int left, int right) {
+        int len = nums.length;
+        int l=0;
+        int r=0;
+        int subCount=0;
+        int count=0;
+
+        while(r<len){
+            if(nums[r]>right){
+                subCount=0;
+                l=r+1;
+            }else if((nums[r]>=left && nums[r]<=right)){
+                subCount=r-l+1;
+            }
+            r++;
+            count+=subCount;
+        }
+
+        return count;
+    }
+}
+
+
+```
+
+    Things to remember 
+    most important trick is when the element at index r is not in the [left , right] in that case you have to include it but (r-l+1) will give wrong number of subarrays it also includes single element arr[r]. So to get around this we should remember the previous value of (r-l+1) and add that.
+    Essentially
+    previous (r-l+1) is just 1 less than the current (r-l+1) and thats what we wanted in order to remove one substring i.e arr[r]
+
+    Time and Space complexities: O(n)
+</details>
+
+
+<details id="2537. Count the Number of Good Subarrays">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">2537. Count the Number of Good Subarrays 
+</span>
+</summary>
+
+https://leetcode.com/problems/count-the-number-of-good-subarrays/description/
+
+Given an integer array nums and an integer k, return the number of good subarrays of nums.
+
+A subarray arr is good if there are at least k pairs of indices (i, j) such that i < j and arr[i] == arr[j].
+
+A subarray is a contiguous non-empty sequence of elements within an array.
+
+ 
+
+Example 1:
+
+Input: nums = [1,1,1,1,1], k = 10
+Output: 1
+Explanation: The only good subarray is the array nums itself.
+Example 2:
+
+Input: nums = [3,1,4,3,2,2,4], k = 2
+Output: 4
+Explanation: There are 4 different good subarrays:
+- [3,1,4,3,2,2] that has 2 pairs.
+- [3,1,4,3,2,2,4] that has 3 pairs.
+- [1,4,3,2,2,4] that has 2 pairs.
+- [4,3,2,2,4] that has 2 pairs.
+ 
+
+Constraints:
+
+1 <= nums.length <= 105
+1 <= nums[i], k <= 109
+
+```java
+class Solution {
+    public long countGood(int[] nums, int k) {
+        int n = nums.length;
+        int i = 0, j = 0;
+
+        long result = 0;
+        long pairs = 0;
+
+        Map<Integer, Integer> map = new HashMap<>();
+
+        while (j < n) {
+            pairs += map.getOrDefault(nums[j], 0);
+            map.put(nums[j], map.getOrDefault(nums[j], 0) + 1);
+
+            while (pairs >= k) {
+                result += (n - j);
+                map.put(nums[i], map.get(nums[i]) - 1);
+                pairs -= map.get(nums[i]);
+                i++;
+            }
+
+            j++;
+        }
+
+        return result;
+    }
+}
+
+```
+
+    Things To remember:
+    
+    This is a fucking so fucking hard for me to handle becaue of the observation (n-j) which gives all the subarrys with min k pairs. We can count subarrays starting [i, j] but dont forget that any subarrays starting i and ending (j, len] will also be correct sub arrays because of the condition "at least k pairs of indices (i, j) such that i < j and arr[i] == arr[j]".
+    pairs -= map.get(nums[i]); condition is nuts still cant figure out how the hell we know that we need to decrement the pair, this is coincident that if 4->6 we have seen 4 six times then we might have added 5 to the pairs sub array when we saw sixth 4. Now when you remove the one 4 from the sub arrays you have to also remove the pairs it might have amde with other 4s. So exactly that 4 have made 5 pairs so remove those. This 5 is given by 
+     // nums[i]) = 6
+     map.put(nums[i], map.get(nums[i]) - 1);
+     pairs -= map.get(nums[i]);//5
+
+    curently i think it is difficult for me to solve this one.
+    I have to learn it by heart then only i will be able to solve this.
+
+
+</details>
+
+<details id="1838. Frequency of the Most Frequent Element">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1838. Frequency of the Most Frequent Element 
+</span>
+</summary>
+
+https://leetcode.com/problems/frequency-of-the-most-frequent-element/description/
+
+The frequency of an element is the number of times it occurs in an array.
+
+You are given an integer array nums and an integer k. In one operation, you can choose an index of nums and increment the element at that index by 1.
+
+Return the maximum possible frequency of an element after performing at most k operations.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,4], k = 5
+Output: 3
+Explanation: Increment the first element three times and the second element two times to make nums = [4,4,4].
+4 has a frequency of 3.
+Example 2:
+
+Input: nums = [1,4,8,13], k = 5
+Output: 2
+Explanation: There are multiple optimal solutions:
+- Increment the first element three times to make nums = [4,4,8,13]. 4 has a frequency of 2.
+- Increment the second element four times to make nums = [1,8,8,13]. 8 has a frequency of 2.
+- Increment the third element five times to make nums = [1,4,13,13]. 13 has a frequency of 2.
+Example 3:
+
+Input: nums = [3,9,6], k = 2
+Output: 1
+ 
+```java
+// Bruteforce n2
+class Solution {
+    public int maxFrequency(int[] nums, int k) {
+        Arrays.sort(nums);
+        int count=1;
+        for(int i=nums.length - 1;i>0;i--){
+            int sunreq=1;
+            int left=k;
+            for(int j=i-1;j>=0;j--){
+                if(j>=0 && (nums[i] - nums[j]<=left)){
+                    left-=(nums[i] - nums[j]);
+                    sunreq++;
+                }else break;
+            }
+            count=Math.max(count, sunreq);
+        }
+        return count;
+    }
+}
+
+```
+```java
+// Optimal 
+class Solution {
+    public int maxFrequency(int[] nums, int k) {
+        Arrays.sort(nums);
+        
+        int n = nums.length;
+        
+        int result = 0;
+        
+        int i = 0;
+        long currSum = 0;
+        
+        for (int j = 0; j < n; j++) {
+            
+            long target = nums[j];
+            currSum += nums[j];
+            
+            if ((j - i + 1) * target - currSum > k) {
+                currSum -= nums[i];
+                i++;
+            }
+            
+            result = Math.max(result, j - i + 1);
+            
+        }
+        return result;
+    }
+}
+```
+
+    Things to remenber
+    This question first seems to be impossible solving with sliding window so i solveed it using the bruiteforce. But then it seems that this can be done using the sliding window.
+
+    Most important is to find out that sorting will help here. 
+    And then you find out a way to find the sum required to make every element equal to the last element.
+
+    Time Complexity: O(nlogn) and space O(1)
+
+</details>
+
+<details id="992. Subarrays with K Different Integers">
+<summary> 
+<span style="color:red;font-size:16px;font-weight:bold">992. Subarrays with K Different Integers 
+</span>
+</summary>
+
+https://leetcode.com/problems/subarrays-with-k-different-integers/description/
+
+Given an integer array nums and an integer k, return the number of good subarrays of nums.
+
+A good array is an array where the number of different integers in that array is exactly k.
+
+For example, [1,2,3,1,2] has 3 different integers: 1, 2, and 3.
+A subarray is a contiguous part of an array.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,1,2,3], k = 2
+Output: 7
+Explanation: Subarrays formed with exactly 2 different integers: [1,2], [2,1], [1,2], [2,3], [1,2,1], [2,1,2], [1,2,1,2]
+Example 2:
+
+Input: nums = [1,2,1,3,4], k = 3
+Output: 3
+Explanation: Subarrays formed with exactly 3 different integers: [1,2,1,3], [2,1,3], [1,3,4].
+
+
+```java
+class Solution {
+    public int subarraysWithKDistinct(int[] nums, int k) {
+        int len=nums.length;
+        int count=0;
+
+        for(int i=0; i<len;i++){
+            HashSet<Integer> set=new HashSet<>();
+            for(int j=i;j<len;j++){
+                set.add(nums[j]);
+                if(set.size() == k){
+                    count++;
+                }else if(set.size() > k){
+                    break;
+                }
+            }
+        }
+        return count;
+    }
+}
+```
+
+```java
+//Approach-1 (Standard Sliding Window twice - A very good Pattern of Sliding Window Problems)
+//T.C : O(n)
+//S.C : O(n)
+class Solution {
+    
+    // Total count of subarrays having <= k distinct elements
+    public int slidingWindow(int[] nums, int k) {
+        HashMap<Integer, Integer> mp = new HashMap<>();
+        
+        int n = nums.length;
+        int i = 0; 
+        int j = 0;
+        
+        int count = 0;
+        
+        while(j < n) {
+            
+            mp.put(nums[j], mp.getOrDefault(nums[j], 0) + 1);
+            
+            while(mp.size() > k) {
+                // Shrink the window
+                mp.put(nums[i], mp.get(nums[i]) - 1);
+                if(mp.get(nums[i]) == 0) {
+                    mp.remove(nums[i]);
+                }
+                i++;
+            }
+            
+            count += (j - i + 1); // Ending at j
+            j++;
+        }
+        
+        return count;
+    }
+    
+    public int subarraysWithKDistinct(int[] nums, int k) {
+        return slidingWindow(nums, k) - slidingWindow(nums, k - 1);
+    }
+}
+
+```
+
+    Things to remember
+    This question is good a medium question to be honest 
+
+</details>
+
+
 
 # Prefix Sum
 
 ### Prefix Sum
 
-### Line Sweep
 
 
 <details id="238. Product of Array Except Self">
@@ -1465,6 +2007,938 @@ class NumMatrix {
 </details>
 
 
+
+### Line Sweep
+    Line sweep is out of the box solution sometimes, so these problems can be solved in other ways as well. So if dont stress out on Line Sweep this may only work if the given possibilities of number is less
+
+
+
+<details id="2848. Points That Intersect With Cars">
+<summary> 
+<span style="color:green;font-size:16px;font-weight:bold">2848. Points That Intersect With Cars 
+</span>
+</summary>
+
+https://leetcode.com/problems/points-that-intersect-with-cars/description/
+
+You are given a 0-indexed 2D integer array nums representing the coordinates of the cars parking on a number line. For any index i, nums[i] = [starti, endi] where starti is the starting point of the ith car and endi is the ending point of the ith car.
+
+Return the number of integer points on the line that are covered with any part of a car.
+
+ 
+
+Example 1:
+
+Input: nums = [[3,6],[1,5],[4,7]]
+Output: 7
+Explanation: All the points from 1 to 7 intersect at least one car, therefore the answer would be 7.
+Example 2:
+
+Input: nums = [[1,3],[5,8]]
+Output: 7
+Explanation: Points intersecting at least one car are 1, 2, 3, 5, 6, 7, 8. There are a total of 7 points, therefore the answer would be 7.
+
+```java
+class Solution {
+    public int numberOfPoints(List<List<Integer>> nums) {
+        // we have a constraint of only 100 integer
+        int[] arr=new int[102];
+        int countCovered=0;
+        for(List<Integer> num: nums){
+            int start=num.get(0);
+            int end=num.get(1);
+            arr[start]+=1;
+            arr[end+1]-=1;
+        }
+
+        for(int i=1;i<arr.length;i++){
+            arr[i]+=arr[i-1];
+            if(arr[i]>0)countCovered++;
+        }
+        return countCovered;
+    }
+}
+
+```
+
+
+    Points to remember
+    Line Sweep is like prefix but mostly deals with ranges. If you want to count the integer points in a bunch of range. 
+
+</details>
+
+<details id="1094. Car Pooling">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1094. Car Pooling 
+</span>
+</summary>
+
+There is a car with capacity empty seats. The vehicle only drives east (i.e., it cannot turn around and drive west).
+
+You are given the integer capacity and an array trips where trips[i] = [numPassengersi, fromi, toi] indicates that the ith trip has numPassengersi passengers and the locations to pick them up and drop them off are fromi and toi respectively. The locations are given as the number of kilometers due east from the car's initial location.
+
+Return true if it is possible to pick up and drop off all passengers for all the given trips, or false otherwise.
+
+ 
+
+Example 1:
+
+Input: trips = [[2,1,5],[3,3,7]], capacity = 4
+Output: false
+Example 2:
+
+Input: trips = [[2,1,5],[3,3,7]], capacity = 5
+Output: true
+ 
+
+Constraints:
+
+1 <= trips.length <= 1000
+trips[i].length == 3
+1 <= numPassengersi <= 100
+0 <= fromi < toi <= 1000
+1 <= capacity <= 105
+
+```java
+// O(n)
+class Solution {
+    public boolean carPooling(int[][] trips, int capacity) {
+        int[] track = new int[1002];
+        for (int[] trip : trips) {
+            int passengers = trip[0];
+            int from = trip[1];
+            int to = trip[2];
+            track[from] += passengers;
+            track[to] -= passengers;
+        }
+        int numPass = 0;
+        for (int i = 0; i < track.length - 1; i++) {
+            numPass += track[i];
+            if (numPass > capacity)
+                return false;
+        }
+        return true;
+    }
+}
+
+// min heap solution
+class Solution {
+    public boolean carPooling(int[][] trips, int capacity) {
+        Queue<int[]> queue=new PriorityQueue<>((a,b)->Integer.compare(a[2],b[2]));
+        Arrays.sort(trips, (a,b)->Integer.compare(a[1],b[1]));
+        for(int[] trip:trips){
+            queue.offer(trip);
+        }
+        int currPassengers=0;
+        for(int[] trip:trips){
+            int passenger=trip[0];
+            int to=trip[1];
+            int from=trip[2];
+            
+            while(!queue.isEmpty() && queue.peek()[2]<=to){
+                int[] journey=queue.poll();
+                currPassengers-=journey[0];
+            }
+            if(currPassengers + passenger>capacity)return false;
+            currPassengers+=passenger;
+        }
+        return true;
+    }
+}
+
+```
+</details>
+
+<details id="731. My Calendar II">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">731. My Calendar II 
+</span>
+</summary>
+
+https://leetcode.com/problems/my-calendar-ii/description/
+
+You are implementing a program to use as your calendar. We can add a new event if adding the event will not cause a triple booking.
+
+A triple booking happens when three events have some non-empty intersection (i.e., some moment is common to all the three events.).
+
+The event can be represented as a pair of integers startTime and endTime that represents a booking on the half-open interval [startTime, endTime), the range of real numbers x such that startTime <= x < endTime.
+
+Implement the MyCalendarTwo class:
+
+MyCalendarTwo() Initializes the calendar object.
+boolean book(int startTime, int endTime) Returns true if the event can be added to the calendar successfully without causing a triple booking. Otherwise, return false and do not add the event to the calendar.
+ 
+
+Example 1:
+
+Input
+["MyCalendarTwo", "book", "book", "book", "book", "book", "book"]
+[[], [10, 20], [50, 60], [10, 40], [5, 15], [5, 10], [25, 55]]
+Output
+[null, true, true, true, false, true, true]
+
+Explanation
+MyCalendarTwo myCalendarTwo = new MyCalendarTwo();
+myCalendarTwo.book(10, 20); // return True, The event can be booked. 
+myCalendarTwo.book(50, 60); // return True, The event can be booked. 
+myCalendarTwo.book(10, 40); // return True, The event can be double booked. 
+myCalendarTwo.book(5, 15);  // return False, The event cannot be booked, because it would result in a triple booking.
+myCalendarTwo.book(5, 10); // return True, The event can be booked, as it does not use time 10 which is already double booked.
+myCalendarTwo.book(25, 55); // return True, The event can be booked, as the time in [25, 40) will be double booked with the third event, the time [40, 50) will be single booked, and the time [50, 55) will be double booked with the second event.
+ 
+
+Constraints:
+
+0 <= start < end <= 109
+At most 1000 calls will be made to book.
+
+```java
+// memory limit exceed
+class MyCalendarTwo {
+    int[] timeline;
+    public MyCalendarTwo() {
+        timeline=new int[(int)Math.pow(10,9)+1];
+    }
+    
+    public boolean book(int startTime, int endTime) {
+        for(int i=startTime;i<endTime;i++){
+            if(timeline[i] >= 2){
+                return false;
+            }
+        }
+        for(int i=startTime;i<endTime;i++){
+            timeline[i]++;
+        }
+        return true;
+    }
+}
+```
+
+```java
+// time limit exceed
+class MyCalendarTwo {
+    HashMap<Integer, Integer> timeline=new LinkedHashMap<>();
+    public MyCalendarTwo() {
+    }
+    
+    public boolean book(int startTime, int endTime) {
+        for(int i=startTime;i<endTime;i++){
+            if(timeline.getOrDefault(i,0) >= 2){
+                return false;
+            }
+        }
+        for(int i=startTime;i<endTime;i++){
+            timeline.put(i, timeline.getOrDefault(i,0)+1);
+        }
+        return true;
+    }
+}
+```
+
+![alt text](image.png)
+
+```java
+
+class MyCalendarTwo {
+    List<int[]> doubleBookings=new ArrayList<>();
+    List<int[]> bookings=new ArrayList<>();
+
+    public MyCalendarTwo() {
+        
+    }
+    
+    public boolean book(int startTime, int endTime) {
+        // chcek if this booking will make triple booking
+        for(int[] booking:doubleBookings){
+            if(checkOverlap( booking[0],  booking[1], startTime, endTime)){
+                return false;
+            }
+        }
+
+        // check if this is making nay double booking
+        for(int[] booking:bookings){
+            if(checkOverlap( booking[0],  booking[1], startTime, endTime)){
+                doubleBookings.add(getOverlap( booking[0],  booking[1], startTime, endTime));
+            }
+        }
+        bookings.add(new int[]{startTime, endTime});
+        return true;
+    }
+
+    boolean checkOverlap(int x1, int y1, int x2, int y2){
+        return Math.max(x1,x2)<Math.min(y1,y2);
+    }
+
+    int[] getOverlap(int x1, int y1, int x2, int y2){
+        return new int[]{Math.max(x1,x2),Math.min(y1,y2)};
+    }
+}
+```
+
+
+    Analysis:
+    Here this solution worked because it took O(n) where n is the number of bookings 
+</details>
+
+# Matrics
+
+    Main Concepts:
+    - Transpose is    i <-> j
+    - rotate matrix 90 degree clockwise -> transpose and reverse each row
+    - rotate matrix 90 degree anticlockwise --> transpose and reverse each column
+    - diagonal traversal of matrix think about 2 concpts
+      -> i+j for ///
+      -> i-j for \\\
+
+
+### Matrix Transformation and Modification
+
+
+<details id="73. Set Matrix Zeroes">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">73. Set Matrix Zeroes 
+</span>
+</summary>
+
+https://leetcode.com/problems/set-matrix-zeroes/
+
+```java
+class Solution {
+    public void setZeroes(int[][] matrix) {
+        int r = matrix.length, c = matrix[0].length;
+        boolean firstRow = false, firstCol = false;
+
+        // check first row
+        for (int j = 0; j < c; j++)
+            if (matrix[0][j] == 0) firstRow = true;
+
+        // check first col
+        for (int i = 0; i < r; i++)
+            if (matrix[i][0] == 0) firstCol = true;
+
+        // mark using first row & col
+        for (int i = 1; i < r; i++) {
+            for (int j = 1; j < c; j++) {
+                if (matrix[i][j] == 0) {
+                    matrix[i][0] = 0;
+                    matrix[0][j] = 0;
+                }
+            }
+        }
+
+        // fill cells
+        for (int i = 1; i < r; i++) {
+            for (int j = 1; j < c; j++) {
+                if (matrix[i][0] == 0 || matrix[0][j] == 0)
+                    matrix[i][j] = 0;
+            }
+        }
+
+        // handle first row
+        if (firstRow)
+            for (int j = 0; j < c; j++) matrix[0][j] = 0;
+
+        // handle first col
+        if (firstCol)
+            for (int i = 0; i < r; i++) matrix[i][0] = 0;
+    }
+}
+
+```
+
+    Things to remember
+    Time- O(n2)
+    Space- O(1)
+
+    Here it is essential to to handle the first row and column separately, since the 
+</details>
+
+
+<details id="867. Transpose Matrix">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">867. Transpose Matrix 
+</span>
+</summary>
+
+https://leetcode.com/problems/transpose-matrix/
+
+Given a 2D integer array matrix, return the transpose of matrix.
+
+The transpose of a matrix is the matrix flipped over its main diagonal, switching the matrix's row and column indices.
+
+
+
+ 
+
+Example 1:
+
+Input: matrix = [[1,2,3],[4,5,6],[7,8,9]]
+Output: [[1,4,7],[2,5,8],[3,6,9]]
+Example 2:
+
+Input: matrix = [[1,2,3],[4,5,6]]
+Output: [[1,4],[2,5],[3,6]]
+ 
+
+Constraints:
+
+m == matrix.length
+n == matrix[i].length
+1 <= m, n <= 1000
+1 <= m * n <= 105
+-109 <= matrix[i][j] <= 109
+
+```java
+class Solution {
+    public int[][] transpose(int[][] matrix) {
+
+        int r = matrix.length;
+        int c = matrix[0].length;
+        int[][] trannspose = new int[c][r];
+
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                trannspose[j][i] = matrix[i][j];
+            }
+        }
+        return trannspose;
+    }
+}
+```
+
+    Things to remenber
+    I initially wore a code where in the inner for loop starting i+1 and transposing both the cells. But this code only works for a square matrix.
+
+
+</details>
+
+<details id="48. Rotate Image">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">48. Rotate Image 
+</span>
+</summary>
+
+https://leetcode.com/problems/rotate-image/description/
+
+
+You are given an n x n 2D matrix representing an image, rotate the image by 90 degrees (clockwise).
+
+You have to rotate the image in-place, which means you have to modify the input 2D matrix directly. DO NOT allocate another 2D matrix and do the rotation.
+
+ 
+
+Example 1:
+
+
+Input: matrix = [[1,2,3],[4,5,6],[7,8,9]]
+Output: [[7,4,1],[8,5,2],[9,6,3]]
+Example 2:
+
+
+Input: matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]
+Output: [[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]
+ 
+
+Constraints:
+
+n == matrix.length == matrix[i].length
+1 <= n <= 20
+-1000 <= matrix[i][j] <= 1000
+
+
+```java
+class Solution {
+    public void rotate(int[][] matrix) {
+        transpose(matrix);
+        for (int[] array : matrix) {
+            reverseArray(array);
+        }
+    }
+
+    private void transpose(int[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = i + 1; j < matrix[0].length; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+            }
+        }
+    }
+
+    private void reverseArray(int[] array) {
+        int l = 0;
+        int r = array.length - 1;
+        while (l < r) {
+            int temp = array[l];
+            array[l] = array[r];
+            array[r] = temp;
+            l++;
+            r--;
+        }
+    }
+}
+```
+
+
+    Things to remember
+    - rotate matrix 90 degree clockwise -> transpose and reverse each row
+    - rotate matrix 90 degree anticlockwise --> transpose and reverse each column
+    - trabspose only worked due the fact that it is a square matrix, else we need to change the transpose logic
+    - for 180 degree, we can do 90 twice or Reverse each row and then Reverse the order of rows
+</details>
+
+### Matrix Traversal and Validity Check
+
+
+<details id="498. Diagonal Traverse">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">498. Diagonal Traverse 
+</span>
+</summary>
+
+https://leetcode.com/problems/diagonal-traverse/description/
+
+
+Given an m x n matrix mat, return an array of all the elements of the array in a diagonal order.
+
+ 
+
+Example 1:
+
+
+Input: mat = [[1,2,3],[4,5,6],[7,8,9]]
+Output: [1,2,4,7,5,3,6,8,9]
+Example 2:
+
+Input: mat = [[1,2],[3,4]]
+Output: [1,2,3,4]
+ 
+
+Constraints:
+
+m == mat.length
+n == mat[i].length
+1 <= m, n <= 104
+1 <= m * n <= 104
+-105 <= mat[i][j] <= 105
+
+```java
+class Solution {
+    public int[] findDiagonalOrder(int[][] mat) {
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        int r = mat.length;
+        int c = mat[0].length;
+        int[] spiral = new int[r * c];
+
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                map.computeIfAbsent(i + j, (a) -> new ArrayList<>()).add(mat[i][j]);
+            }
+        }
+        int index = 0;
+        for (int i = 0; i < map.size(); i++) {
+            if (i % 2 != 0) {
+                for (int val : map.get(i)) {
+                    spiral[index] = val;
+                    index++;
+                }
+            } else {
+                for (int val = map.get(i).size() - 1; val >= 0; val--) {
+                    spiral[index] = map.get(i).get(val);
+                    index++;
+                }
+            }
+
+        }
+        return spiral;
+    }
+}
+```
+
+     Things to remember:
+     whenever we see anything related to diagonal traversal of matrix think about 2 concpts
+     - i+j for ///
+     - i-j for \\\
+
+</details>
+
+<details id="54. Spiral Matrix">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">54. Spiral Matrix 
+</span>
+</summary>
+
+https://leetcode.com/problems/spiral-matrix/description/
+
+
+Given an m x n matrix, return all elements of the matrix in spiral order.
+
+ 
+
+Example 1:
+
+
+Input: matrix = [[1,2,3],[4,5,6],[7,8,9]]
+Output: [1,2,3,6,9,8,7,4,5]
+Example 2:
+
+
+Input: matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]
+Output: [1,2,3,4,8,12,11,10,9,5,6,7]
+ 
+
+Constraints:
+
+m == matrix.length
+n == matrix[i].length
+1 <= m, n <= 10
+-100 <= matrix[i][j] <= 100
+
+```java
+class Solution {
+    public List<Integer> spiralOrder(int[][] matrix) {
+        List<Integer> spiral = new ArrayList<>();
+
+        int r1 = 0, r2 = matrix.length - 1; //0 and 3
+        int c1 = 0, c2 = matrix[0].length - 1; // 0 and 3
+
+        while (r1 <= r2 && c1 <= c2) {
+            // left to right
+            for (int c = c1; c <= c2; c++) {
+                spiral.add(matrix[r1][c]);
+            }
+            r1++;
+            // top to bottom
+            for (int r = r1; r <= r2; r++) {
+                spiral.add(matrix[r][c2]);
+            }
+            c2--;
+            // right to left (only if still within bounds)
+            if (r1 <= r2) {
+                for (int c = c2; c >= c1; c--) {
+                    spiral.add(matrix[r2][c]);
+                }
+                r2--;
+            }
+
+            // bottom to top (only if still within bounds)
+            if (c1 <= c2) {
+                for (int r = r2; r >= r1; r--) {
+                    spiral.add(matrix[r][c1]);
+                }
+                c1++;
+            }
+        }
+        return spiral;
+    }
+}
+```
+
+    Things to emember:
+    When the spiral closes in, those loops can run even when r1 > r2 or c1 > c2, which causes duplicates or out-of-bounds issues.
+</details>
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+# Stacks
+
+### Parentheis / Advance Stack Problems
+
+<details id="32. Longest Valid Parentheses">
+<summary> 
+<span style="color:red;font-size:16px;font-weight:bold">32. Longest Valid Parentheses 
+</span>
+</summary>
+
+https://leetcode.com/problems/longest-valid-parentheses/description/
+
+Given a string containing just the characters '(' and ')', return the length of the longest valid (well-formed) parentheses substring.
+
+
+Example 1:
+
+Input: s = "(()"
+Output: 2
+Explanation: The longest valid parentheses substring is "()".
+Example 2:
+
+Input: s = ")()())"
+Output: 4
+Explanation: The longest valid parentheses substring is "()()".
+Example 3:
+
+Input: s = ""
+Output: 0
+ 
+
+Constraints:
+
+0 <= s.length <= 3 * 104
+s[i] is '(', or ')'.
+```java
+// BruiteForce sol
+class Solution {
+    public int longestValidParentheses(String s) {
+        Stack<Integer> stack = new Stack<>();
+
+        // Gereral way to remove all the valid parenthesis and the index left in the stack are the indexs of invalid parenthesis, now we can just substract the adjcent indexes and find the max value
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                stack.push(i);
+            } else {
+                if (!stack.isEmpty() && s.charAt(stack.peek()) == '(') {
+                    stack.pop();
+                } else {
+                    stack.push(i);
+                }
+            }
+        }
+        // all parenthesis are valid
+        if (stack.isEmpty())
+            return s.length();
+
+        List<Integer> ans = new ArrayList<>();
+        // add -1 and length so that finnding diff will be convinient
+        ans.add(s.length());
+        while (!stack.isEmpty()) {
+            ans.add(stack.pop());
+        }
+        ans.add(-1);
+        int maxlen = 0;
+        for (int i = 1; i < ans.size(); i++) {
+            maxlen = Math.max(maxlen, ans.get(i - 1) - ans.get(i) - 1);
+        }
+        return maxlen;
+    }
+}
+```
+</details>
+
+<details id="155. Min Stack">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">155. Min Stack 
+</span>
+</summary>
+
+https://leetcode.com/problems/min-stack/description/
+
+Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.
+
+Implement the MinStack class:
+
+MinStack() initializes the stack object.
+void push(int val) pushes the element val onto the stack.
+void pop() removes the element on the top of the stack.
+int top() gets the top element of the stack.
+int getMin() retrieves the minimum element in the stack.
+You must implement a solution with O(1) time complexity for each function.
+
+ 
+
+Example 1:
+
+Input
+["MinStack","push","push","push","getMin","pop","top","getMin"]
+[[],[-2],[0],[-3],[],[],[],[]]
+
+Output
+[null,null,null,null,-3,null,0,-2]
+
+Explanation
+MinStack minStack = new MinStack();
+minStack.push(-2);
+minStack.push(0);
+minStack.push(-3);
+minStack.getMin(); // return -3
+minStack.pop();
+minStack.top();    // return 0
+minStack.getMin(); // return -2
+ 
+
+Constraints:
+
+-231 <= val <= 231 - 1
+Methods pop, top and getMin operations will always be called on non-empty stacks.
+At most 3 * 104 calls will be made to push, pop, top, and getMin.
+
+
+```java
+class MinStack {
+    Stack<Integer> increasing=new Stack<>();
+    Stack<Integer> stack=new Stack<>();
+
+    public MinStack() {
+        
+    }
+    public void push(int val) {
+        stack.push(val);
+        if(increasing.isEmpty() || (!increasing.isEmpty() && val<= increasing.peek())){
+            increasing.push(val);
+        }else{
+            increasing.push(increasing.peek());
+        }
+    }
+    
+    public void pop() {
+        increasing.pop();
+        stack.pop();
+    }
+    
+    public int top() {
+        return stack.peek();
+    }
+    
+    public int getMin() {
+        return increasing.peek();
+    }
+}
+
+```
+
+    points to remember:
+    It can feel like a magic how pop() works. This is die to the fact that if the current element is bigger than the increasing.peek() we are pushing the smallest value to increasing stack so that the length of both stack remains same.
+    So this makes our pop() logic simpler and just pop the current element from the stack thats it
+    if you push the curr min to the increasing stack at each step then you will get correct answer
+</details>
+
+
+<details id="895. Maximum Frequency Stack">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">895. Maximum Frequency Stack 
+</span>
+</summary>
+
+https://leetcode.com/problems/maximum-frequency-stack/description/
+
+```java
+class FreqStack {
+    int maxfrequency = 0;
+    // <frequency, stack<elements>>
+    HashMap<Integer, Stack<Integer>> freqStack = new HashMap<>();
+    // <element, frequency>
+    HashMap<Integer, Integer> freqMap = new HashMap<>();
+
+    public FreqStack() {
+
+    }
+
+    public void push(int val) {
+        // increment the value in freqMap
+        int freq = freqMap.getOrDefault(val, 0) + 1;
+        freqMap.put(val, freq);
+
+        // update the maxfrequency
+        if (freq > maxfrequency) {
+            maxfrequency = freq;
+        }
+
+        // add value to the freqStack
+        freqStack.computeIfAbsent(freq, x -> new Stack<>()).push(val);
+    }
+
+    public int pop() {
+        Stack<Integer> stack = freqStack.get(maxfrequency);
+        int top = stack.pop();
+        if (stack.isEmpty()) {
+            maxfrequency--;
+        }
+        freqMap.put(top, freqMap.get(top) - 1);
+        return top;
+    }
+}
+
+```
+
+    Things to remember
+    - Here we wanted to always have a maxfrequenct element in our hand, so for that we sisnt used any heap, we just maintened a maxfrequency integer which gave us element corresponding to maxfrequency.
+
+    - We wanted to index on element to get the frequency so we created a Map
+
+    - We wanted to index on freuency to get the maxfrequency element, hence one more Map
+
+
+
+    Time Complexity 
+    both push and pop operation has been done in O(1) complexity, we couldnt achieve this if we use heap
+</details>
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
 
 
 # Graphs
