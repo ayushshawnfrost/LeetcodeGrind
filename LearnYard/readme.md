@@ -3053,27 +3053,241 @@ asteroids[i] != 0
     }
 }
 ```
+    Things to remember
+    if you thing that you need to reprocess somthing again and again, like here you need check the next astroid if previous 2 collides. Then in this case think of Stack
 
-    
 </details>
-<!-- <details id="1584. Min Cost to Connect All Points">
+
+### Monotonic Stack
+
+<details id="739. Daily Temperatures">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">739. Daily Temperatures </summary>
+</span>
+
+https://leetcode.com/problems/daily-temperatures/description/
+
+Given an array of integers temperatures represents the daily temperatures, return an array answer such that answer[i] is the number of days you have to wait after the ith day to get a warmer temperature. If there is no future day for which this is possible, keep answer[i] == 0 instead.
+
+ 
+
+Example 1:
+
+Input: temperatures = [73,74,75,71,69,72,76,73]
+Output: [1,1,4,2,1,1,0,0]
+Example 2:
+
+Input: temperatures = [30,40,50,60]
+Output: [1,1,1,0]
+Example 3:
+
+Input: temperatures = [30,60,90]
+Output: [1,1,0]
+ 
+
+Constraints:
+
+1 <= temperatures.length <= 105
+30 <= temperatures[i] <= 100
+
+```java
+class Solution {
+    public int[] dailyTemperatures(int[] temperatures) {
+        Stack<Integer> decStack = new Stack<>();
+        int len = temperatures.length;
+        int[] nextWarmDay = new int[len];
+
+        for (int i = len - 1; i >= 0; i--) {
+            while (!decStack.isEmpty() && temperatures[decStack.peek()] <= temperatures[i]) {
+                decStack.pop();
+            }
+
+            if (decStack.isEmpty()) {
+                nextWarmDay[i] = 0;
+            } else {
+                nextWarmDay[i] = decStack.peek() - i;
+            }
+            decStack.push(i);
+        }
+        return nextWarmDay;
+    }
+}
+
+```
+
+
+    Points to remember:
+    which type of stack is required to solve a problem has to be deduced by manually solving the question
+
+    Time complexity is O(n) because each element is pushed and popped once, so 2n -> n 
+
+</details>
+
+
+<details id="907. Sum of Subarray Minimums">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">907. Sum of Subarray Minimums 
 </span>
 </summary>
-</details> -->
-<!-- <details id="1584. Min Cost to Connect All Points">
+
+https://leetcode.com/problems/sum-of-subarray-minimums/description/
+
+Given an array of integers arr, find the sum of min(b), where b ranges over every (contiguous) subarray of arr. Since the answer may be large, return the answer modulo 109 + 7.
+
+ 
+
+Example 1:
+
+Input: arr = [3,1,2,4]
+Output: 17
+Explanation: 
+Subarrays are [3], [1], [2], [4], [3,1], [1,2], [2,4], [3,1,2], [1,2,4], [3,1,2,4]. 
+Minimums are 3, 1, 2, 4, 1, 1, 2, 1, 1, 1.
+Sum is 17.
+Example 2:
+
+Input: arr = [11,81,94,43,3]
+Output: 444
+ 
+
+Constraints:
+
+1 <= arr.length <= 3 * 104
+1 <= arr[i] <= 3 * 104
+
+```java
+public class Solution {
+    public int[] getNSL(int[] arr, int n) {
+        int[] result = new int[n];
+        Stack<Integer> st = new Stack<>();
+
+        for (int i = 0; i < n; i++) {
+            while (!st.isEmpty() && arr[st.peek()] > arr[i]) {
+                st.pop();
+            }
+
+            result[i] = st.isEmpty() ? -1 : st.peek();
+            st.push(i);
+        }
+
+        return result;
+    }
+
+    public int[] getNSR(int[] arr, int n) {
+        int[] result = new int[n];
+        Stack<Integer> st = new Stack<>();
+
+        for (int i = n - 1; i >= 0; i--) {
+            // taking equals sign here or in NSL so that we deduct the duplicate subarray arising from duplicate values
+            while (!st.isEmpty() && arr[st.peek()] >= arr[i]) {
+                st.pop();
+            }
+
+            result[i] = st.isEmpty() ? n : st.peek();
+            st.push(i);
+        }
+
+        return result;
+    }
+
+    public int sumSubarrayMins(int[] arr) {
+        int n = arr.length;
+
+        int[] NSL = getNSL(arr, n);
+        int[] NSR = getNSR(arr, n);
+
+        long sum = 0;
+        int M = 1000000007;
+
+        for (int i = 0; i < n; i++) {
+            long d1 = i - NSL[i];
+            long d2 = NSR[i] - i;
+            
+            long totalWaysForIMin = d1 * d2;
+            long sumIInTotalWays = arr[i] * totalWaysForIMin;
+
+            sum = (sum + sumIInTotalWays) % M;
+        }
+
+        return (int) sum;
+    }
+}
+```
+
+    Things to remember
+    learn the NSL and NSR by heart 
+</details>
+
+
+<details id="42. Trapping Rain Water">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">42. Trapping Rain Water 
 </span>
 </summary>
-</details> -->
-<!-- <details id="1584. Min Cost to Connect All Points">
-<summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
-</span>
-</summary>
-</details> -->
+
+https://leetcode.com/problems/trapping-rain-water/description/
+
+Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.
+
+ 
+
+Example 1:
+
+
+Input: height = [0,1,0,2,1,0,1,3,2,1,2,1]
+Output: 6
+Explanation: The above elevation map (black section) is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. In this case, 6 units of rain water (blue section) are being trapped.
+Example 2:
+
+Input: height = [4,2,0,3,2,5]
+Output: 9
+ 
+
+Constraints:
+
+n == height.length
+1 <= n <= 2 * 104
+0 <= height[i] <= 105
+
+```java
+class Solution {
+    public int trap(int[] height) {
+        int len = height.length;
+        if (len == 0) return 0;
+
+        int[] leftMax = new int[len];
+        int[] rightMax = new int[len];
+
+        leftMax[0] = height[0];
+        for (int i = 1; i < len; i++) {
+            leftMax[i] = Math.max(leftMax[i - 1], height[i]);
+        }
+
+        rightMax[len - 1] = height[len - 1];
+        for (int i = len - 2; i >= 0; i--) {
+            rightMax[i] = Math.max(rightMax[i + 1], height[i]);
+        }
+
+        int water = 0;
+        for (int i = 0; i < len; i++) {
+            water += Math.min(leftMax[i], rightMax[i]) - height[i];
+        }
+
+        return water;
+    }
+}
+
+
+    Things to remember
+     see what’s happening in your code. The main issue is that you’re using monotonic stacks to track the nearest greater elements, but for the trapping rain water problem, what you actually need are the maximum heights to the left and right of each index, not just the nearest greater bar.
+
+    Here’s why your current approach fails:
+
+    l_greater[i] and r_greater[i] store indices of the nearest greater elements, but water trapping depends on the tallest bar seen so far to the left and right, not just the nearest taller one.
+
+    For example, if the tallest bar is far away, your logic misses it and underestimates the trapped water.
+```
+</details>
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
 <span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
