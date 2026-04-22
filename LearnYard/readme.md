@@ -3288,12 +3288,112 @@ class Solution {
     For example, if the tallest bar is far away, your logic misses it and underestimates the trapped water.
 ```
 </details>
-<!-- <details id="1584. Min Cost to Connect All Points">
+
+
+<details id="84. Largest Rectangle in Histogram">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">84. Largest Rectangle in Histogram 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/largest-rectangle-in-histogram/description/
+
+Given an array of integers heights representing the histogram's bar height where the width of each bar is 1, return the area of the largest rectangle in the histogram.
+
+ 
+
+Example 1:
+
+
+Input: heights = [2,1,5,6,2,3]
+Output: 10
+Explanation: The above is a histogram where width of each bar is 1.
+The largest rectangle is shown in the red area, which has an area = 10 units.
+Example 2:
+
+
+Input: heights = [2,4]
+Output: 4
+ 
+
+Constraints:
+
+1 <= heights.length <= 105
+0 <= heights[i] <= 104
+```java
+// bruteforce
+class Solution {
+    public int largestRectangleArea(int[] heights) {
+
+        int maxArea = Integer.MIN_VALUE;
+
+        for (int i = 0; i < heights.length; i++) {
+            int minHeight = heights[i];
+            for (int j = i; j < heights.length; j++) {
+                minHeight = Math.min(minHeight, heights[j]);
+                int area = minHeight* (j - i + 1);
+                maxArea = Math.max(area, maxArea);
+                if (minHeight == 0)
+                    break;
+            }
+        }
+        return maxArea;
+    }
+}
+```
+
+```java
+class Solution {
+    public int largestRectangleArea(int[] heights) {
+        int len = heights.length;
+        int maxArea = 0;
+        int[] pse = new int[len];
+        int[] nse = new int[len];
+        Stack<Integer> stack = new Stack<>();
+
+        // Previous Smaller Element
+        for (int i = 0; i < len; i++) {
+            while (!stack.isEmpty() && heights[stack.peek()] >= heights[i]) {
+                stack.pop();
+            }
+            pse[i] = stack.isEmpty() ? -1 : stack.peek();
+            stack.push(i);
+        }
+
+        // Clear stack before NSE
+        stack.clear();
+
+        // Next Smaller Element
+        for (int i = len - 1; i >= 0; i--) {
+            while (!stack.isEmpty() && heights[stack.peek()] >= heights[i]) {
+                stack.pop();
+            }
+            nse[i] = stack.isEmpty() ? len : stack.peek();
+            stack.push(i);
+        }
+
+        // Calculate max area
+        for (int i = 0; i < len; i++) {
+            int width = nse[i] - pse[i] - 1;
+            int area = width * heights[i];
+            maxArea = Math.max(maxArea, area);
+        }
+
+        return maxArea;
+    }
+}
+
+```
+
+
+    Things to remember 
+    Why >= is needed
+    The stack is meant to maintain monotonic increasing heights.
+
+    If you only check > (strictly greater), equal heights will remain stacked together. That causes incorrect width calculations because the algorithm won’t properly "collapse" bars of the same height.
+
+    Using >= ensures that when you encounter a bar of the same height, you pop the previous one. This avoids double-counting and guarantees that each bar’s rectangle is computed with the widest possible span.
+</details>
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
 <span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
