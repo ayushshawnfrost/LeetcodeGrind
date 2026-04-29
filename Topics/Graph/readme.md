@@ -73,7 +73,7 @@ dfs(adj, 0, visited );
 // DFS logic
 void dfs(List<List<Integer>> adj, int node, boolean visited){
 
-    if(vivited[node])return;
+    if(vivited[node])return;// redundant, never true
     visited[node]=true;
     // Do something
     for(int i: adj.get(node)){
@@ -87,23 +87,29 @@ void dfs(List<List<Integer>> adj, int node, boolean visited){
 
 // Implementation
 class Solution {
-    // Function to return a list containing the DFS traversal of the graph.
     public ArrayList<Integer> dfsOfGraph(int V, ArrayList<ArrayList<Integer>> adj) {
-        boolean[] visited=new boolean[V];
-        ArrayList<Integer> ans=new ArrayList<>();
-        dfs(adj, 0, visited, ans);
+        boolean[] visited = new boolean[V];
+        ArrayList<Integer> ans = new ArrayList<>();
+        
+        for (int i = 0; i < V; i++) {
+            if (!visited[i]) {
+                dfsHelper(adj, i, visited, ans);
+            }
+        }
         return ans;
     }
     
-    public void dfs(ArrayList<ArrayList<Integer>> adj, int node, boolean[]  visited, ArrayList<Integer> ans){
-        if(visited[node])return;
-        visited[node]=true;
+    private void dfsHelper(ArrayList<ArrayList<Integer>> adj, int node, boolean[] visited, ArrayList<Integer> ans) {
+        visited[node] = true;
         ans.add(node);
-        for(int i:adj.get(node)){
-            if(!visited[i])dfs(adj, i, visited, ans);
+        for (int neighbor : adj.get(node)) {
+            if (!visited[neighbor]) {
+                dfsHelper(adj, neighbor, visited, ans);
+            }
         }
     }
 }
+
 ```
 </details>
 
