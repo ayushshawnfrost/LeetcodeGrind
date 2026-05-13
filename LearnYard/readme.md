@@ -3724,6 +3724,8 @@ https://github.com/MAZHARMIK/Interview_DS_Algo/blob/master/Graph/Disjoint%20Set/
 
     ```
 
+        Time Complexity:
+        𝑂(𝑛+𝑚) 
 
 </details>
 
