@@ -3530,12 +3530,202 @@ for (int neighbour : adj.get(node)) {
     Otherwise, you might miss valid paths that aren’t through the first neighbor.
 </details>
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="2685. Count the Number of Complete Components">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">2685. Count the Number of Complete Components 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/count-the-number-of-complete-components/description/
+
+You are given an integer n. There is an undirected graph with n vertices, numbered from 0 to n - 1. You are given a 2D integer array edges where edges[i] = [ai, bi] denotes that there exists an undirected edge connecting vertices ai and bi.
+
+Return the number of complete connected components of the graph.
+
+A connected component is a subgraph of a graph in which there exists a path between any two vertices, and no vertex of the subgraph shares an edge with a vertex outside of the subgraph.
+
+A connected component is said to be complete if there exists an edge between every pair of its vertices.
+
+ 
+
+Example 1:
+
+
+
+Input: n = 6, edges = [[0,1],[0,2],[1,2],[3,4]]
+Output: 3
+Explanation: From the picture above, one can see that all of the components of this graph are complete.
+Example 2:
+
+
+
+Input: n = 6, edges = [[0,1],[0,2],[1,2],[3,4],[3,5]]
+Output: 1
+Explanation: The component containing vertices 0, 1, and 2 is complete since there is an edge between every pair of two vertices. On the other hand, the component containing vertices 3, 4, and 5 is not complete since there is no edge between vertices 4 and 5. Thus, the number of complete components in this graph is 1.
+ 
+
+Constraints:
+
+1 <= n <= 50
+0 <= edges.length <= n * (n - 1) / 2
+edges[i].length == 2
+0 <= ai, bi <= n - 1
+ai != bi
+There are no repeated edges.
+
+```java
+// The DFS and BFS approach, both has O(V+E) time complexity
+class Solution {
+    public int countCompleteComponents(int n, int[][] edges) {
+        boolean[] visited = new boolean[n];
+        List<List<Integer>> adj = new ArrayList<>();
+        int components = 0;
+        int[] v_e = new int[2];
+
+        for (int i = 0; i < n; i++)
+            adj.add(new ArrayList<>());
+
+        for (int i = 0; i < edges.length; i++) {
+            adj.get(edges[i][0]).add(edges[i][1]);
+            adj.get(edges[i][1]).add(edges[i][0]);
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (!visited[i]) {
+                // dfs(i, adj, visited, v_e);
+                bfs(i, adj, visited, v_e);
+                int v = v_e[0];
+                int e = v_e[1];
+                if ((v * (v - 1) / 2) == e / 2) {
+                    components++;
+                }
+                v_e[0] = 0;
+                v_e[1] = 0;
+            }
+        }
+        return components;
+    }
+
+    private void dfs(int node, List<List<Integer>> adj, boolean[] visited, int[] v_e) {
+        visited[node] = true;
+        v_e[0]++;
+        v_e[1] += adj.get(node).size();
+        for (int neighbour : adj.get(node)) {
+            if (!visited[neighbour]) {
+                dfs(neighbour, adj, visited, v_e);
+            }
+        }
+    }
+
+    private void bfs(int node, List<List<Integer>> adj, boolean[] visited, int[] v_e) {
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(node);
+        visited[node] = true;
+
+        while (!queue.isEmpty()) {
+            int currNode = queue.poll();
+            v_e[0]++;
+            v_e[1] += adj.get(currNode).size();
+            for (int neighbour : adj.get(currNode)) {
+                if (!visited[neighbour]) {
+                    visited[neighbour] = true;
+                    queue.offer(neighbour);
+                }
+            }
+        }
+    }
+}
+
+```
+
+
+
+    Things To remember:
+    Complete Graph is one where each vertex is connected with every other vertex directly
+
+    How to identify:
+    - count of vC2=edges
+      example triangle has 3 edges and 3 vertex
+      vC2 ==> 3 * (3-1)/2 ==> 3 which is equal to edges, Hence its a comptete graph
+
+    - every vertex has an in degree of v-1
+
+    ```java
+    // DSU
+    class Solution {
+    class DSU {
+        int[] parent;
+        int[] rank;
+
+        public DSU(int n) {
+            parent = new int[n];
+            rank = new int[n];
+
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+                rank[i] = 1;
+            }
+        }
+
+        public int find(int x) {
+            if (parent[x] == x)
+                return x;
+            return parent[x] = find(parent[x]);
+        }
+
+        public void union(int x, int y) {
+            int parent_x = find(x);
+            int parent_y = find(y);
+
+            if (parent_x == parent_y)
+                return;
+
+            if (rank[parent_x] > rank[parent_y]) {
+                parent[parent_y] = parent_x;
+                rank[parent_x] += rank[parent_y];
+            } else {
+                parent[parent_x] = parent_y;
+                rank[parent_y] += rank[parent_x];
+            }
+        }
+    }
+
+    public int countCompleteComponents(int n, int[][] edges) {
+        Map<Integer, Integer> edgesMap = new HashMap<>();
+        int completeComponent = 0;
+        DSU dsu = new DSU(n);
+
+        // make graph
+        for (int[] edge : edges) {
+            dsu.union(edge[0], edge[1]);
+        }
+
+        // make the edge count map (may not contain every vertex)
+        for (int[] edge : edges) {
+            int parent = dsu.find(edge[0]);
+            edgesMap.put(parent, edgesMap.getOrDefault(parent, 0) + 1);
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (dsu.find(i) == i) {
+                int edge = edgesMap.getOrDefault(i, 0);
+                int v = dsu.rank[i];
+        
+                if (v * (v - 1) / 2 == edge) {
+                    completeComponent++;
+                }
+            }
+        }
+        return completeComponent;
+    }
+}
+
+https://github.com/MAZHARMIK/Interview_DS_Algo/blob/master/Graph/Disjoint%20Set/Count%20the%20Number%20of%20Complete%20Components.cpp
+
+    ```
+
+
+</details>
 
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 

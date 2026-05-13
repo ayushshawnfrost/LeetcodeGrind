@@ -1335,6 +1335,9 @@ void union(int x, int y, List<Integer> parent, List<Integer> rank){
 </span>
 </summary>
 
+https://leetcode.com/problems/number-of-operations-to-make-network-connected
+
+
 There are n computers numbered from 0 to n - 1 connected by ethernet cables connections forming a network where connections[i] = [ai, bi] represents a connection between computers ai and bi. Any computer can reach any other computer directly or indirectly through the network.
 
 You are given an initial computer network connections. You can extract certain cables between two directly connected computers, and place them between any pair of disconnected computers to make them directly connected.
@@ -1445,13 +1448,14 @@ class Solution {
 
         if(x_parent == y_parent){
             return;
-        }else if(rank[x_parent]> rank[y_parent]){
+        }
+        
+        if(rank[x_parent]> rank[y_parent]){
             parent[y_parent]=x_parent;
-        }else if(rank[x_parent]< rank[y_parent]){
-            parent[x_parent]=y_parent;
+            rank[x_parent]+=rank[y_parent];
         }else{
             parent[x_parent]=y_parent;
-            rank[y_parent]++;
+            rank[y_parent]+=rank[x_parent];
         }
     }
 }
