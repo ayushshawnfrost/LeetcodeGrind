@@ -3650,7 +3650,7 @@ class Solution {
 
     - every vertex has an in degree of v-1
 
-    ```java
+```java
     // DSU
     class Solution {
     class DSU {
@@ -3828,12 +3828,108 @@ class Solution {
 
 </details>
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="752. Open the Lock">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">752. Open the Lock 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/open-the-lock/description/
+
+You have a lock in front of you with 4 circular wheels. Each wheel has 10 slots: '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'. The wheels can rotate freely and wrap around: for example we can turn '9' to be '0', or '0' to be '9'. Each move consists of turning one wheel one slot.
+
+The lock initially starts at '0000', a string representing the state of the 4 wheels.
+
+You are given a list of deadends dead ends, meaning if the lock displays any of these codes, the wheels of the lock will stop turning and you will be unable to open it.
+
+Given a target representing the value of the wheels that will unlock the lock, return the minimum total number of turns required to open the lock, or -1 if it is impossible.
+
+ 
+
+Example 1:
+
+Input: deadends = ["0201","0101","0102","1212","2002"], target = "0202"
+Output: 6
+Explanation: 
+A sequence of valid moves would be "0000" -> "1000" -> "1100" -> "1200" -> "1201" -> "1202" -> "0202".
+Note that a sequence like "0000" -> "0001" -> "0002" -> "0102" -> "0202" would be invalid,
+because the wheels of the lock become stuck after the display becomes the dead end "0102".
+Example 2:
+
+Input: deadends = ["8888"], target = "0009"
+Output: 1
+Explanation: We can turn the last wheel in reverse to move from "0000" -> "0009".
+Example 3:
+
+Input: deadends = ["8887","8889","8878","8898","8788","8988","7888","9888"], target = "8888"
+Output: -1
+Explanation: We cannot reach the target without getting stuck.
+ 
+
+Constraints:
+
+1 <= deadends.length <= 500
+deadends[i].length == 4
+target.length == 4
+target will not be in the list deadends.
+target and deadends[i] consist of digits only.
+ 
+ ```java
+class Solution {
+    public int openLock(String[] deadends, String target) {
+        Set<String> set = new HashSet<>(Arrays.asList(deadends));
+        if (set.contains("0000")) return -1;
+
+        Queue<String> queue = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+        queue.add("0000");
+        visited.add("0000");
+
+        int steps = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int x = 0; x < size; x++) {
+                String pattern = queue.poll();
+                if (pattern.equals(target)) return steps;
+
+                for (String neighbor : getNeighbors(pattern)) {
+                    if (!visited.contains(neighbor) && !set.contains(neighbor)) {
+                        visited.add(neighbor);
+                        queue.add(neighbor);
+                    }
+                }
+            }
+            steps++;
+        }
+        return -1;
+    }
+
+    private List<String> getNeighbors(String s) {
+        List<String> res = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            char[] chars = s.toCharArray();
+            chars[i] = chars[i] == '9' ? '0' : (char)(chars[i] + 1);
+            res.add(new String(chars));
+            chars = s.toCharArray();
+            chars[i] = chars[i] == '0' ? '9' : (char)(chars[i] - 1);
+            res.add(new String(chars));
+        }
+        return res;
+    }
+}
+
+ ```
+
+
+    Things to remember
+    Whener number is given as strig, always manipulate it with char, dont use StringBuilder or String, its crap
+
+    shortest parth --> BFS
+
+    always inceremrnt steps at the end of for loop.
+    dont increment at top before adding nodes to the queue;
+
+</details>
 
 
 <!-- <details id="1584. Min Cost to Connect All Points">
