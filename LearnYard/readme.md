@@ -4125,12 +4125,166 @@ public class Solution {
 ```
 </details>
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="1162. As Far from Land as Possible">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">1162. As Far from Land as Possible 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/as-far-from-land-as-possible
+
+
+Given an n x n grid containing only values 0 and 1, where 0 represents water and 1 represents land, find a water cell such that its distance to the nearest land cell is maximized, and return the distance. If no land or water exists in the grid, return -1.
+
+The distance used in this problem is the Manhattan distance: the distance between two cells (x0, y0) and (x1, y1) is |x0 - x1| + |y0 - y1|.
+
+ 
+
+Example 1:
+
+
+Input: grid = [[1,0,1],[0,0,0],[1,0,1]]
+Output: 2
+Explanation: The cell (1, 1) is as far as possible from all the land with distance 2.
+Example 2:
+
+
+Input: grid = [[1,0,0],[0,0,0],[0,0,0]]
+Output: 4
+Explanation: The cell (2, 2) is as far as possible from all the land with distance 4.
+ 
+
+Constraints:
+
+n == grid.length
+n == grid[i].length
+1 <= n <= 100
+grid[i][j] is 0 or 1
+
+```java
+
+```
+
+
+    ```
+Why symmetry alone is not enough
+Distance symmetry: for any two nodes 
+𝑎
+,
+𝑏
+, 
+dist
+(
+𝑎
+,
+𝑏
+)
+=
+dist
+(
+𝑏
+,
+𝑎
+)
+. That fact is true and useful.
+
+What a multi‑source BFS returns: when you enqueue a set 
+𝑆
+ of source nodes and run BFS, the distance value you record for a node 
+𝑣
+ is 
+min
+⁡
+𝑠
+∈
+𝑆
+dist
+(
+𝑠
+,
+𝑣
+)
+ — the distance from the nearest source in 
+𝑆
+ to 
+𝑣
+.
+
+If 
+𝑆
+ = all water cells: the BFS computes for every node 
+𝑣
+ the distance from the nearest water to 
+𝑣
+. That means:
+
+For land nodes you get the distance from the nearest water to that land (useful if you wanted land→water distances).
+
+For water nodes you get distance 0 (because they are sources), so you do not get the distance from that water cell to the nearest land.
+
+Because the BFS result is keyed to the chosen sources, symmetry of pairwise distances does not magically let you read off per‑water nearest‑land distances from a BFS seeded by water.
+
+Concrete counterexample
+Grid:
+
+Code
+1 0 0
+0 0 0
+0 0 0
+Seed with all land cells (cell (0,0)) → BFS layers: water at (0,1) and (1,0) get distance 1, etc. You directly obtain each water cell’s nearest‑land distance.
+
+Seed with all water cells → every water cell is distance 0 (sources). BFS will compute distances for land cells (how far each land is from nearest water), but you cannot read the nearest‑land distance for a water cell from this run — it’s 0 by construction.
+
+Two ways you could (but should not) try to recover the needed values
+Run BFS from every water cell separately — correct but expensive: 
+𝑂
+(
+𝑊
+⋅
+𝑛
+2
+)
+ worst case, where 
+𝑊
+ is number of water cells (can be 
+𝑂
+(
+𝑛
+4
+)
+ for naive per‑cell BFS on an 
+𝑛
+×
+𝑛
+ grid).
+
+Run BFS seeded with all land cells — one pass, 
+𝑂
+(
+𝑛
+2
+)
+, and directly yields the required distances for every water cell. This is the correct and efficient approach.
+
+Recommendation
+Always use multi‑source BFS seeded with all land cells for this problem. It is simple, correct, and optimal: one BFS pass computes the shortest distance to land for every water cell in 
+𝑂
+(
+𝑛
+2
+)
+ time and 
+𝑂
+(
+𝑛
+2
+)
+ space.
+
+If you want, I can walk through the exact queue and grid updates for a small example so you can see how the distances for water cells are produced step by step.
+    ```
+
+</details>
 
 
 <!-- <details id="1584. Min Cost to Connect All Points">
