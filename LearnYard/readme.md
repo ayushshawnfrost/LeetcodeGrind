@@ -3932,6 +3932,252 @@ class Solution {
 </details>
 
 
+<details id="3015. Count the Number of Houses at a Certain Distance I">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">3015. Count the Number of Houses at a Certain Distance I 
+</span>
+</summary>
+
+https://leetcode.com/problems/count-the-number-of-houses-at-a-certain-distance-i/description/
+
+ou are given three positive integers n, x, and y.
+
+In a city, there exist houses numbered 1 to n connected by n streets. There is a street connecting the house numbered i with the house numbered i + 1 for all 1 <= i <= n - 1 . An additional street connects the house numbered x with the house numbered y.
+
+For each k, such that 1 <= k <= n, you need to find the number of pairs of houses (house1, house2) such that the minimum number of streets that need to be traveled to reach house2 from house1 is k.
+
+Return a 1-indexed array result of length n where result[k] represents the total number of pairs of houses such that the minimum streets required to reach one house from the other is k.
+
+Note that x and y can be equal.
+
+ 
+
+Example 1:
+
+
+Input: n = 3, x = 1, y = 3
+Output: [6,0,0]
+Explanation: Let's look at each pair of houses:
+- For the pair (1, 2), we can go from house 1 to house 2 directly.
+- For the pair (2, 1), we can go from house 2 to house 1 directly.
+- For the pair (1, 3), we can go from house 1 to house 3 directly.
+- For the pair (3, 1), we can go from house 3 to house 1 directly.
+- For the pair (2, 3), we can go from house 2 to house 3 directly.
+- For the pair (3, 2), we can go from house 3 to house 2 directly.
+Example 2:
+
+
+Input: n = 5, x = 2, y = 4
+Output: [10,8,2,0,0]
+Explanation: For each distance k the pairs are:
+- For k == 1, the pairs are (1, 2), (2, 1), (2, 3), (3, 2), (2, 4), (4, 2), (3, 4), (4, 3), (4, 5), and (5, 4).
+- For k == 2, the pairs are (1, 3), (3, 1), (1, 4), (4, 1), (2, 5), (5, 2), (3, 5), and (5, 3).
+- For k == 3, the pairs are (1, 5), and (5, 1).
+- For k == 4 and k == 5, there are no pairs.
+Example 3:
+
+
+Input: n = 4, x = 1, y = 1
+Output: [6,4,2,0]
+Explanation: For each distance k the pairs are:
+- For k == 1, the pairs are (1, 2), (2, 1), (2, 3), (3, 2), (3, 4), and (4, 3).
+- For k == 2, the pairs are (1, 3), (3, 1), (2, 4), and (4, 2).
+- For k == 3, the pairs are (1, 4), and (4, 1).
+- For k == 4, there are no pairs.
+ 
+
+Constraints:
+
+2 <= n <= 100
+1 <= x, y <= n
+
+
+```java
+// class Solution {
+//     public int[] countOfPairs(int n, int x, int y) {
+//         int[] dist = new int[n];
+//         for (int i = 1; i <= n; i++) { // n = 3, x = 1, y = 3
+//             bfs(i, x, y, n, dist);
+//         }
+//         return dist;
+//     }
+
+//     public void bfs(int node, int x, int y, int n, int[] dist) {
+//         Queue<Integer> queue = new LinkedList<>();
+//         boolean[] visited = new boolean[n + 1];
+//         queue.offer(node);
+//         visited[node] = true;
+//         int distance = 1;
+
+//         while (!queue.isEmpty()) {
+//             int size = queue.size();
+
+//             for (int i = 0; i < size; i++) {
+//                 int curr = queue.poll();
+//                 if (!visited[x] && x == curr) {
+//                     visited[y] = true;
+//                     queue.offer(y);
+//                     dist[distance - 1]++;
+//                 } else if (!visited[y] && y == curr) {
+//                     visited[x] = true;
+//                     queue.offer(x);
+//                     dist[distance - 1]++;
+//                 }
+//                 if (!visited[curr] && curr != n) {
+//                     visited[curr + 1] = true;
+//                     queue.offer(curr + 1);
+//                     dist[distance - 1]++;
+//                 }
+//             }
+//             distance++;
+//         }
+//     }
+// }
+
+class Solution {
+    public int[] countOfPairs(int n, int x, int y) {
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i <= n; i++) graph.add(new ArrayList<>());
+        
+        // Build edges
+        for (int i = 1; i < n; i++) {
+            graph.get(i).add(i+1);
+            graph.get(i+1).add(i);
+        }
+        if (x != y) {
+            graph.get(x).add(y);
+            graph.get(y).add(x);
+        }
+        
+        int[] result = new int[n+1]; // 1-indexed
+        
+        // BFS from each node
+        for (int start = 1; start <= n; start++) {
+            int[] dist = new int[n+1];
+            Arrays.fill(dist, -1);
+            Queue<Integer> q = new LinkedList<>();
+            q.add(start);
+            dist[start] = 0;
+            
+            while (!q.isEmpty()) {
+                int u = q.poll();
+                for (int v : graph.get(u)) {
+                    if (dist[v] == -1) {
+                        dist[v] = dist[u] + 1;
+                        q.add(v);
+                        result[dist[v]]++;
+                    }
+                }
+            }
+        }
+        
+        return Arrays.copyOfRange(result, 1, n+1);
+    }
+}
+
+```
+
+
+    Thing to remember
+    time: O(n^2) space O(n^2)
+
+    The distance finding logic is unique here, in this bfs we are not using any step variable to keep trak of the distance of nodes. Instead we are utilizing a dist array which has distance for each node also doubbles up as visited array.
+
+```java
+//T.C : O(n^3)
+//S.C : O(n^2)
+public class Solution {
+    public int[] countOfPairs(int n, int x, int y) {
+        int[][] grid = new int[n + 1][n + 1];
+
+        for (int[] row : grid) {
+            Arrays.fill(row, 100000);
+        }
+
+        for (int j = 1; j < n; j++) {
+            grid[j][j + 1] = 1;
+            grid[j + 1][j] = 1;
+        }
+        grid[x][y] = 1;
+        grid[y][x] = 1;
+
+        for (int via = 1; via <= n; via++) {
+            for (int i = 1; i <= n; i++) {
+                for (int j = 1; j <= n; j++) {
+                    grid[i][j] = Math.min(grid[i][j], grid[i][via] + grid[via][j]);
+                }
+            }
+        }
+
+        int[] result = new int[n];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (i != j) {
+                    int val = grid[i][j];
+                    result[val - 1]++;
+                }
+            }
+        }
+
+        return result;
+    }
+}
+```
+</details>
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
 <span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
