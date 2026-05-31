@@ -2666,6 +2666,632 @@ class Solution {
 </summary>
 </details> -->
 
+
+# Tree
+
+### Traversal
+
+### Properties of Trees
+
+
+<details id="Remove Half Nodes">
+<summary> 
+<span style="color:green;font-size:16px;font-weight:bold">Remove Half Nodes 
+</span>
+</summary>
+
+https://www.geeksforgeeks.org/problems/remove-half-nodes/1
+
+ou are given a binary tree and you need to remove all the half nodes (which have only one child). Return the root node of the modified tree after removing all the half-nodes.
+
+Note: The output will be judged by the inorder traversal of the resultant tree, inside the driver code.
+
+Examples:
+
+Input: tree = 5
+            /   \
+          7     8
+        / 
+      2
+Output: 2 5 8
+Explanation: In the above tree, the node 7 has only single child. After removing the node the tree becomes  2<-5->8. Hence, the answer is 2 5 8 & it is in inorder traversal.
+Input:  tree = 2   
+              / \   
+            7   5 
+Output: 7 2 5
+Explanation: Here there are no nodes which has only one child. So the tree remains same.
+Expected Time Complexity: O(n)
+Expected Auxiliary Space: O(height of the binary tree)
+
+Constraints:
+1<=number of nodes<=104
+
+```jaVA
+/*
+
+class Node{
+    int data;
+    Node left,right;
+    Node(int d){
+        data=d;
+        left=right=null;
+    }
+}
+
+*/
+
+class Solution {
+    public Node RemoveHalfNodes(Node root) {
+        if(root ==null){
+            return null;
+        }
+        Node newRoot=new Node(root.data);
+        newRoot.left = RemoveHalfNodes(root.left);
+        newRoot.right = RemoveHalfNodes(root.right);
+        
+        if(newRoot.left==null && newRoot.right!=null){
+            return newRoot.right;
+        }
+        if(newRoot.left!=null && newRoot.right==null){
+            return newRoot.left;
+        }
+        return newRoot;
+    }
+}
+```
+</details>
+
+
+<details id="110. Balanced Binary Tree">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">110. Balanced Binary Tree 
+</span>
+</summary>
+
+https://leetcode.com/problems/balanced-binary-tree/description/
+
+Given a binary tree, determine if it is height-balanced.
+
+ 
+
+Example 1:
+
+
+Input: root = [3,9,20,null,null,15,7]
+Output: true
+Example 2:
+
+
+Input: root = [1,2,2,3,3,null,null,4,4]
+Output: false
+Example 3:
+
+Input: root = []
+Output: true
+ 
+
+Constraints:
+
+The number of nodes in the tree is in the range [0, 5000].
+-104 <= Node.val <= 104
+
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public boolean isBalanced(TreeNode root) {
+        if(getHeight(root)== -1){
+            return false;
+        }
+        return true;
+    }
+
+    private int getHeight(TreeNode root){
+        if(root == null)return 0;
+
+        int l_height= getHeight(root.left);
+        if(l_height == -1)return -1;
+
+        int r_height= getHeight(root.right);
+        if(r_height == -1)return -1;
+
+        if(Math.abs(l_height - r_height) >1)return -1;
+
+        return Math.max(l_height, r_height)+1;
+    }
+}
+```
+
+
+</details>
+
+<details id="104. Maximum Depth of Binary Tree">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">104. Maximum Depth of Binary Tree 
+</span>
+</summary>
+
+https://leetcode.com/problems/maximum-depth-of-binary-tree/description/
+
+Given the root of a binary tree, return its maximum depth.
+
+A binary tree's maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.
+
+ 
+
+Example 1:
+
+
+Input: root = [3,9,20,null,null,15,7]
+Output: 3
+Example 2:
+
+Input: root = [1,null,2]
+Output: 2
+ 
+
+Constraints:
+
+The number of nodes in the tree is in the range [0, 104].
+-100 <= Node.val <= 100
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public int maxDepth(TreeNode root) {
+        if(root   == null)return 0;
+        return (Math.max(maxDepth(root.left), maxDepth(root.right)) +1);
+    }
+}
+```
+
+</details>
+
+
+<details id="543. Diameter of Binary Tree">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">543. Diameter of Binary Tree 
+</span>
+</summary>
+
+https://leetcode.com/problems/diameter-of-binary-tree/description/
+
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    int max = Integer.MIN_VALUE;
+
+    public int diameterOfBinaryTree(TreeNode root) {
+        findDiameter(root);
+        return max; 
+    }
+
+    private int findDiameter(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int leftHeight = findDiameter(root.left);
+        int rightHeight = findDiameter(root.right);
+        max = Math.max(max, leftHeight + rightHeight);
+        return Math.max(leftHeight, rightHeight) + 1;
+    }
+}
+```
+
+</details>
+
+<details id="222. Count Complete Tree Nodes">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">222. Count Complete Tree Nodes 
+</span>
+</summary>
+
+https://leetcode.com/problems/count-complete-tree-nodes/description/
+
+Given the root of a complete binary tree, return the number of the nodes in the tree.
+
+According to Wikipedia, every level, except possibly the last, is completely filled in a complete binary tree, and all nodes in the last level are as far left as possible. It can have between 1 and 2h nodes inclusive at the last level h.
+
+Design an algorithm that runs in less than O(n) time complexity.
+
+ 
+
+Example 1:
+
+
+Input: root = [1,2,3,4,5,6]
+Output: 6
+Example 2:
+
+Input: root = []
+Output: 0
+Example 3:
+
+Input: root = [1]
+Output: 1
+ 
+
+Constraints:
+
+The number of nodes in the tree is in the range [0, 5 * 104].
+0 <= Node.val <= 5 * 104
+The tree is guaranteed to be complete.
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;222. Count Complete Tree Nodes
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public int countNodes(TreeNode root) {
+        // height of perfect binary tree = 2^h - 1 and also log(number of nodes)
+        if(root == null)return 0;
+
+        int lh= leftHeight(root);
+        int rh= rightHeight(root);
+
+        if(lh == rh){
+            return (int)Math.pow(2,lh)-1;
+        }
+        return countNodes(root.left) + countNodes(root.right) + 1;
+    }
+
+    private int leftHeight(TreeNode root){
+        int h=0;
+        while(root!=null){
+            h++;
+            root=root.left;
+        }
+        return h;
+    }private int rightHeight(TreeNode root){
+        int h=0;
+        while(root!=null){
+            h++;
+            root=root.right;
+        }
+        return h;
+    }
+}
+```
+</details>
+
+
+<details id="111. Minimum Depth of Binary Tree">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">111. Minimum Depth of Binary Tree 
+</span>
+</summary>
+
+https://leetcode.com/problems/minimum-depth-of-binary-tree/description/
+
+Given a binary tree, find its minimum depth.
+
+The minimum depth is the number of nodes along the shortest path from the root node down to the nearest leaf node.
+
+Note: A leaf is a node with no children.
+
+ 
+
+Example 1:
+
+
+Input: root = [3,9,20,null,null,15,7]
+Output: 2
+Example 2:
+
+Input: root = [2,null,3,null,4,null,5,null,6]
+Output: 5
+ 
+
+Constraints:
+
+The number of nodes in the tree is in the range [0, 105].
+-1000 <= Node.val <= 1000
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public int minDepth(TreeNode root) {
+        if (root == null) return 0;
+        if (root.left == null && root.right == null) return 1;
+
+        if (root.left == null) return minDepth(root.right) + 1;
+        if (root.right == null) return minDepth(root.left) + 1;
+
+        return Math.min(minDepth(root.left), minDepth(root.right)) + 1;
+    }
+}
+
+
+```
+</details>
+
+<details id="958. Check Completeness of a Binary Tree">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">958. Check Completeness of a Binary Tree 
+</span>
+</summary>
+
+https://leetcode.com/problems/check-completeness-of-a-binary-tree/description/
+
+Given the root of a binary tree, determine if it is a complete binary tree.
+
+In a complete binary tree, every level, except possibly the last, is completely filled, and all nodes in the last level are as far left as possible. It can have between 1 and 2h nodes inclusive at the last level h.
+
+ 
+
+Example 1:
+
+
+Input: root = [1,2,3,4,5,6]
+Output: true
+Explanation: Every level before the last is full (ie. levels with node-values {1} and {2, 3}), and all nodes in the last level ({4, 5, 6}) are as far left as possible.
+Example 2:
+
+
+Input: root = [1,2,3,4,5,null,7]
+Output: false
+Explanation: The node with value 7 isn't as far left as possible.
+ 
+
+Constraints:
+
+The number of nodes in the tree is in the range [1, 100].
+1 <= Node.val <= 1000
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public boolean isCompleteTree(TreeNode root) {
+        //   bfs
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        boolean point = false;
+        while (!queue.isEmpty()) {
+            TreeNode curr = queue.poll();
+            if (curr != null && point) {
+                return false;
+            }
+            if (curr == null) {
+                point = true;
+                continue;
+            }
+            queue.add(curr.left);
+            queue.add(curr.right);
+        }
+        return true;
+    }
+}
+```
+
+
+```java
+// wrong approach
+class Solution {
+    public boolean isCompleteTree(TreeNode root) {
+        if(root == null)return true;
+        if(root.left == null   && root.right!=null)return false;
+        return isCompleteTree(root.left) && isCompleteTree(root.right);
+    }
+}
+// here the  
+```
+    Things to remember:
+    BFS is the only best way to solve this
+</details>
+
+### Construction of Tree
+
+<details id="Construct Binary Tree from Parent Array>
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">Construct Binary Tree from Parent Array
+</span>
+</summary>
+
+https://www.geeksforgeeks.org/problems/construct-binary-tree-from-parent-array/1
+
+Given an array parent[] where each index represents a node and parent[i] gives the parent’s index, with -1 indicating the root. Your task is to construct the binary tree in standard linked-node form (each node having left and right pointers) based on this parent–child relationship and return the root node.
+
+Note: If two elements have the same parent, the one that appears first in the array will be the left child and the other is the right child. You don't need to print anything, the driver code will print the level order traversal of the returned root node to verify the output.
+
+Examples:
+
+Input: parent[] = [-1, 0, 0, 1, 1, 3, 5]
+Output: [0, 1, 2, 3, 4, N, N, 5, N, N, N, 6]
+Explanation: the tree generated will have a structure like
+
+Input: parent[] = [2, 0, -1]
+Output: [2, 0, N, 1]
+Explanation: the tree generated will have a structure like
+
+Constraints:
+1 ≤ parent.size() ≤ 103
+
+```java
+class Solution {
+    Node createTree(int[] parent) {
+        List<Node> tree=new ArrayList<>();
+        
+        for(int i=0;i<parent.length;i++){
+            tree.add(i, new Node(i));
+        }
+        Node root=null;
+        for(int i=0;i<parent.length;i++){
+            if(parent[i] == -1){
+                root=tree.get(i);continue;
+            }
+            Node currNode=tree.get(parent[i]);
+            if(currNode.left == null){
+                currNode.left = tree.get(i);
+            }else{
+                currNode.right = tree.get(i);
+            }
+        }
+        return root;
+    }
+}
+```
+</details>
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+
 ######################################################################################
 
 # Stacks
@@ -4161,9 +4787,7 @@ n == grid[i].length
 1 <= n <= 100
 grid[i][j] is 0 or 1
 
-```java
 
-```
 
 
     ```
@@ -4284,15 +4908,103 @@ Always use multi‑source BFS seeded with all land cells for this problem. It is
 If you want, I can walk through the exact queue and grid updates for a small example so you can see how the distances for water cells are produced step by step.
     ```
 
+
+```java
+class Solution {
+    public int maxDistance(int[][] grid) {
+        Queue<int[]> queue = new LinkedList<>();
+        int r = grid.length, c = grid[0].length;
+
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                if (grid[i][j] == 1) {
+                    queue.offer(new int[] { i, j });
+                    grid[i][j] = -1;
+                }
+            }
+        }
+        if (queue.isEmpty() || queue.size() == r * c)
+            return -1;
+        int distance = -1;
+
+        int[][] dir = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+
+            for (int i = 0; i < size; i++) {
+                int[] cell = queue.poll();
+                for (int[] direct : dir) {
+                    int row = cell[0] + direct[0];
+                    int col = cell[1] + direct[1];
+                    if (row >= 0 && col >= 0 && row < r && col < c && grid[row][col] == 0) {
+                        grid[row][col] = -1;
+                        queue.offer(new int[] { row, col });
+                    }
+                }
+            }
+            distance++;
+        }
+        return distance;
+    }
+}
+
+```
+
 </details>
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="2059. Minimum Operations to Convert Number">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">2059. Minimum Operations to Convert Number 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/minimum-operations-to-convert-number/description/
+
+
+You are given a 0-indexed integer array nums containing distinct numbers, an integer start, and an integer goal. There is an integer x that is initially set to start, and you want to perform operations on x such that it is converted to goal. You can perform the following operation repeatedly on the number x:
+
+If 0 <= x <= 1000, then for any index i in the array (0 <= i < nums.length), you can set x to any of the following:
+
+x + nums[i]
+x - nums[i]
+x ^ nums[i] (bitwise-XOR)
+Note that you can use each nums[i] any number of times in any order. Operations that set x to be out of the range 0 <= x <= 1000 are valid, but no more operations can be done afterward.
+
+Return the minimum number of operations needed to convert x = start into goal, and -1 if it is not possible.
+
+ 
+
+Example 1:
+
+Input: nums = [2,4,12], start = 2, goal = 12
+Output: 2
+Explanation: We can go from 2 → 14 → 12 with the following 2 operations.
+- 2 + 12 = 14
+- 14 - 2 = 12
+Example 2:
+
+Input: nums = [3,5,7], start = 0, goal = -4
+Output: 2
+Explanation: We can go from 0 → 3 → -4 with the following 2 operations. 
+- 0 + 3 = 3
+- 3 - 7 = -4
+Note that the last operation sets x out of the range 0 <= x <= 1000, which is valid.
+Example 3:
+
+Input: nums = [2,8,16], start = 0, goal = 1
+Output: -1
+Explanation: There is no way to convert 0 into 1.
+ 
+
+Constraints:
+
+1 <= nums.length <= 1000
+-109 <= nums[i], goal <= 109
+0 <= start <= 1000
+start != goal
+All the integers in nums are distinct.
+</details>
 
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
