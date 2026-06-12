@@ -1,3 +1,92 @@
+# Math
+
+### Bianomial Exponential/ fast multiplication
+
+    Whenever we want to find the exponents, it is generally time tacking example: 2^100 will take 100 time miltiplication of 2
+
+    Here we can incorporate Binomial Exponententian, whose time complexity would be log 100 base 2, basically for a^n => log(n)
+
+```java
+public int binomialEx(int a, int n){
+    // zero power is always 1
+    if(n ==  0)return 1;
+
+    int result=binomialEx(a,n/2);
+
+    // odd power can be broken into a* (a^n/2)^2
+    if(n % 2 != 0){
+        return a * result;
+    }
+    return result;
+} 
+
+```
+
+<details id="1922. Count Good Numbers">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">1922. Count Good Numbers
+</span>
+</summary>
+
+
+https://leetcode.com/problems/count-good-numbers/description/
+
+A digit string is good if the digits (0-indexed) at even indices are even and the digits at odd indices are prime (2, 3, 5, or 7).
+
+For example, "2582" is good because the digits (2 and 8) at even positions are even and the digits (5 and 2) at odd positions are prime. However, "3245" is not good because 3 is at an even index but is not even.
+Given an integer n, return the total number of good digit strings of length n. Since the answer may be large, return it modulo 109 + 7.
+
+A digit string is a string consisting of digits 0 through 9 that may contain leading zeros.
+
+ 
+
+Example 1:
+
+Input: n = 1
+Output: 5
+Explanation: The good numbers of length 1 are "0", "2", "4", "6", "8".
+Example 2:
+
+Input: n = 4
+Output: 400
+Example 3:
+
+Input: n = 50
+Output: 564908303
+ 
+
+Constraints:
+
+1 <= n <= 1015
+
+```java
+class Solution {
+    long MOD = 1_000_000_007;
+
+    public int countGoodNumbers(long n) {
+        long oddIndex = n / 2;
+        long evenIndex = (n + 1) / 2;
+
+        long result = (modPow(5, evenIndex) * modPow(4, oddIndex)) % MOD;
+        return (int) result;
+    }
+
+    private long modPow(long base, long exp) {
+        if (exp == 0) return 1;
+        long half = modPow(base, exp / 2);
+        long res = (half * half) % MOD;
+        if (exp % 2 == 1) {
+            res = (res * base) % MOD;
+        }
+        return res;
+    }
+}
+
+```
+</details>
+
+
+
 # Arrays
 
 ### interval
@@ -2786,6 +2875,678 @@ class Solution {
 </span>
 </summary>
 </details> -->
+
+# Recursion & Backtracking
+
+    In backtracking problems we first add someting to array then ddo recursive call and then remove it. This is the basic pattern.
+    Generally the constraints are very low which tells that we can apply backtracking
+
+
+### Permutation 
+
+
+<details id="46. Permutations">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">46. Permutations
+</span>
+</summary>
+
+https://leetcode.com/problems/permutations/description/
+
+Given an array nums of distinct integers, return all the possible permutations. You can return the answer in any order.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,3]
+Output: [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+Example 2:
+
+Input: nums = [0,1]
+Output: [[0,1],[1,0]]
+Example 3:
+
+Input: nums = [1]
+Output: [[1]]
+ 
+
+Constraints:
+
+1 <= nums.length <= 6
+-10 <= nums[i] <= 10
+All the integers of nums are unique.
+
+```java
+class Solution {
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> result=new ArrayList<>(); 
+        makePermutations(nums, new ArrayList<>(),new HashSet<>(), result);
+        return result;
+    }
+
+    private void makePermutations(int[] nums, List<Integer> subList, HashSet<Integer> set, List<List<Integer>> result) {
+        if (subList.size() == nums.length) {
+            result.add(new ArrayList<>(subList));
+            return;
+        }
+
+        for (int index = 0; index < nums.length; index++) {
+            if (set.contains(nums[index]))
+                continue;
+                
+            subList.add(nums[index]);
+            set.add(nums[index]);
+
+            makePermutations(nums, subList, set, result);
+
+            subList.remove(subList.size() - 1);
+            set.remove(nums[index]);
+        }
+    }
+
+}
+```
+
+![alt text](image-1.png)
+
+    Things to remember
+    - always run for loop starting from starting index to have all permutation
+    - pure recursion in play, visualize the tree
+    - Time complexity is O(n * n!)
+</details>
+
+
+<details id="2375. Construct Smallest Number From DI String">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">2375. Construct Smallest Number From DI String
+</span>
+</summary>
+
+https://leetcode.com/problems/construct-smallest-number-from-di-string/description/
+
+
+You are given a 0-indexed string pattern of length n consisting of the characters 'I' meaning increasing and 'D' meaning decreasing.
+
+A 0-indexed string num of length n + 1 is created using the following conditions:
+
+num consists of the digits '1' to '9', where each digit is used at most once.
+If pattern[i] == 'I', then num[i] < num[i + 1].
+If pattern[i] == 'D', then num[i] > num[i + 1].
+Return the lexicographically smallest possible string num that meets the conditions.
+
+ 
+
+Example 1:
+
+Input: pattern = "IIIDIDDD"
+Output: "123549876"
+Explanation:
+At indices 0, 1, 2, and 4 we must have that num[i] < num[i+1].
+At indices 3, 5, 6, and 7 we must have that num[i] > num[i+1].
+Some possible values of num are "245639871", "135749862", and "123849765".
+It can be proven that "123549876" is the smallest possible num that meets the conditions.
+Note that "123414321" is not possible because the digit '1' is used more than once.
+Example 2:
+
+Input: pattern = "DDD"
+Output: "4321"
+Explanation:
+Some possible values of num are "9876", "7321", and "8742".
+It can be proven that "4321" is the smallest possible num that meets the conditions.
+ 
+
+Constraints:
+
+1 <= pattern.length <= 8
+pattern consists of only the letters 'I' and 'D'.
+
+
+```java
+class Solution {
+     List<Integer> answer = new ArrayList<>();
+    public String smallestNumber(String pattern) {
+        List<Integer> result=new ArrayList<>();// DDD
+        createString(pattern,0, result, new HashSet<>());
+        String answers="";
+        for(int i:answer){
+            answers+=Integer.toString(i);
+        }
+        return answers;
+    }
+
+    private void createString(String pattern,int index, List<Integer> result, HashSet<Integer> included){
+
+        if(result.size() == pattern.length() + 1){
+            if(answer.isEmpty())answer = new ArrayList(result);
+            return;
+        }
+
+        for(int i=1;i<=9;i++){
+            if(result.isEmpty()){
+                result.add(i);
+                included.add(i);
+                createString(pattern,index, result, included);
+
+                result.remove(result.size()-1);
+                included.remove(i);
+                continue;
+            }
+            if(included.contains(i)){
+                continue;
+            }
+            if(pattern.charAt(index) == 'I'){
+                if(i > result.get(result.size()-1)){
+                    result.add(i);
+                    included.add(i);
+
+                    createString(pattern,index+1, result, included);
+
+                    result.remove(result.size()-1);
+                    included.remove(i);
+                }
+            }else{
+                 if(i < result.get(result.size()-1)){
+                    result.add(i);
+                    included.add(i);
+
+                    createString(pattern,index+1, result, included);
+
+                    result.remove(result.size()-1);
+                    included.remove(i);
+                }
+            }
+        }
+    }
+}
+
+```java
+
+class Solution {
+    public String smallestNumber(String pattern) {
+        StringBuilder result = new StringBuilder();
+        Stack<Integer> stack = new Stack<>();
+
+        // We need digits from 1 to n+1
+        int n = pattern.length();
+        for (int i = 0; i <= n; i++) {
+            // Push the next number
+            stack.push(i + 1);
+
+            // If we see 'I' or reach the end, pop all from stack
+            if (i == n || pattern.charAt(i) == 'I') {
+                while (!stack.isEmpty()) {
+                    result.append(stack.pop());
+                }
+            }
+        }
+        return result.toString();
+    }
+}
+
+Here’s the correct step-by-step dry run for "IIIDIDDD":
+
+Step	Pattern	Stack	Result
+1	I	[1] → pop	1
+2	I	[2] → pop	12
+3	I	[3] → pop	123
+4	D	[4]	123
+5	I	push 5 → pop 5,4	12354
+6	D	[6]	12354
+7	I	push 7 → pop 7,6	1235476
+8	D	[8]	1235476
+9	D	[9,8] → end → pop all	123549876
+```
+
+    Time complexity is O(n)
+</details>
+
+<details id="526. Beautiful Arrangement">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">526. Beautiful Arrangement
+</span>
+</summary>
+
+https://leetcode.com/problems/beautiful-arrangement/description/
+
+Suppose you have n integers labeled 1 through n. A permutation of those n integers perm (1-indexed) is considered a beautiful arrangement if for every i (1 <= i <= n), either of the following is true:
+
+perm[i] is divisible by i.
+i is divisible by perm[i].
+Given an integer n, return the number of the beautiful arrangements that you can construct.
+
+ 
+
+Example 1:
+
+Input: n = 2
+Output: 2
+Explanation: 
+The first beautiful arrangement is [1,2]:
+    - perm[1] = 1 is divisible by i = 1
+    - perm[2] = 2 is divisible by i = 2
+The second beautiful arrangement is [2,1]:
+    - perm[1] = 2 is divisible by i = 1
+    - i = 2 is divisible by perm[2] = 1
+Example 2:
+
+Input: n = 1
+Output: 1
+ 
+
+Constraints:
+
+1 <= n <= 15
+ 
+```java
+class Solution {
+    int count = 0;
+
+    public int countArrangement(int n) {
+        solve(n, new HashSet<>(), 1);
+        return count;
+    }
+
+    private void solve(int n, HashSet<Integer> set, int currentIndex){
+        if(set.size() ==n){
+            count++;
+        }
+        for(int num=1;num<=n;num++){
+            if(set.contains(num))continue;
+
+            if(currentIndex % num == 0 || num % currentIndex == 0){
+                set.add(num);
+                solve(n, set, currentIndex + 1);
+                set.remove(num);
+            }
+        }
+    }
+}
+```
+
+</details>
+
+### Combination
+
+<details id="77. Combinationss">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">77. Combinationss 
+</span>
+</summary>
+
+https://leetcode.com/problems/combinations/description/
+
+Given two integers n and k, return all possible combinations of k numbers chosen from the range [1, n].
+
+You may return the answer in any order.
+
+ 
+
+Example 1:
+
+Input: n = 4, k = 2
+Output: [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]
+Explanation: There are 4 choose 2 = 6 total combinations.
+Note that combinations are unordered, i.e., [1,2] and [2,1] are considered to be the same combination.
+Example 2:
+
+Input: n = 1, k = 1
+Output: [[1]]
+Explanation: There is 1 choose 1 = 1 total combination.
+ 
+
+Constraints:
+
+1 <= n <= 20
+1 <= k <= n
+
+
+```java
+class Solution {
+    public List<List<Integer>> combine(int n, int k) {
+        List<List<Integer>> result = new ArrayList<>();
+        solve(1, n, k, new ArrayList<>(), result);
+        return result;
+    }
+
+    private void solve(int num, int n, int k, List<Integer> subList, List<List<Integer>> result) {
+        if (k==0) {
+            result.add(new ArrayList<>(subList));
+            return;
+        }
+        if(num == n+1){
+            return;
+        }
+        subList.add(num);
+        solve(num + 1, n, k - 1, subList, result);
+        subList.remove(subList.size()-1);
+        solve(num + 1, n, k, subList, result);
+    }
+}
+```
+</details>
+
+<details id="494. Target Sum">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">494. Target Sum 
+</span>
+</summary>
+
+https://leetcode.com/problems/combinations/description/
+
+Given two integers n and k, return all possible combinations of k numbers chosen from the range [1, n].
+
+You may return the answer in any order.
+
+ 
+
+Example 1:
+
+Input: n = 4, k = 2
+Output: [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]
+Explanation: There are 4 choose 2 = 6 total combinations.
+Note that combinations are unordered, i.e., [1,2] and [2,1] are considered to be the same combination.
+Example 2:
+
+Input: n = 1, k = 1
+Output: [[1]]
+Explanation: There is 1 choose 1 = 1 total combination.
+ 
+
+Constraints:
+
+1 <= n <= 20
+1 <= k <= n
+
+```java
+class Solution {
+    public List<List<Integer>> combine(int n, int k) {
+        List<List<Integer>> result = new ArrayList<>();
+        solve(1, n, k, new ArrayList<>(), result);
+        return result;
+    }
+
+    private void solve(int num, int n, int k, List<Integer> subList, List<List<Integer>> result) {
+        if (k==0) {
+            result.add(new ArrayList<>(subList));
+            return;
+        }
+        if(num == n+1){
+            return;
+        }
+        subList.add(num);
+        solve(num + 1, n, k - 1, subList, result);
+        subList.remove(subList.size()-1);
+        solve(num + 1, n, k, subList, result);
+    }
+}
+```
+
+</details>
+
+
+<details id="40. Combination Sum II">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">40. Combination Sum II 
+</span>
+</summary>
+
+https://leetcode.com/problems/combination-sum-ii/description/
+
+Given a collection of candidate numbers (candidates) and a target number (target), find all unique combinations in candidates where the candidate numbers sum to target.
+
+Each number in candidates may only be used once in the combination.
+
+Note: The solution set must not contain duplicate combinations.
+
+ 
+
+Example 1:
+
+Input: candidates = [10,1,2,7,6,1,5], target = 8
+Output: 
+[
+[1,1,6],
+[1,2,5],
+[1,7],
+[2,6]
+]
+Example 2:
+
+Input: candidates = [2,5,2,1,2], target = 5
+Output: 
+[
+[1,2,2],
+[5]
+]
+ 
+
+Constraints:
+
+1 <= candidates.length <= 100
+1 <= candidates[i] <= 50
+1 <= target <= 30
+
+```java
+class Solution {
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        Arrays.sort(candidates);
+        findGroup(0, new ArrayList<>(), candidates, target, result);
+        return result;
+    }
+
+    private void findGroup(int index, List<Integer> group, int[] candidates, int target, List<List<Integer>> result) {
+        if (target == 0) {
+            result.add(new ArrayList<>(group));
+            return;
+        }
+        if (target < 0 || index == candidates.length) return;
+
+        // include current element
+        group.add(candidates[index]);
+        findGroup(index + 1, group, candidates, target - candidates[index], result);
+        group.remove(group.size() - 1);
+
+        // skip duplicates when excluding
+        int next = index + 1;
+        while (next < candidates.length && candidates[next] == candidates[index]) {
+            next++;
+        }
+        findGroup(next, group, candidates, target, result);
+    }
+}
+
+```
+
+```java
+🔎 Why the while loop is placed before the second recursive call
+In your recursive style, you always do two things:
+
+Include the current number (group.add(...) → recurse with index+1).
+
+Exclude the current number (findGroup(index+1, ...)).
+
+The include branch must allow duplicates.
+Example: if the array is [1,1,6], you want to include the first 1, then later include the second 1, so you can form [1,1,6].
+If you skipped duplicates here, you’d never be able to pick both 1s.
+
+The exclude branch is where duplicates cause problems.
+If you skip the first 1 and then immediately recurse on the second 1, you’ll generate the same path twice. That’s why the while loop is placed before the second call: it skips over all identical numbers when you decide to exclude them, ensuring you don’t re‑explore duplicate “skip” paths.
+```
+
+
+</details>
+
+
+<details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+
+https://leetcode.com/problems/maximum-compatibility-score-sum/description/
+
+https://www.youtube.com/watch?v=U0cK0SzRln0
+
+There is a survey that consists of n questions where each question's answer is either 0 (no) or 1 (yes).
+
+The survey was given to m students numbered from 0 to m - 1 and m mentors numbered from 0 to m - 1. The answers of the students are represented by a 2D integer array students where students[i] is an integer array that contains the answers of the ith student (0-indexed). The answers of the mentors are represented by a 2D integer array mentors where mentors[j] is an integer array that contains the answers of the jth mentor (0-indexed).
+
+Each student will be assigned to one mentor, and each mentor will have one student assigned to them. The compatibility score of a student-mentor pair is the number of answers that are the same for both the student and the mentor.
+
+For example, if the student's answers were [1, 0, 1] and the mentor's answers were [0, 0, 1], then their compatibility score is 2 because only the second and the third answers are the same.
+You are tasked with finding the optimal student-mentor pairings to maximize the sum of the compatibility scores.
+
+Given students and mentors, return the maximum compatibility score sum that can be achieved.
+
+ 
+
+Example 1:
+
+Input: students = [[1,1,0],[1,0,1],[0,0,1]], mentors = [[1,0,0],[0,0,1],[1,1,0]]
+Output: 8
+Explanation: We assign students to mentors in the following way:
+- student 0 to mentor 2 with a compatibility score of 3.
+- student 1 to mentor 0 with a compatibility score of 2.
+- student 2 to mentor 1 with a compatibility score of 3.
+The compatibility score sum is 3 + 2 + 3 = 8.
+Example 2:
+
+Input: students = [[0,0],[0,0],[0,0]], mentors = [[1,1],[1,1],[1,1]]
+Output: 0
+Explanation: The compatibility score of any student-mentor pair is 0.
+ 
+
+Constraints:
+
+m == students.length == mentors.length
+n == students[i].length == mentors[j].length
+1 <= m, n <= 8
+students[i][k] is either 0 or 1.
+mentors[j][k] is either 0 or 1.
+
+```java
+class Solution {
+    int maxScore = 0;
+
+    public int maxCompatibilitySum(int[][] students, int[][] mentors) {
+        findCompatibility(0, 0, students, mentors, new HashSet<Integer>());
+        return maxScore;
+    }
+
+    private void findCompatibility(int s, int score, int[][] students, int[][] mentors, HashSet<Integer> mentorSet) {
+        if (s == students.length) {
+            maxScore = Math.max(maxScore, score);
+            return;
+        }
+
+        // loop over mentors
+        for (int i = 0; i < mentors.length; i++) {
+            if (mentorSet.contains(i))
+                continue;
+            mentorSet.add(i);
+            findCompatibility(s + 1, score + calc(s, i, students, mentors), students, mentors, mentorSet);
+            mentorSet.remove(i);
+        }
+    }
+
+    private int calc(int s, int m, int[][] students, int[][] mentors) {
+        int finalval = 0;
+        for (int i = 0; i < students[s].length; i++) {
+            finalval += students[s][i] == mentors[m][i] ? 1 : 0;
+        }
+        return finalval;
+    }
+}
+```
+
+    This question can be done using DP + Bit masking aslo refer to the above video
+
+</details>
+
+### Subsets
+
+<details id="78. Subsets">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">78. Subsets 
+</span>
+</summary>
+
+https://leetcode.com/problems/subsets/description/
+
+Given an integer array nums of unique elements, return all possible subsets (the power set).
+
+The solution set must not contain duplicate subsets. Return the solution in any order.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,3]
+Output: [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+Example 2:
+
+Input: nums = [0]
+Output: [[],[0]]
+ 
+
+Constraints:
+
+1 <= nums.length <= 10
+-10 <= nums[i] <= 10
+All the numbers of nums are unique.
+
+```java
+class Solution {
+
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> uniqueResult=new ArrayList<>();
+        Set<List<Integer>> subsets=new HashSet<>();
+
+        create(0, nums, new boolean[nums.length],new ArrayList<>(), subsets);
+        uniqueResult.addAll(subsets);
+        return uniqueResult;
+    }
+
+    private void create(int index, int[] nums, boolean[] visited, List<Integer> subSet, Set<List<Integer>> subsets){
+        subsets.add(new ArrayList<>(subSet));
+
+        for(int i=index;i<nums.length;i++){
+            if(visited[i])continue;
+            visited[i]=true;
+            subSet.add(nums[i]);
+            
+            create(i+1,nums, visited,subSet, subsets);
+
+            visited[i]=false;
+            subSet.remove(subSet.size()-1);
+        }
+    }
+}
+```
+
+    what if you want all possible permutaions 
+    just start the for loop with 0 everytime it will produce below output
+    
+    nums = [1,2,3]
+    
+    Output
+    [[1],[2,1],[3,2],[],[1,2,3],[2],[3,2,1],[1,2],[2,3],[3],[1,3],[2,1,3],[3,1,2],[1,3,2],[2,3,1],[3,1]]
+    
+    Expected
+    [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+</details>
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
 
 
 # Tree
