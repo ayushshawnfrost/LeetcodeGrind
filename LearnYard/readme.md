@@ -3525,7 +3525,7 @@ class Solution {
     }
 }
 ```
-
+    Time - O(n*2^n)
     what if you want all possible permutaions 
     just start the for loop with 0 everytime it will produce below output
     
@@ -3539,15 +3539,141 @@ class Solution {
 </details>
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="90. Subsets II">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">90. Subsets II 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/subsets-ii/description/
+
+Given an integer array nums that may contain duplicates, return all possible subsets (the power set).
+
+The solution set must not contain duplicate subsets. Return the solution in any order.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,2]
+Output: [[],[1],[1,2],[1,2,2],[2],[2,2]]
+Example 2:
+
+Input: nums = [0]
+Output: [[],[0]]
+ 
+
+Constraints:
+
+1 <= nums.length <= 10
+-10 <= nums[i] <= 10
+
+```java
+class Solution {
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        List<List<Integer>> uniqueResult=new ArrayList<>();
+        Set<List<Integer>> subsets=new HashSet<>();
+        Arrays.sort(nums);
+        create(0, nums, new boolean[nums.length],new ArrayList<>(), subsets);
+        uniqueResult.addAll(subsets);
+        return uniqueResult;
+    }
+
+    private void create(int index, int[] nums, boolean[] visited, List<Integer> subSet, Set<List<Integer>> subsets){
+        subsets.add(new ArrayList<>(subSet));
+
+        for(int i=index;i<nums.length;i++){
+            if(visited[i])continue;
+            visited[i]=true;
+            subSet.add(nums[i]);
+            
+            create(i+1,nums, visited,subSet, subsets);
+            
+            visited[i]=false;
+            subSet.remove(subSet.size()-1);
+        }
+    }
+}
+```
+
+    The change here is only the initial sorting rest everything will be taken care automatically 
+    why? 
+    if sorting is not there we can get subsets like [1,4,3,6] [1,3,4,6] but thats what is not required
+
+
+```java
+This was the issue if we dont sort
+
+nums =
+[4,4,4,1,4]
+
+Use Testcase
+Output
+[[4,4,1],[1],[],[4,4],[4],[4,4,4],[1,4],[4,1,4],[4,4,4,1,4],[4,4,1,4],[4,4,4,4],[4,4,4,1],[4,1]]
+Expected
+[[],[1],[1,4],[1,4,4],[1,4,4,4],[1,4,4,4,4],[4],[4,4],[4,4,4],[4,4,4,4]]
+```
+</details>
 
 
 
+<details id="491. Non-decreasing Subsequences">
+<summary> 
+<span style="color:green;font-size:16px;font-weight:bold">491. Non-decreasing Subsequences 
+</span>
+</summary>
+
+https://leetcode.com/problems/non-decreasing-subsequences/description/
+
+Given an integer array nums, return all the different possible non-decreasing subsequences of the given array with at least two elements. You may return the answer in any order.
+
+ 
+
+Example 1:
+
+Input: nums = [4,6,7,7]
+Output: [[4,6],[4,6,7],[4,6,7,7],[4,7],[4,7,7],[6,7],[6,7,7],[7,7]]
+Example 2:
+
+Input: nums = [4,4,3,2,1]
+Output: [[4,4]]
+ 
+
+Constraints:
+
+1 <= nums.length <= 15
+-100 <= nums[i] <= 100
+
+```java
+class Solution {
+    public List<List<Integer>> findSubsequences(int[] nums) {
+      List<List<Integer>> uniqueResult=new ArrayList<>();
+        Set<List<Integer>> subsets=new HashSet<>();
+        create(0, nums, new boolean[nums.length],new ArrayList<>(), subsets);
+        uniqueResult.addAll(subsets);
+        return uniqueResult;
+    }
+
+    private void create(int index, int[] nums, boolean[] visited, List<Integer> subSet, Set<List<Integer>> subsets){
+        if(subSet.size()>1)subsets.add(new ArrayList<>(subSet));
+
+        for(int i=index;i<nums.length;i++){
+            if(visited[i])continue;
+            if(!subSet.isEmpty() && subSet.get(subSet.size()-1)>nums[i])continue;
+            visited[i]=true;
+            subSet.add(nums[i]);
+            
+            create(i+1,nums, visited,subSet, subsets);
+            
+            visited[i]=false;
+            subSet.remove(subSet.size()-1);
+        }
+    }
+}
+```
+
+    very sligt change from the pattern is that we need atleast 2 size array and we only want monotonically increasing sequence
+</details>
 
 # Tree
 
