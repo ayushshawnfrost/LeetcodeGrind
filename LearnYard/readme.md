@@ -1,26 +1,30 @@
 # Math
 
-### Bianomial Exponential/ fast multiplication
+<details id="Bianomial Exponential/ fast multiplication">
+<summary> 
+<span style="color:pink;font-size:16px;font-weight:bold">Bianomial Exponential/ fast multiplication
+</span></summary>
+
 
     Whenever we want to find the exponents, it is generally time tacking example: 2^100 will take 100 time miltiplication of 2
 
     Here we can incorporate Binomial Exponententian, whose time complexity would be log 100 base 2, basically for a^n => log(n)
 
 ```java
-public int binomialEx(int a, int n){
-    // zero power is always 1
-    if(n ==  0)return 1;
+public int binomialEx(int a, int n) {
+    if (n == 0) return 1;
 
-    int result=binomialEx(a,n/2);
+    int half = binomialEx(a, n / 2);
 
-    // odd power can be broken into a* (a^n/2)^2
-    if(n % 2 != 0){
-        return a * result;
+    if (n % 2 == 0) {
+        return half * half;
+    } else {
+        return a * half * half;
     }
-    return result;
-} 
+}
 
 ```
+</details>
 
 <details id="1922. Count Good Numbers">
 <summary> 
@@ -255,7 +259,8 @@ Constraints:
 class Solution {
     public void nextPermutation(int[] nums) {
         int swapIndex=-1;
-        // find a position where a next greater digit can be placed. Here start from the right most corner and keep chceking adjcent element [i-1]>i. if this condition satisfies then mark the [i-1] element and it will be the swap position. Now find a first number greeater than [i-1]th element in right to left fashion. swap both of them. reverse the right half (after the [i-1] position).  
+        // find a position where a next greater digit can be placed. Here start from the right most corner and keep chceking adjcent element [i]<i+1. if this condition satisfies then mark the [i] element and it will be the swap position. Now find a first number greeater than [i]th element in right to left fashion. swap both of them. reverse the right half (after the [i] position).  
+        // 1257654 index 2 is 5 which is less than 7. now we find the number greater then 5 from right which is 6 so we now swap them to make 1267554 now we need to rever the suffix to make 1264557
         for(int i=nums.length-2;i>=0;i--){
             if(nums[i]<nums[i+1]){
                 swapIndex=i;
@@ -3675,6 +3680,65 @@ class Solution {
     very sligt change from the pattern is that we need atleast 2 size array and we only want monotonically increasing sequence
 </details>
 
+
+<details id="90. Subsets II">
+<summary> 
+<span style="color:green;font-size:16px;font-weight:bold">90. Subsets II 
+</span>
+</summary>
+
+https://leetcode.com/problems/subsets-ii/description/
+
+Given an integer array nums that may contain duplicates, return all possible subsets (the power set).
+
+The solution set must not contain duplicate subsets. Return the solution in any order.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,2]
+Output: [[],[1],[1,2],[1,2,2],[2],[2,2]]
+Example 2:
+
+Input: nums = [0]
+Output: [[],[0]]
+ 
+
+Constraints:
+
+1 <= nums.length <= 10
+-10 <= nums[i] <= 10
+
+```java
+class Solution {
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+         List<List<Integer>> uniqueResult=new ArrayList<>();
+        Set<List<Integer>> subsets=new HashSet<>();
+        Arrays.sort(nums);
+        create(0, nums, new boolean[nums.length],new ArrayList<>(), subsets);
+        uniqueResult.addAll(subsets);
+        return uniqueResult;
+    }
+
+    private void create(int index, int[] nums, boolean[] visited, List<Integer> subSet, Set<List<Integer>> subsets){
+        subsets.add(new ArrayList<>(subSet));
+
+        for(int i=index;i<nums.length;i++){
+            if(visited[i])continue;
+            visited[i]=true;
+            subSet.add(nums[i]);
+            
+            create(i+1,nums, visited,subSet, subsets);
+
+            visited[i]=false;
+            subSet.remove(subSet.size()-1);
+        }
+    }
+}
+```
+</details>
+
 # Tree
 
 ### Traversal
@@ -5798,123 +5862,123 @@ grid[i][j] is 0 or 1
 
 
 
-    ```
-Why symmetry alone is not enough
-Distance symmetry: for any two nodes 
-𝑎
-,
-𝑏
-, 
-dist
-(
-𝑎
-,
-𝑏
-)
-=
-dist
-(
-𝑏
-,
-𝑎
-)
-. That fact is true and useful.
+```java
+    Why symmetry alone is not enough
+    Distance symmetry: for any two nodes 
+    𝑎
+    ,
+    𝑏
+    , 
+    dist
+    (
+    𝑎
+    ,
+    𝑏
+    )
+    =
+    dist
+    (
+    𝑏
+    ,
+    𝑎
+    )
+    . That fact is true and useful.
 
-What a multi‑source BFS returns: when you enqueue a set 
-𝑆
- of source nodes and run BFS, the distance value you record for a node 
-𝑣
- is 
-min
-⁡
-𝑠
-∈
-𝑆
-dist
-(
-𝑠
-,
-𝑣
-)
- — the distance from the nearest source in 
-𝑆
- to 
-𝑣
-.
+    What a multi‑source BFS returns: when you enqueue a set 
+    𝑆
+    of source nodes and run BFS, the distance value you record for a node 
+    𝑣
+    is 
+    min
+    ⁡
+    𝑠
+    ∈
+    𝑆
+    dist
+    (
+    𝑠
+    ,
+    𝑣
+    )
+    — the distance from the nearest source in 
+    𝑆
+    to 
+    𝑣
+    .
 
-If 
-𝑆
- = all water cells: the BFS computes for every node 
-𝑣
- the distance from the nearest water to 
-𝑣
-. That means:
+    If 
+    𝑆
+    = all water cells: the BFS computes for every node 
+    𝑣
+    the distance from the nearest water to 
+    𝑣
+    . That means:
 
-For land nodes you get the distance from the nearest water to that land (useful if you wanted land→water distances).
+    For land nodes you get the distance from the nearest water to that land (useful if you wanted land→water distances).
 
-For water nodes you get distance 0 (because they are sources), so you do not get the distance from that water cell to the nearest land.
+    For water nodes you get distance 0 (because they are sources), so you do not get the distance from that water cell to the nearest land.
 
-Because the BFS result is keyed to the chosen sources, symmetry of pairwise distances does not magically let you read off per‑water nearest‑land distances from a BFS seeded by water.
+    Because the BFS result is keyed to the chosen sources, symmetry of pairwise distances does not magically let you read off per‑water nearest‑land distances from a BFS seeded by water.
 
-Concrete counterexample
-Grid:
+    Concrete counterexample
+    Grid:
 
-Code
-1 0 0
-0 0 0
-0 0 0
-Seed with all land cells (cell (0,0)) → BFS layers: water at (0,1) and (1,0) get distance 1, etc. You directly obtain each water cell’s nearest‑land distance.
+    Code
+    1 0 0
+    0 0 0
+    0 0 0
+    Seed with all land cells (cell (0,0)) → BFS layers: water at (0,1) and (1,0) get distance 1, etc. You directly obtain each water cell’s nearest‑land distance.
 
-Seed with all water cells → every water cell is distance 0 (sources). BFS will compute distances for land cells (how far each land is from nearest water), but you cannot read the nearest‑land distance for a water cell from this run — it’s 0 by construction.
+    Seed with all water cells → every water cell is distance 0 (sources). BFS will compute distances for land cells (how far each land is from nearest water), but you cannot read the nearest‑land distance for a water cell from this run — it’s 0 by construction.
 
-Two ways you could (but should not) try to recover the needed values
-Run BFS from every water cell separately — correct but expensive: 
-𝑂
-(
-𝑊
-⋅
-𝑛
-2
-)
- worst case, where 
-𝑊
- is number of water cells (can be 
-𝑂
-(
-𝑛
-4
-)
- for naive per‑cell BFS on an 
-𝑛
-×
-𝑛
- grid).
+    Two ways you could (but should not) try to recover the needed values
+    Run BFS from every water cell separately — correct but expensive: 
+    𝑂
+    (
+    𝑊
+    ⋅
+    𝑛
+    2
+    )
+    worst case, where 
+    𝑊
+    is number of water cells (can be 
+    𝑂
+    (
+    𝑛
+    4
+    )
+    for naive per‑cell BFS on an 
+    𝑛
+    ×
+    𝑛
+    grid).
 
-Run BFS seeded with all land cells — one pass, 
-𝑂
-(
-𝑛
-2
-)
-, and directly yields the required distances for every water cell. This is the correct and efficient approach.
+    Run BFS seeded with all land cells — one pass, 
+    𝑂
+    (
+    𝑛
+    2
+    )
+    , and directly yields the required distances for every water cell. This is the correct and efficient approach.
 
-Recommendation
-Always use multi‑source BFS seeded with all land cells for this problem. It is simple, correct, and optimal: one BFS pass computes the shortest distance to land for every water cell in 
-𝑂
-(
-𝑛
-2
-)
- time and 
-𝑂
-(
-𝑛
-2
-)
- space.
+    Recommendation
+    Always use multi‑source BFS seeded with all land cells for this problem. It is simple, correct, and optimal: one BFS pass computes the shortest distance to land for every water cell in 
+    𝑂
+    (
+    𝑛
+    2
+    )
+    time and 
+    𝑂
+    (
+    𝑛
+    2
+    )
+    space.
 
-If you want, I can walk through the exact queue and grid updates for a small example so you can see how the distances for water cells are produced step by step.
-    ```
+    If you want, I can walk through the exact queue and grid updates for a small example so you can see how the distances for water cells are produced step by step.
+```
 
 
 ```java
@@ -7369,28 +7433,328 @@ class Solution {
 
 </details>
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+
+# MIK
+
+
+### 1 D based DP
+
+<details id="70. Climbing Stairs">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:green;font-size:16px;font-weight:bold">70. Climbing Stairs 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/climbing-stairs/
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+You are climbing a staircase. It takes n steps to reach the top.
+
+Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
+
+ 
+
+Example 1:
+
+Input: n = 2
+Output: 2
+Explanation: There are two ways to climb to the top.
+1. 1 step + 1 step
+2. 2 steps
+Example 2:
+
+Input: n = 3
+Output: 3
+Explanation: There are three ways to climb to the top.
+1. 1 step + 1 step + 1 step
+2. 1 step + 2 steps
+3. 2 steps + 1 step
+ 
+
+Constraints:
+
+1 <= n <= 45
+
+
+```java
+// Brute-force
+class Solution {
+    public int climbStairs(int n) {
+        if (n == 0) {
+            return 1;
+        }
+        if (n < 0) {
+            return 0;
+        }
+        int oneStep = climbStairs(n - 1);
+        int twoSteps = climbStairs(n - 2);
+        return oneStep + twoSteps;
+    }
+}
+```
+
+    This solution is giving TLE the time complexity is 2^n
+
+```java
+// Memoization
+class Solution {
+    public int climbStairs(int n) {
+        int dp[] = new int[n+1];
+        Arrays.fill(dp, -1);
+        return memoClimbStairs(dp, n);
+    }
+
+    private int memoClimbStairs(int[] dp, int n){
+        if (n == 0) return 1;
+        if (n < 0) return 0;
+
+        if (dp[n] != -1) {
+            return dp[n];
+        }
+
+        int oneStep = memoClimbStairs(dp, n - 1);
+        int twoSteps = memoClimbStairs(dp, n - 2);
+
+        dp[n] = oneStep + twoSteps;
+        return dp[n];
+    }
+}
+```
+
+    Since we were solving the similar problems more than once we can memoize this, which reduces the TC to O(n)
+
+
+```java
+class Solution {
+    public int climbStairs(int n) {
+        // Bottom-up
+        if(n==1 || n==2 || n==3)return n;
+        int[] dp=new int[n+1];
+        dp[0]=0;
+        dp[1]=1;
+        dp[2]=2;
+        for(int i=3;i<=n;i++){
+            dp[i]=dp[i-1]+dp[i-2];
+        }
+        return dp[n];
+    }
+}
+```
+
+    Here n represents the number of ways to climb n stairs
+</details>
+
+
+<details id="198. House Robber">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">198. House Robber 
 </span>
 </summary>
-</details> -->
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+https://leetcode.com/problems/house-robber/description/
+
+You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
+
+Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,3,1]
+Output: 4
+Explanation: Rob house 1 (money = 1) and then rob house 3 (money = 3).
+Total amount you can rob = 1 + 3 = 4.
+Example 2:
+
+Input: nums = [2,7,9,3,1]
+Output: 12
+Explanation: Rob house 1 (money = 2), rob house 3 (money = 9) and rob house 5 (money = 1).
+Total amount you can rob = 2 + 9 + 1 = 12.
+ 
+
+Constraints:
+
+1 <= nums.length <= 100
+0 <= nums[i] <= 400
+
+```java
+// Bruteforce
+class Solution {
+    public int rob(int[] nums) {
+        return solve(0, nums);
+    }
+
+    private int solve(int house, int[] nums) {
+        if (house >= nums.length) {
+            return 0;
+        }
+        // Option 1: Rob this house and skip the next
+        int rob = nums[house] + solve(house + 2, nums);
+
+        // Option 2: Skip this house
+        int skip = solve(house + 1, nums);
+
+        return Math.max(rob, skip);
+    }
+}
+
+```
+
+    We start with 0 and index 1, then we start the basic recursion to rob or not rob the house, if we rob the house we next goto house+2 and also add the profit of this house. If we not rot this house we can goto the house just next to it house+1 and we will not add the profit of this house. This is 2^n solution as we always have 2 options to rob/ not rob
+
+```java
+// Bruteforce 
+class Solution {
+    int maxProfit=Integer.MIN_VALUE;
+    public int rob(int[] nums) {
+        solve(0, 0, nums);
+        solve(1, 0, nums);
+        return maxProfit;
+    }
+
+    private void solve(int house, int profit, int[] nums){
+        if(house >= nums.length){
+            maxProfit=Math.max(maxProfit, profit);
+            return;
+        }
+        solve(house+2, profit+nums[house], nums);
+        solve(house+1, profit, nums);
+    }
+}
+```
+    There is also another way to solve this question by taking a global variable and then saving the max to that variable, but that will not be a good initial step for memoiazion, to to write the bruitforce solution also try to write one which returns certain result
+
+```java
+// Memoized
+class Solution {
+    public int rob(int[] nums) {
+        int[] dp = new int[nums.length];
+        Arrays.fill(dp, -1);
+        return solve(0, nums, dp);
+    }
+
+    private int solve(int house, int[] nums, int[] dp) {
+        if (house >= nums.length) {
+            return 0;
+        }
+        if (dp[house] != -1) {
+            return dp[house];
+        }
+
+        // Option 1: Rob this house and skip the next
+        int rob = nums[house] + solve(house + 2, nums, dp);
+
+        // Option 2: Skip this house
+        int skip = solve(house + 1, nums, dp);
+
+        dp[house] = Math.max(rob, skip);
+        return dp[house];
+    }
+}
+
+```
+
+
+    Time complexity for this one is O(n)
+    dp[i] represents the maximum profit you can achieve starting from house i onward to the end. our solution in the end will return dp[0] which will be the answer
+
+
+
+```java
+// Bottom up
+class Solution {
+    public int rob(int[] nums) {
+        int[] dp = new int[nums.length+1];
+        dp[0]=0;
+        dp[1]=nums[0];
+
+        for(int i=2;i<=nums.length;i++){
+            int steal=nums[i-1] + dp[i-2]; // nums[i-1] since i is usedd in context to dp array
+            int skip=dp[i-1];
+            dp[i]=Math.max(steal, skip);
+        }
+        return dp[nums.length];
+    }
+}
+```
+
+    In this solution dp[i] tell the max profit we have made so far this house from starting
+</details>
+
+<details id="213. House Robber II">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">213. House Robber II 
 </span>
 </summary>
-</details> -->
 
+https://leetcode.com/problems/house-robber-ii/description/
+
+You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed. All houses at this place are arranged in a circle. That means the first house is the neighbor of the last one. Meanwhile, adjacent houses have a security system connected, and it will automatically contact the police if two adjacent houses were broken into on the same night.
+
+Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
+
+ 
+
+Example 1:
+
+Input: nums = [2,3,2]
+Output: 3
+Explanation: You cannot rob house 1 (money = 2) and then rob house 3 (money = 2), because they are adjacent houses.
+Example 2:
+
+Input: nums = [1,2,3,1]
+Output: 4
+Explanation: Rob house 1 (money = 1) and then rob house 3 (money = 3).
+Total amount you can rob = 1 + 3 = 4.
+Example 3:
+
+Input: nums = [1,2,3]
+Output: 3
+ 
+
+Constraints:
+
+1 <= nums.length <= 100
+0 <= nums[i] <= 1000
+
+
+```java
+// bottom up
+class Solution {
+    public int rob(int[] nums) {
+        // Edge case: if there is only one house, rob it
+        if (nums.length == 1) return nums[0];
+
+        // DP array to store max profit up to each index
+        int[] dp = new int[nums.length + 1];
+        dp[0] = 0;
+
+        // Case 1: Rob houses from index 0 to n-2 (exclude last house)
+        for (int i = 1; i <= nums.length - 1; i++) {
+            // Either rob current house (nums[i-1] + dp[i-2]) or skip it (dp[i-1])
+            dp[i] = Math.max(nums[i - 1] + ((i - 2) < 0 ? 0 : dp[i - 2]), dp[i - 1]);
+        }
+        int ans1 = dp[nums.length - 1]; // Best profit excluding last house
+
+        // Case 2: Rob houses from index 1 to n-1 (exclude first house)
+        Arrays.fill(dp, 0); // Reset dp array for second run
+        for (int i = 2; i <= nums.length; i++) {
+            // Same transition, but now starting from house 1
+            dp[i] = Math.max(nums[i - 1] + ((i - 2) < 0 ? 0 : dp[i - 2]), dp[i - 1]);
+        }
+        int ans2 = dp[nums.length]; // Best profit excluding first house
+
+        // Final answer is the maximum of the two cases
+        return Math.max(ans1, ans2);
+    }
+}
+
+```
+ House robber 2 seems easy but it is not. proper index are needed to finc the correct sol
+</details>
+
+   
 
 
 <!-- <details id="1584. Min Cost to Connect All Points">
