@@ -7898,12 +7898,146 @@ class Solution {
     We don’t need a “skip” state separately — skipping is naturally handled by taking the max of current vs previous.
 </details>
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="300. Longest Increasing Subsequence">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">300. Longest Increasing Subsequence 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/longest-increasing-subsequence/description/
+
+Given an integer array nums, return the length of the longest strictly increasing subsequence.
+
+ 
+
+Example 1:
+
+Input: nums = [10,9,2,5,3,7,101,18]
+Output: 4
+Explanation: The longest increasing subsequence is [2,3,7,101], therefore the length is 4.
+Example 2:
+
+Input: nums = [0,1,0,3,2,3]
+Output: 4
+Example 3:
+
+Input: nums = [7,7,7,7,7,7,7]
+Output: 1
+ 
+
+Constraints:
+
+1 <= nums.length <= 2500
+-104 <= nums[i] <= 104
+ 
+```java
+
+// bruteforce
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        return findLIS(0, Integer.MIN_VALUE, nums);// [0,1,0,3,2,3]
+    }
+
+    private int findLIS(int index, int lastNum, int[] nums){
+        // terminating condition
+        if(index >= nums.length){
+            return 0;
+        }
+        int include=0;
+        // include
+        if(lastNum < nums[index]){
+            include = 1 + findLIS(index+1, nums[index], nums); 
+        }
+
+        // skip
+        int exclude = findLIS(index+1, lastNum, nums); 
+        return Math.max(include, exclude);
+    }
+}
+```
+
+    This solution is O(2^n)
+
+```java
+// memoized
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int[][] dp=new int[nums.length+1][nums.length+1];
+        for(int[] i:dp)Arrays.fill(i, -1);
+        return findLIS(0, -1, nums, dp); 
+    }
+
+    private int findLIS(int index, int lastNumIndex, int[] nums, int[][] dp){
+        // terminating condition
+        if(index >= nums.length){
+            return 0;
+        }
+
+        if(lastNumIndex != -1 && dp[index][lastNumIndex] != -1)return dp[index][lastNumIndex];
+        int include = 0;
+        
+        // include
+        if(lastNumIndex == -1 || nums[lastNumIndex] < nums[index]){
+            include = 1 + findLIS(index+1, index, nums, dp); 
+        }
+
+        // skip
+        int exclude = findLIS(index+1, lastNumIndex, nums, dp); 
+
+        if(lastNumIndex!= -1){
+            dp[index][lastNumIndex] = Math.max(include, exclude);
+        }
+        return Math.max(include, exclude);
+    }
+}
+```
+
+    Memoization is tricky only because of the index handling -1.
+    Time complexity is O(n^2, as total states are defined by dp[][] and its n length 2d array)
+
+
+```java
+// Bottom-up solution
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int[] LIS=new int[nums.length];
+        Arrays.fill(LIS, 1);
+        int max=1;
+        for(int i=0;i<nums.length;i++){
+            for(int j=0;j<i;j++){
+                if(i!=j && nums[i]> nums[j]){
+                    LIS[i]=Math.max(LIS[i],1+LIS[j]);
+                }
+            }
+            max=Math.max(max, LIS[i]);
+        }
+        return max;
+    }
+}
+```
+
+    Time complexity is O(n^2). 
+    here LIS[i] denotes the longest increasing subsequence ending at index i. 
+    We start by making the LIS for each element as 1, then we compare if we can make a subsequence that is LIS and keep updatung the LIS
+
+
+```java
+// patirnt sorting + binary search O(nlogn) samajh nai aaya
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        List<Integer> sub = new ArrayList<>();
+        for (int num : nums) {
+            int idx = Collections.binarySearch(sub, num);
+            if (idx < 0) idx = -(idx + 1);
+            if (idx == sub.size()) sub.add(num);
+            else sub.set(idx, num);
+        }
+        return sub.size();
+    }
+}
+
+```
+</details>
 
 
 <!-- <details id="1584. Min Cost to Connect All Points">
