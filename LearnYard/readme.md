@@ -1,30 +1,26 @@
 # Math
 
-<details id="Bianomial Exponential/ fast multiplication">
-<summary> 
-<span style="color:pink;font-size:16px;font-weight:bold">Bianomial Exponential/ fast multiplication
-</span></summary>
-
+### Bianomial Exponential/ fast multiplication
 
     Whenever we want to find the exponents, it is generally time tacking example: 2^100 will take 100 time miltiplication of 2
 
     Here we can incorporate Binomial Exponententian, whose time complexity would be log 100 base 2, basically for a^n => log(n)
 
 ```java
-public int binomialEx(int a, int n) {
-    if (n == 0) return 1;
+public int binomialEx(int a, int n){
+    // zero power is always 1
+    if(n ==  0)return 1;
 
-    int half = binomialEx(a, n / 2);
+    int result=binomialEx(a,n/2);
 
-    if (n % 2 == 0) {
-        return half * half;
-    } else {
-        return a * half * half;
+    // odd power can be broken into a* (a^n/2)^2
+    if(n % 2 != 0){
+        return a * result;
     }
-}
+    return result;
+} 
 
 ```
-</details>
 
 <details id="1922. Count Good Numbers">
 <summary> 
@@ -259,8 +255,7 @@ Constraints:
 class Solution {
     public void nextPermutation(int[] nums) {
         int swapIndex=-1;
-        // find a position where a next greater digit can be placed. Here start from the right most corner and keep chceking adjcent element [i]<i+1. if this condition satisfies then mark the [i] element and it will be the swap position. Now find a first number greeater than [i]th element in right to left fashion. swap both of them. reverse the right half (after the [i] position).  
-        // 1257654 index 2 is 5 which is less than 7. now we find the number greater then 5 from right which is 6 so we now swap them to make 1267554 now we need to rever the suffix to make 1264557
+        // find a position where a next greater digit can be placed. Here start from the right most corner and keep chceking adjcent element [i-1]>i. if this condition satisfies then mark the [i-1] element and it will be the swap position. Now find a first number greeater than [i-1]th element in right to left fashion. swap both of them. reverse the right half (after the [i-1] position).  
         for(int i=nums.length-2;i>=0;i--){
             if(nums[i]<nums[i+1]){
                 swapIndex=i;
@@ -1550,7 +1545,7 @@ class Solution {
 
     Things to remember
     
-    r-l+1 will give the total number of subarrays ending at index r
+    r-l+1 will give the subarrays whose right boundary is fixed at r and whose starting index is between l and r. (That is how we achieve O(n) else if we will check this in a lop it will be O(n^2/))
     You are always forgetting to count the total subarrays.
     [1, 3, 4]
     from 1->4 there are 2-0+1=3 subarrays
@@ -4286,6 +4281,63 @@ class Solution {
 }
 ```
 </details>
+
+# Dynamic Programming
+
+### Linear DP
+
+<details id="Remove Half Nodes">
+<summary> 
+<span style="color:green;font-size:16px;font-weight:bold">Remove Half Nodes 
+</span>
+</summary>
+</details>
+
+
+
+<!-- <details id="Remove Half Nodes">
+<summary> 
+<span style="color:green;font-size:16px;font-weight:bold">Remove Half Nodes 
+</span>
+</summary>
+</details> -->
+
+
+
+<!-- <details id="Remove Half Nodes">
+<summary> 
+<span style="color:green;font-size:16px;font-weight:bold">Remove Half Nodes 
+</span>
+</summary>
+</details> -->
+
+
+
+
+<!-- <details id="Remove Half Nodes">
+<summary> 
+<span style="color:green;font-size:16px;font-weight:bold">Remove Half Nodes 
+</span>
+</summary>
+</details> -->
+
+
+
+<!-- <details id="Remove Half Nodes">
+<summary> 
+<span style="color:green;font-size:16px;font-weight:bold">Remove Half Nodes 
+</span>
+</summary>
+</details> -->
+
+
+
+<!-- <details id="Remove Half Nodes">
+<summary> 
+<span style="color:green;font-size:16px;font-weight:bold">Remove Half Nodes 
+</span>
+</summary>
+</details> -->
 
 
 <!-- <details id="1584. Min Cost to Connect All Points">
@@ -7433,611 +7485,43 @@ class Solution {
 
 </details>
 
-
-# MIK
-
-
-### 1 D based DP
-
-<details id="70. Climbing Stairs">
+<!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
-<span style="color:green;font-size:16px;font-weight:bold">70. Climbing Stairs 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
 </span>
 </summary>
-
-https://leetcode.com/problems/climbing-stairs/
-
-
-You are climbing a staircase. It takes n steps to reach the top.
-
-Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
-
- 
-
-Example 1:
-
-Input: n = 2
-Output: 2
-Explanation: There are two ways to climb to the top.
-1. 1 step + 1 step
-2. 2 steps
-Example 2:
-
-Input: n = 3
-Output: 3
-Explanation: There are three ways to climb to the top.
-1. 1 step + 1 step + 1 step
-2. 1 step + 2 steps
-3. 2 steps + 1 step
- 
-
-Constraints:
-
-1 <= n <= 45
+</details> -->
 
 
-```java
-// Brute-force
-class Solution {
-    public int climbStairs(int n) {
-        if (n == 0) {
-            return 1;
-        }
-        if (n < 0) {
-            return 0;
-        }
-        int oneStep = climbStairs(n - 1);
-        int twoSteps = climbStairs(n - 2);
-        return oneStep + twoSteps;
-    }
-}
-```
-
-    This solution is giving TLE the time complexity is 2^n
-
-```java
-// Memoization
-class Solution {
-    public int climbStairs(int n) {
-        int dp[] = new int[n+1];
-        Arrays.fill(dp, -1);
-        return memoClimbStairs(dp, n);
-    }
-
-    private int memoClimbStairs(int[] dp, int n){
-        if (n == 0) return 1;
-        if (n < 0) return 0;
-
-        if (dp[n] != -1) {
-            return dp[n];
-        }
-
-        int oneStep = memoClimbStairs(dp, n - 1);
-        int twoSteps = memoClimbStairs(dp, n - 2);
-
-        dp[n] = oneStep + twoSteps;
-        return dp[n];
-    }
-}
-```
-
-    Since we were solving the similar problems more than once we can memoize this, which reduces the TC to O(n)
-
-
-```java
-class Solution {
-    public int climbStairs(int n) {
-        // Bottom-up
-        if(n==1 || n==2 || n==3)return n;
-        int[] dp=new int[n+1];
-        dp[0]=0;
-        dp[1]=1;
-        dp[2]=2;
-        for(int i=3;i<=n;i++){
-            dp[i]=dp[i-1]+dp[i-2];
-        }
-        return dp[n];
-    }
-}
-```
-
-    Here n represents the number of ways to climb n stairs
-</details>
-
-
-<details id="198. House Robber">
+<!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">198. House Robber 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
 </span>
 </summary>
+</details> -->
 
-https://leetcode.com/problems/house-robber/description/
-
-You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
-
-Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
-
- 
-
-Example 1:
-
-Input: nums = [1,2,3,1]
-Output: 4
-Explanation: Rob house 1 (money = 1) and then rob house 3 (money = 3).
-Total amount you can rob = 1 + 3 = 4.
-Example 2:
-
-Input: nums = [2,7,9,3,1]
-Output: 12
-Explanation: Rob house 1 (money = 2), rob house 3 (money = 9) and rob house 5 (money = 1).
-Total amount you can rob = 2 + 9 + 1 = 12.
- 
-
-Constraints:
-
-1 <= nums.length <= 100
-0 <= nums[i] <= 400
-
-```java
-// Bruteforce
-class Solution {
-    public int rob(int[] nums) {
-        return solve(0, nums);
-    }
-
-    private int solve(int house, int[] nums) {
-        if (house >= nums.length) {
-            return 0;
-        }
-        // Option 1: Rob this house and skip the next
-        int rob = nums[house] + solve(house + 2, nums);
-
-        // Option 2: Skip this house
-        int skip = solve(house + 1, nums);
-
-        return Math.max(rob, skip);
-    }
-}
-
-```
-
-    We start with 0 and index 1, then we start the basic recursion to rob or not rob the house, if we rob the house we next goto house+2 and also add the profit of this house. If we not rot this house we can goto the house just next to it house+1 and we will not add the profit of this house. This is 2^n solution as we always have 2 options to rob/ not rob
-
-```java
-// Bruteforce 
-class Solution {
-    int maxProfit=Integer.MIN_VALUE;
-    public int rob(int[] nums) {
-        solve(0, 0, nums);
-        solve(1, 0, nums);
-        return maxProfit;
-    }
-
-    private void solve(int house, int profit, int[] nums){
-        if(house >= nums.length){
-            maxProfit=Math.max(maxProfit, profit);
-            return;
-        }
-        solve(house+2, profit+nums[house], nums);
-        solve(house+1, profit, nums);
-    }
-}
-```
-    There is also another way to solve this question by taking a global variable and then saving the max to that variable, but that will not be a good initial step for memoiazion, to to write the bruitforce solution also try to write one which returns certain result
-
-```java
-// Memoized
-class Solution {
-    public int rob(int[] nums) {
-        int[] dp = new int[nums.length];
-        Arrays.fill(dp, -1);
-        return solve(0, nums, dp);
-    }
-
-    private int solve(int house, int[] nums, int[] dp) {
-        if (house >= nums.length) {
-            return 0;
-        }
-        if (dp[house] != -1) {
-            return dp[house];
-        }
-
-        // Option 1: Rob this house and skip the next
-        int rob = nums[house] + solve(house + 2, nums, dp);
-
-        // Option 2: Skip this house
-        int skip = solve(house + 1, nums, dp);
-
-        dp[house] = Math.max(rob, skip);
-        return dp[house];
-    }
-}
-
-```
-
-
-    Time complexity for this one is O(n)
-    dp[i] represents the maximum profit you can achieve starting from house i onward to the end. our solution in the end will return dp[0] which will be the answer
-
-
-
-```java
-// Bottom up
-class Solution {
-    public int rob(int[] nums) {
-        int[] dp = new int[nums.length+1];
-        dp[0]=0;
-        dp[1]=nums[0];
-
-        for(int i=2;i<=nums.length;i++){
-            int steal=nums[i-1] + dp[i-2]; // nums[i-1] since i is usedd in context to dp array
-            int skip=dp[i-1];
-            dp[i]=Math.max(steal, skip);
-        }
-        return dp[nums.length];
-    }
-}
-```
-
-    In this solution dp[i] tell the max profit we have made so far this house from starting
-</details>
-
-<details id="213. House Robber II">
+<!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">213. House Robber II 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
 </span>
 </summary>
-
-https://leetcode.com/problems/house-robber-ii/description/
-
-You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed. All houses at this place are arranged in a circle. That means the first house is the neighbor of the last one. Meanwhile, adjacent houses have a security system connected, and it will automatically contact the police if two adjacent houses were broken into on the same night.
-
-Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
-
- 
-
-Example 1:
-
-Input: nums = [2,3,2]
-Output: 3
-Explanation: You cannot rob house 1 (money = 2) and then rob house 3 (money = 2), because they are adjacent houses.
-Example 2:
-
-Input: nums = [1,2,3,1]
-Output: 4
-Explanation: Rob house 1 (money = 1) and then rob house 3 (money = 3).
-Total amount you can rob = 1 + 3 = 4.
-Example 3:
-
-Input: nums = [1,2,3]
-Output: 3
- 
-
-Constraints:
-
-1 <= nums.length <= 100
-0 <= nums[i] <= 1000
+</details> -->
 
 
-```java
-// bottom up
-class Solution {
-    public int rob(int[] nums) {
-        // Edge case: if there is only one house, rob it
-        if (nums.length == 1) return nums[0];
 
-        // DP array to store max profit up to each index
-        int[] dp = new int[nums.length + 1];
-        dp[0] = 0;
-
-        // Case 1: Rob houses from index 0 to n-2 (exclude last house)
-        for (int i = 1; i <= nums.length - 1; i++) {
-            // Either rob current house (nums[i-1] + dp[i-2]) or skip it (dp[i-1])
-            dp[i] = Math.max(nums[i - 1] + ((i - 2) < 0 ? 0 : dp[i - 2]), dp[i - 1]);
-        }
-        int ans1 = dp[nums.length - 1]; // Best profit excluding last house
-
-        // Case 2: Rob houses from index 1 to n-1 (exclude first house)
-        Arrays.fill(dp, 0); // Reset dp array for second run
-        for (int i = 2; i <= nums.length; i++) {
-            // Same transition, but now starting from house 1
-            dp[i] = Math.max(nums[i - 1] + ((i - 2) < 0 ? 0 : dp[i - 2]), dp[i - 1]);
-        }
-        int ans2 = dp[nums.length]; // Best profit excluding first house
-
-        // Final answer is the maximum of the two cases
-        return Math.max(ans1, ans2);
-    }
-}
-
-```
- House robber 2 seems easy but it is not. proper index are needed to finc the correct sol
-</details>
-
-   
-
-
-<details id="1911. Maximum Alternating Subsequence Sum">
+<!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1911. Maximum Alternating Subsequence Sum 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
 </span>
 </summary>
+</details> -->
 
-https://leetcode.com/problems/maximum-alternating-subsequence-sum/description/
-
-The alternating sum of a 0-indexed array is defined as the sum of the elements at even indices minus the sum of the elements at odd indices.
-
-For example, the alternating sum of [4,2,5,3] is (4 + 5) - (2 + 3) = 4.
-Given an array nums, return the maximum alternating sum of any subsequence of nums (after reindexing the elements of the subsequence).
-
-A subsequence of an array is a new array generated from the original array by deleting some elements (possibly none) without changing the remaining elements' relative order. For example, [2,7,4] is a subsequence of [4,2,3,7,2,1,4] (the underlined elements), while [2,4,2] is not.
-
- 
-
-Example 1:
-
-Input: nums = [4,2,5,3]
-Output: 7
-Explanation: It is optimal to choose the subsequence [4,2,5] with alternating sum (4 + 5) - 2 = 7.
-Example 2:
-
-Input: nums = [5,6,7,8]
-Output: 8
-Explanation: It is optimal to choose the subsequence [8] with alternating sum 8.
-Example 3:
-
-Input: nums = [6,2,1,2,4,5]
-Output: 10
-Explanation: It is optimal to choose the subsequence [6,1,5] with alternating sum (6 + 5) - 1 = 10.
- 
-
-Constraints:
-
-1 <= nums.length <= 105
-1 <= nums[i] <= 105
-
-
-```java
-// bruteforce
-
-class Solution {
-    public long maxAlternatingSum(int[] nums) {
-        return findMaxSum(0, 0, nums);
-    }
-
-    private long findMaxSum(int index, int count, int[] nums ){
-        // terminating condition
-        if(index >= nums.length){
-            return 0;
-        }
-
-        int num= (count) % 2 == 0 ? nums[index] : -nums[index];
-
-        // include current num in sum
-        long include = num + findMaxSum(index + 1, count+1, nums);  
-        
-        // exclude current num in sum
-        long exclude = findMaxSum(index + 1, count, nums); 
-
-        return Math.max(include, exclude);
-    }
-}
-```
-
-    O(2^n) time complexity 
-
-
-```java
-// memoized
-class Solution {
-    public long maxAlternatingSum(int[] nums) {
-        long[][] dp=new long[nums.length][2];
-        for(int i=0;i<nums.length;i++)Arrays.fill(dp[i], Long.MIN_VALUE);
-        findMaxSum(0, 0, nums, dp);
-        return dp[0][0];
-    }
-
-    private long findMaxSum(int index, int count, int[] nums, long[][] dp ){
-        // terminating condition
-        if(index >= nums.length){
-            return 0;
-        }
-        int parity = (count) % 2 == 0? 0:1;
-        if(dp[index][parity] != Long.MIN_VALUE)return dp[index][parity];
-
-        int num= (count) % 2 == 0 ? nums[index] : -nums[index];
-
-        // include current num in sum
-        long include = num + findMaxSum(index + 1, count+1, nums, dp);  
-        
-        // exclude current num in sum
-        long exclude = findMaxSum(index + 1, count, nums, dp); 
-
-        return dp[index][parity]=Math.max(include, exclude);
-    }
-}
-```
-
-    Here we need a 2d dp, each index can occur as even or odd index so we need both values there. we could directly store the count as second index but that will be highly inefficient and give memory out of bound exception.
-    Current complexity:O(N)
-    Suggested complexity:O(1)space
-    Suggestions:
-    Optimize space to O(1) by using two variables to track even and odd state sums instead of a full DP table.
-
-
-```java
-class Solution {
-    public long maxAlternatingSum(int[] nums) {
-        long[][] dp = new long[nums.length][2];
-        dp[0][0] = nums[0]; // best alternating sum ending with a positive sign.
-        dp[0][1] = 0;       // best alternating sum ending with a negative sign.
-
-        for (int i = 1; i < nums.length; i++) {
-            dp[i][0] = Math.max(dp[i-1][0], dp[i-1][1] + nums[i]); // take nums[i] as +
-            dp[i][1] = Math.max(dp[i-1][1], dp[i-1][0] - nums[i]); // take nums[i] as -
-        }
-
-        return dp[nums.length - 1][0];
-    }
-}
-```
-
-    We only need two states at each step:
-    
-    even → best alternating sum ending with a positive sign.
-
-    odd → best alternating sum ending with a negative sign.
-
-    Why only two states?
-    Because at any index, the subsequence can either:
-
-    End with a positive term (so the next one must be negative).
-
-    End with a negative term (so the next one must be positive).
-
-    We don’t need a “skip” state separately — skipping is naturally handled by taking the max of current vs previous.
-</details>
-
-<details id="300. Longest Increasing Subsequence">
+<!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">300. Longest Increasing Subsequence 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
 </span>
 </summary>
-
-https://leetcode.com/problems/longest-increasing-subsequence/description/
-
-Given an integer array nums, return the length of the longest strictly increasing subsequence.
-
- 
-
-Example 1:
-
-Input: nums = [10,9,2,5,3,7,101,18]
-Output: 4
-Explanation: The longest increasing subsequence is [2,3,7,101], therefore the length is 4.
-Example 2:
-
-Input: nums = [0,1,0,3,2,3]
-Output: 4
-Example 3:
-
-Input: nums = [7,7,7,7,7,7,7]
-Output: 1
- 
-
-Constraints:
-
-1 <= nums.length <= 2500
--104 <= nums[i] <= 104
- 
-```java
-
-// bruteforce
-class Solution {
-    public int lengthOfLIS(int[] nums) {
-        return findLIS(0, Integer.MIN_VALUE, nums);// [0,1,0,3,2,3]
-    }
-
-    private int findLIS(int index, int lastNum, int[] nums){
-        // terminating condition
-        if(index >= nums.length){
-            return 0;
-        }
-        int include=0;
-        // include
-        if(lastNum < nums[index]){
-            include = 1 + findLIS(index+1, nums[index], nums); 
-        }
-
-        // skip
-        int exclude = findLIS(index+1, lastNum, nums); 
-        return Math.max(include, exclude);
-    }
-}
-```
-
-    This solution is O(2^n)
-
-```java
-// memoized
-class Solution {
-    public int lengthOfLIS(int[] nums) {
-        int[][] dp=new int[nums.length+1][nums.length+1];
-        for(int[] i:dp)Arrays.fill(i, -1);
-        return findLIS(0, -1, nums, dp); 
-    }
-
-    private int findLIS(int index, int lastNumIndex, int[] nums, int[][] dp){
-        // terminating condition
-        if(index >= nums.length){
-            return 0;
-        }
-
-        if(lastNumIndex != -1 && dp[index][lastNumIndex] != -1)return dp[index][lastNumIndex];
-        int include = 0;
-        
-        // include
-        if(lastNumIndex == -1 || nums[lastNumIndex] < nums[index]){
-            include = 1 + findLIS(index+1, index, nums, dp); 
-        }
-
-        // skip
-        int exclude = findLIS(index+1, lastNumIndex, nums, dp); 
-
-        if(lastNumIndex!= -1){
-            dp[index][lastNumIndex] = Math.max(include, exclude);
-        }
-        return Math.max(include, exclude);
-    }
-}
-```
-
-    Memoization is tricky only because of the index handling -1.
-    Time complexity is O(n^2, as total states are defined by dp[][] and its n length 2d array)
-
-
-```java
-// Bottom-up solution
-class Solution {
-    public int lengthOfLIS(int[] nums) {
-        int[] LIS=new int[nums.length];
-        Arrays.fill(LIS, 1);
-        int max=1;
-        for(int i=0;i<nums.length;i++){
-            for(int j=0;j<i;j++){
-                if(i!=j && nums[i]> nums[j]){
-                    LIS[i]=Math.max(LIS[i],1+LIS[j]);
-                }
-            }
-            max=Math.max(max, LIS[i]);
-        }
-        return max;
-    }
-}
-```
-
-    Time complexity is O(n^2). 
-    here LIS[i] denotes the longest increasing subsequence ending at index i. 
-    We start by making the LIS for each element as 1, then we compare if we can make a subsequence that is LIS and keep updatung the LIS
-
-
-```java
-// patirnt sorting + binary search O(nlogn) samajh nai aaya
-class Solution {
-    public int lengthOfLIS(int[] nums) {
-        List<Integer> sub = new ArrayList<>();
-        for (int num : nums) {
-            int idx = Collections.binarySearch(sub, num);
-            if (idx < 0) idx = -(idx + 1);
-            if (idx == sub.size()) sub.add(num);
-            else sub.set(idx, num);
-        }
-        return sub.size();
-    }
-}
-
-```
-</details>
+</details> -->
 
 
 <!-- <details id="1584. Min Cost to Connect All Points">
