@@ -1596,7 +1596,7 @@ class Solution {
         int count=0;
 
         while(r<len){
-            if(nums[r]>right){
+            if(nums[r]>right){// We cant include nums[r], so just step over 
                 subCount=0;
                 l=r+1;
             }else if((nums[r]>=left && nums[r]<=right)){
@@ -1614,7 +1614,7 @@ class Solution {
 ```
 
     Things to remember 
-    most important trick is when the element at index r is not in the [left , right] in that case you have to include it but (r-l+1) will give wrong number of subarrays it also includes single element arr[r]. So to get around this we should remember the previous value of (r-l+1) and add that.
+    most important trick is when the element at index r is <left  in that case you have to include it but (r-l+1) will give wrong number of subarrays it also includes single element arr[r] and other subarryas ending at r which may not be correct because the max elment may or may not be in the range. So to get around this we should remember the previous value of (r-l+1) and add that (we will have r-l+1 number of subarrays shuch that each of they now just have r in them).
     Essentially
     previous (r-l+1) is just 1 less than the current (r-l+1) and thats what we wanted in order to remove one substring i.e arr[r]
 
