@@ -1766,26 +1766,17 @@ class Solution {
 class Solution {
     public int maxFrequency(int[] nums, int k) {
         Arrays.sort(nums);
-        
-        int n = nums.length;
-        
-        int result = 0;
-        
-        int i = 0;
-        long currSum = 0;
-        
-        for (int j = 0; j < n; j++) {
-            
-            long target = nums[j];
-            currSum += nums[j];
-            
-            if ((j - i + 1) * target - currSum > k) {
-                currSum -= nums[i];
-                i++;
+        int l=0,r=0;
+        long  currSum=0;
+        int result=0;
+        while(r<nums.length){
+            currSum+=nums[r];
+            while((long)nums[r]*(r-l+1)>k+currSum){// invalid window
+                currSum-=nums[l];
+                l++;
             }
-            
-            result = Math.max(result, j - i + 1);
-            
+            result=Math.max(result, r-l+1);
+            r++;
         }
         return result;
     }
@@ -1793,7 +1784,7 @@ class Solution {
 ```
 
     Things to remenber
-    This question first seems to be impossible solving with sliding window so i solveed it using the bruiteforce. But then it seems that this can be done using the sliding window.
+    we will try to make the sum equal to the num of elements * maxlement which is the pointed by r always because the array is sorted.
 
     Most important is to find out that sorting will help here. 
     And then you find out a way to find the sum required to make every element equal to the last element.
