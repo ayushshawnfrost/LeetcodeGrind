@@ -1046,11 +1046,32 @@ class Solution {
 
 ### Fixed Window
 
-    Fixed Window questions can be solved mostly in 2 ways:
+    The clue for sliding window can be find the subsets/subarrays/ less than k 
 
-    1. For loop solution : Here we calculate the first window and then one more loop for checking all the other windows by inclusing the right element and exclusing the left element of the window.
+    **IMPORTANT OBSERVATIONS**
+    
+    1. The r - l + 1 Formula ("At Most" / "Strictly Less Than")
+    Use this when the window must maintain a strict limit (e.g., "sum is less than 5"). If the window [l, r] is valid, every smaller subarray ending at r inside this window is also valid.
 
-    2. While loop solution: We keep on updating the window, once the window size is k, we updat the count and increment the left pointer.
+    Assume a valid window from index l = 1 to r = 3:
+
+    Plaintext
+    Indices:     0    1    2    3    4
+    Array:     [ 8,   2,   4,   1,   7 ]
+                    ↑         ↑
+                    l         r
+    Drawing the valid subarrays ending exactly at r (index 3):
+
+    Length 1: [ 1 ] (Starts at index 3)
+
+    Length 2: [ 4, 1 ] (Starts at index 2)
+
+    Length 3: [ 2, 4, 1 ] (Starts at index 1, which is l)
+
+    The Math:
+    To count how many numbers exist between two indices (inclusive), the formula is Right - Left + 1.
+    For r = 3 and l = 1: 3 - 1 + 1 = 3 valid subarrays.
+
 
 <details id="1456. Maximum Number of Vowels in a Substring of Given Length">
 <summary> 
@@ -1551,6 +1572,12 @@ class Solution {
     from 1->4 there are 2-0+1=3 subarrays
 
     Time and space complexity: O(n)
+    million dollar question is how
+    actualy j is moving over the whole array so n
+    sililarly i is moving over the whole array again so n
+    O(n+n)=O(n)
+
+    if for each j, i is moving ove the whole array then n^2, which is not the case here
 
 </details>
 
@@ -1662,36 +1689,80 @@ Constraints:
 ```java
 class Solution {
     public long countGood(int[] nums, int k) {
-        int n = nums.length;
-        int i = 0, j = 0;
-
-        long result = 0;
-        long pairs = 0;
-
-        Map<Integer, Integer> map = new HashMap<>();
-
-        while (j < n) {
-            pairs += map.getOrDefault(nums[j], 0);
-            map.put(nums[j], map.getOrDefault(nums[j], 0) + 1);
-
-            while (pairs >= k) {
-                result += (n - j);
-                map.put(nums[i], map.get(nums[i]) - 1);
-                pairs -= map.get(nums[i]);
-                i++;
+        Map<Integer, Integer> map=new HashMap<>();
+        int len=nums.length;
+        int left=0,right=0;
+        long goodSubArrays=0;
+        int pairs=0;//[1,2,3,4]
+        while(right<nums.length){
+            map.put(nums[right], map.getOrDefault(nums[right],0)+1);
+            int currCount=map.get(nums[right]);
+            if(currCount>1){
+                pairs+=(currCount-1);
             }
-
-            j++;
+            while(pairs >=k){
+                // We want to count the this subarray + they subarrays on the right side, why right side because the right variable now is the boundary because it makes the total pairs=k, hence we can count the suarrays to its right right side which gives correct answer. On Contrary if we want to count the subarrays you should firest shrink the left index to the max and then count, in that case left index will dipict the boundary. 
+                goodSubArrays+=len-right;
+                //found good array
+                int count=map.getOrDefault(nums[left], 0);
+                // increment left pointer and update frequency till we find an left for which pairs<k
+                map.put(nums[left], map.getOrDefault(nums[left], 0)-1);
+                //Similar to when we added an element, removing an element removes pairs. If the element nums[l] appeared count times in the window, removing one instance of it destroys count - 1 pairs. We update the total pairs counter accordingly.
+                pairs-=(count-1);
+                left++;
+            }
+            
+            right++;
         }
+        return goodSubArrays; 
+    }
+}
 
-        return result;
+
+```
+
+
+```java
+// same code except the position of goodSubArrays, 
+class Solution {
+    public long countGood(int[] nums, int k) {
+        Map<Integer, Integer> map=new HashMap<>();
+
+        int left=0,right=0;
+        long goodSubArrays=0;
+        int pairs=0;//1
+        while(right<nums.length){
+            map.put(nums[right], map.getOrDefault(nums[right],0)+1);
+            int currCount=map.get(nums[right]);
+            if(currCount>1){
+                pairs+=(currCount-1);
+            }
+            while(pairs >=k){
+                //found good array
+                int count=map.getOrDefault(nums[left], 0);
+                // increment left pointer and update frequency till we find an left for which pairs<k
+                map.put(nums[left], map.getOrDefault(nums[left], 0)-1);
+                //Similar to when we added an element, removing an element removes pairs. If the element nums[l] appeared count times in the window, removing one instance of it destroys count - 1 pairs. We update the total pairs counter accordingly.
+                pairs-=(count-1);
+                left++;
+            }
+            // counting the good subarrays on the left side of the orignal good array. Here left index is dipcting the correct boundary to count the left side subarrays.
+            goodSubArrays+=left;
+            right++;
+        }
+        return goodSubArrays; 
     }
 }
 
 ```
 
     Things To remember:
-    
+
+    Think of the algorithm in two simple phases:
+    Expand Right: Keep eating numbers until your window has at least 2 pairs.
+    Shrink Left & Count: Once you have 2 pairs, see how much you can chop off from the left before you lose your 2 pairs. Every time you chop, you count valid subarrays
+
+    Bhai mast quest hai please revisit [*****]
     This is a fucking so fucking hard for me to handle becaue of the observation (n-j) which gives all the subarrys with min k pairs. We can count subarrays starting [i, j] but dont forget that any subarrays starting i and ending (j, len] will also be correct sub arrays because of the condition "at least k pairs of indices (i, j) such that i < j and arr[i] == arr[j]".
     pairs -= map.get(nums[i]); condition is nuts still cant figure out how the hell we know that we need to decrement the pair, this is coincident that if 4->6 we have seen 4 six times then we might have added 5 to the pairs sub array when we saw sixth 4. Now when you remove the one 4 from the sub arrays you have to also remove the pairs it might have amde with other 4s. So exactly that 4 have made 5 pairs so remove those. This 5 is given by 
      // nums[i]) = 6
@@ -1700,6 +1771,11 @@ class Solution {
 
     curently i think it is difficult for me to solve this one.
     I have to learn it by heart then only i will be able to solve this.
+
+    
+
+    Time complexity:
+    again its O(2n) so O(n)
 
 
 </details>
@@ -4277,30 +4353,342 @@ class Solution {
 
 ### Linear DP
 
-<details id="Remove Half Nodes">
+<details id="746. Min Cost Climbing Stairs">
 <summary> 
-<span style="color:green;font-size:16px;font-weight:bold">Remove Half Nodes 
+<span style="color:green;font-size:16px;font-weight:bold">746. Min Cost Climbing Stairs 
 </span>
 </summary>
+
+https://leetcode.com/problems/min-cost-climbing-stairs/description/
+
+You are given an integer array cost where cost[i] is the cost of ith step on a staircase.
+
+Once you pay the cost, you can either climb one or two steps.
+
+You can either start from the step with index 0, or the step with index 1.
+
+Return the minimum cost to reach the top of the staircase, which is the position just past the last step (index cost.length).
+
+ 
+
+Example 1:
+
+Input: cost = [10,15,20]
+Output: 15
+Explanation: You will start at index 1.
+- Pay 15 and climb two steps to reach the top.
+The total cost is 15.
+Example 2:
+
+Input: cost = [1,100,1,1,1,100,1,1,100,1]
+Output: 6
+Explanation: You will start at index 0.
+- Pay 1 and climb two steps to reach index 2.
+- Pay 1 and climb two steps to reach index 4.
+- Pay 1 and climb two steps to reach index 6.
+- Pay 1 and climb one step to reach index 7.
+- Pay 1 and climb two steps to reach index 9.
+- Pay 1 and climb one step to reach the top.
+The total cost is 6.
+ 
+
+Constraints:
+
+2 <= cost.length <= 1000
+0 <= cost[i] <= 999
+
+```java
+
+// recursion with memo
+class Solution {
+    public int minCostClimbingStairs(int[] cost) {
+        int[]dp=new int[cost.length];
+        Arrays.fill(dp, -1);
+        return Math.min(findMin(cost, 0, dp), findMin(cost,1,dp));
+    }
+    private int findMin(int[] cost, int i, int[] dp){
+        if(i == cost.length-1 || i == cost.length - 2){
+            return cost[i];
+        }
+        if(dp[i] != -1)return dp[i];
+        int oneStep=findMin(cost, i+1, dp);
+        int twoStep=findMin(cost, i+2, dp);
+        return dp[i] = cost[i] + Math.min(oneStep, twoStep);
+    }
+}
+```
+
+    Things to Remember
+    TC -> O(n) :Each state i is computed only once because of memoization (dp[i]). 
 </details>
 
 
 
-<!-- <details id="Remove Half Nodes">
+<details id="198. House Robber">
 <summary> 
-<span style="color:green;font-size:16px;font-weight:bold">Remove Half Nodes 
+<span style="color:green;font-size:16px;font-weight:bold">198. House Robber 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/house-robber/
+
+You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
+
+Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,3,1]
+Output: 4
+Explanation: Rob house 1 (money = 1) and then rob house 3 (money = 3).
+Total amount you can rob = 1 + 3 = 4.
+Example 2:
+
+Input: nums = [2,7,9,3,1]
+Output: 12
+Explanation: Rob house 1 (money = 2), rob house 3 (money = 9) and rob house 5 (money = 1).
+Total amount you can rob = 2 + 9 + 1 = 12.
+ 
+
+Constraints:
+
+1 <= nums.length <= 100
+0 <= nums[i] <= 400
 
 
+```java
+```
 
-<!-- <details id="Remove Half Nodes">
+```java
+// bottom up
+class Solution {
+    public int rob(int[] nums) {
+        int[] dp = new int[nums.length+1];
+        dp[0]=0;
+        dp[1]=nums[0];
+
+        for(int i=2;i<=nums.length;i++){
+            dp[i]=Math.max(nums[i-1] + dp[i-2], dp[i-1]);
+        }
+        return dp[nums.length];
+    }
+}
+
+```
+
+```java
+// recursion
+class Solution {
+    public int rob(int[] nums) {
+        return robHouses(nums, 0);
+    }
+    private int robHouses(int[] nums, int i){
+        if(i>= nums.length){
+            return 0;
+        }
+        // rob
+        int rob = nums[i] + robHouses(nums, i+2);
+
+        //skip
+        int skip=robHouses(nums, i+1);
+
+        return Math.max(rob, skip);
+    }
+}
+
+// Time O(2^n)
+```
+
+```java
+// recursion + memoization
+class Solution {
+    public int rob(int[] nums) {
+        int[] dp= new int[nums.length + 1];
+        Arrays.fill(dp, -1);
+        return robHouses(nums, 0, dp);
+    }
+    private int robHouses(int[] nums, int i, int[] dp){
+        if(i>= nums.length){
+            return 0;
+        }
+        if(dp[i]!=-1)return dp[i];
+        // rob
+        int rob = nums[i] + robHouses(nums, i+2, dp);
+
+        //skip
+        int skip=robHouses(nums, i+1, dp);
+
+        return dp[i]=Math.max(rob, skip);
+    }
+}
+
+// Time - O(n)
+```
+</details>
+
+### Linear DP
+
+### 2D DP
+
+### DP on GRID
+
+### Knapsack DP
+
+<details id="494. Target Sum">
 <summary> 
-<span style="color:green;font-size:16px;font-weight:bold">Remove Half Nodes 
+<span style="color:green;font-size:16px;font-weight:bold">494. Target Sum 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/target-sum/description/
+
+You are given an integer array nums and an integer target.
+
+You want to build an expression out of nums by adding one of the symbols '+' and '-' before each integer in nums and then concatenate all the integers.
+
+For example, if nums = [2, 1], you can add a '+' before 2 and a '-' before 1 and concatenate them to build the expression "+2-1".
+Return the number of different expressions that you can build, which evaluates to target.
+
+ 
+
+Example 1:
+
+Input: nums = [1,1,1,1,1], target = 3
+Output: 5
+Explanation: There are 5 ways to assign symbols to make the sum of nums be target 3.
+-1 + 1 + 1 + 1 + 1 = 3
++1 - 1 + 1 + 1 + 1 = 3
++1 + 1 - 1 + 1 + 1 = 3
++1 + 1 + 1 - 1 + 1 = 3
++1 + 1 + 1 + 1 - 1 = 3
+Example 2:
+
+Input: nums = [1], target = 1
+Output: 1
+ 
+
+Constraints:
+
+1 <= nums.length <= 20
+0 <= nums[i] <= 1000
+0 <= sum(nums[i]) <= 1000
+-1000 <= target <= 1000
+
+```java
+// recursion O(2^n)
+class Solution {
+    public int findTargetSumWays(int[] nums, int target) {
+        return findSum(nums, target, 0, 0);
+    }
+
+    private int findSum(int[] nums, int target, int i, int sum){
+        if(i >= nums.length){
+            if(sum == target)return 1;
+            return 0;
+        }
+
+        // add
+        int add = findSum(nums, target, i+1, sum + nums[i]);
+
+        // subtract
+        int subtract = findSum(nums, target, i+1, sum - nums[i]);
+
+        return add + subtract;
+    }
+}
+```
+
+```java
+// same recursion but using target insted of Sum so that in memoization we only need 2d matrix O(2^n)
+class Solution {
+    public int findTargetSumWays(int[] nums, int target) {
+        return findSum(nums, target, 0);
+    }
+
+    private int findSum(int[] nums, int target, int i){
+        if(i >= nums.length){
+            if(target == 0)return 1;
+            return 0;
+        }
+
+        // add
+        int add = findSum(nums, target+ nums[i], i+1);
+
+        // subtract
+        int subtract = findSum(nums, target- nums[i], i+1);
+
+        return add + subtract;
+    }
+}
+```
+
+```java
+// Array index out of bound
+// we cannot directly memoie the problem with a 2d Array because the sum can go negative and it will be array out of bound for dp[sum][index]. 
+class Solution {
+    public int findTargetSumWays(int[] nums, int target) {
+        int maxSum = Arrays.stream(nums).sum();
+        int [][] dp = new int[maxSum*2  +1 ][nums.length+1];
+        for(int[] array:dp)Arrays.fill(array, -1);
+
+        return findSum(nums, target, 0, dp);
+    }
+
+    private int findSum(int[] nums, int target, int i, int[][] dp){
+        if(i >= nums.length){
+            if(target == 0)return 1;
+            return 0;
+        }
+        if(dp[target][i] != -1)return dp[target][i];
+        // add
+        int add = findSum(nums, target+ nums[i], i+1, dp);
+
+        // subtract
+        int subtract = findSum(nums, target- nums[i], i+1, dp);
+
+        return dp[target][i] = add + subtract;
+    }
+}
+```
+
+
+```java
+//memoize using hashMap
+class Solution {
+    private Map<String, Integer> memo = new HashMap<>();
+
+    public int findTargetSumWays(int[] nums, int target) {
+        return dfs(nums, 0, 0, target);
+    }
+    private int dfs(int[] nums, int index, int currentSum, int target) {
+        if (index == nums.length) {
+            return currentSum == target ? 1 : 0;
+        }
+        String key = index + "," + currentSum;
+        if (memo.containsKey(key)) {
+            return memo.get(key);
+        }
+        int add = dfs(nums, index + 1,currentSum + nums[index],target);
+        int subtract = dfs(nums, index + 1,currentSum - nums[index],target);
+        memo.put(key, add + subtract);
+        return memo.get(key);
+    }
+}
+
+// Time Complexity: O(N × S)
+// Space Complexity: O(N × S)
+```
+
+
+
+
+    Things to remember
+    A great problem we cannot directly memoie the problem with a 2d Array because the sum can go negative and it will be array out of bound for dp[sum][index]. 
+    using hashmap is a way out
+
+</details>
 
 
 
