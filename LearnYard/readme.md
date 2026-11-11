@@ -5051,6 +5051,15 @@ class Solution {
 
 ### Longest Increasing Subsequence
 
+    LIS relies on comparing the current value of an index with the values occuring before it, the array must be sorted incresingly.
+
+    we ask a question:
+    can i include the answer at a prev index + current value OR should i just skip that prev index
+
+    MAJOR differentiator of LIS from LCS (Longest Common Subsequesnce) is that LIS has a single array we need to work with (can be 2/3D array).  LCS on the other hand have two strings/arrays and we need to compare them
+
+    Generally the DP array is 1D for most cases
+
 <details id="300. Longest Increasing Subsequence">
 <summary> 
 <span style="color:yellow;font-size:16px;font-weight:bold">300. Longest Increasing Subsequence 
@@ -5421,6 +5430,218 @@ class Solution {
     Time Complexity = O(n²)
     vvimp is to make the cubes lexicographically sorted
 </details>
+
+### Longest Common Subsequence
+
+    LCS always have 2 strings/arrays which have to be checked and make a single subsequence
+
+<details id="1143. Longest Common Subsequence">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1143. Longest Common Subsequence 
+</span>
+</summary>
+
+https://leetcode.com/problems/longest-common-subsequence/description/
+
+Given two strings text1 and text2, return the length of their longest common subsequence. If there is no common subsequence, return 0.
+
+A subsequence of a string is a new string generated from the original string with some characters (can be none) deleted without changing the relative order of the remaining characters.
+
+For example, "ace" is a subsequence of "abcde".
+A common subsequence of two strings is a subsequence that is common to both strings.
+
+ 
+
+Example 1:
+
+Input: text1 = "abcde", text2 = "ace" 
+Output: 3  
+Explanation: The longest common subsequence is "ace" and its length is 3.
+Example 2:
+
+Input: text1 = "abc", text2 = "abc"
+Output: 3
+Explanation: The longest common subsequence is "abc" and its length is 3.
+Example 3:
+
+Input: text1 = "abc", text2 = "def"
+Output: 0
+Explanation: There is no such common subsequence, so the result is 0.
+ 
+
+Constraints:
+
+1 <= text1.length, text2.length <= 1000
+text1 and text2 consist of only lowercase English characters.
+ 
+
+
+```java
+// recursion + memo
+class Solution {
+    public int longestCommonSubsequence(String text1, String text2) {
+        int[][] dp=new int[text1.length()][text2.length()];
+        for(int[] d:dp)Arrays.fill(d,-1);
+        return LCS(0,0,text1, text2, dp);
+    }
+    private int LCS(int i1, int i2, String text1, String text2, int[][] dp){
+        if(i1 >= text1.length() || i2 >= text2.length())return 0;
+
+        if(dp[i1][i2]!= -1)return dp[i1][i2];
+        // take
+        if(text1.charAt(i1) == text2.charAt(i2)){
+            return 1+LCS(i1+1, i2+1, text1, text2, dp);
+        }
+        // skip
+        int skip1= LCS(i1+1, i2, text1, text2, dp);
+        int skip2= LCS(i1, i2+1, text1, text2, dp);
+
+        return dp[i1][i2] = Math.max(skip1, skip2);
+    }
+}
+```
+
+    Things to remember
+    TC : O(n*m)
+    SC : O(n*m)
+
+```java
+// bottom up
+class Solution {
+    public int longestCommonSubsequence(String text1, String text2) {
+        int[][] dp=new int[text1.length()+1][text2.length()+1];
+        for(int r=0;r<text1.length();r++){
+            dp[r][0] = 0;
+        }
+        for(int c=0;c<text2.length();c++){
+            dp[0][c] = 0;
+        }
+        for(int r=1;r<=text1.length();r++){
+            for(int c=1;c<=text2.length();c++){
+                if(text1.charAt(r-1) == text2.charAt(c-1)){
+                    dp[r][c] = 1 + dp[r-1][c-1];
+                }
+                else{
+                    dp[r][c] = Math.max(dp[r-1][c], dp[r][c-1]);
+                }
+            }
+        }
+        return dp[text1.length()][text2.length()];
+    }
+}
+```
+
+    Things to remember
+    TC : O(n*m)
+    SC : O(n*m)
+</details>
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
+<!-- <details id="1584. Min Cost to Connect All Points">
+<summary> 
+<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+</span>
+</summary>
+</details> -->
+
 
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
