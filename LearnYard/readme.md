@@ -4693,68 +4693,734 @@ class Solution {
 
 
 
-<!-- <details id="Remove Half Nodes">
+<details id="638. Shopping Offers">
 <summary> 
-<span style="color:green;font-size:16px;font-weight:bold">Remove Half Nodes 
+<span style="color:green;font-size:16px;font-weight:bold">638. Shopping Offers 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/shopping-offers/
+
+In LeetCode Store, there are n items to sell. Each item has a price. However, there are some special offers, and a special offer consists of one or more different kinds of items with a sale price.
+
+You are given an integer array price where price[i] is the price of the ith item, and an integer array needs where needs[i] is the number of pieces of the ith item you want to buy.
+
+You are also given an array special where special[i] is of size n + 1 where special[i][j] is the number of pieces of the jth item in the ith offer and special[i][n] (i.e., the last integer in the array) is the price of the ith offer.
+
+Return the lowest price you have to pay for exactly certain items as given, where you could make optimal use of the special offers. You are not allowed to buy more items than you want, even if that would lower the overall price. You could use any of the special offers as many times as you want.
+
+ 
+
+Example 1:
+
+Input: price = [2,5], special = [[3,0,5],[1,2,10]], needs = [3,2]
+Output: 14
+Explanation: There are two kinds of items, A and B. Their prices are $2 and $5 respectively. 
+In special offer 1, you can pay $5 for 3A and 0B
+In special offer 2, you can pay $10 for 1A and 2B. 
+You need to buy 3A and 2B, so you may pay $10 for 1A and 2B (special offer #2), and $4 for 2A.
+Example 2:
+
+Input: price = [2,3,4], special = [[1,1,0,4],[2,2,1,9]], needs = [1,2,1]
+Output: 11
+Explanation: The price of A is $2, and $3 for B, $4 for C. 
+You may pay $4 for 1A and 1B, and $9 for 2A ,2B and 1C. 
+You need to buy 1A ,2B and 1C, so you may pay $4 for 1A and 1B (special offer #1), and $3 for 1B, $4 for 1C. 
+You cannot add more items, though only $9 for 2A ,2B and 1C.
+ 
+
+Constraints:
+
+n == price.length == needs.length
+1 <= n <= 6
+0 <= price[i], needs[i] <= 10
+1 <= special.length <= 100
+special[i].length == n + 1
+0 <= special[i][j] <= 50
+The input is generated that at least one of special[i][j] is non-zero for 0 <= j <= n - 1.
+
+```java
+// recursion + memoization 
+class Solution {
+    public int shoppingOffers(List<Integer> price, List<List<Integer>> special, List<Integer> needs) {
+        Map<List<Integer> , Integer> map = new HashMap<>();
+        return minPrice(price, special, needs, map);
+    }
+
+    private int minPrice(List<Integer> price, List<List<Integer>> special, List<Integer> needs, Map<List<Integer> , Integer> map ){
+        int minCost = getNoOfferCost(price, needs);
+        if(map.containsKey(needs))return map.get(needs);
+        for(List<Integer> offer: special){
+            List<Integer> currNeeds=new ArrayList<>(needs);
+            int i;
+            for(i=0;i<currNeeds.size();i++){
+                int remainingQnt=currNeeds.get(i);
+                if(remainingQnt - offer.get(i) <0){
+                    break;// cannot apply the offer
+                }
+                currNeeds.set(i, remainingQnt - offer.get(i));
+            }
+            int offerPrice = offer.get(offer.size()-1);
+            if(i==currNeeds.size()) {
+                // offer applicable 
+                minCost = Math.min(minCost,  offerPrice + minPrice(price, special, currNeeds, map));
+            }
+        }
+        map.put(needs, minCost);
+        return minCost;
+    }
+    private int getNoOfferCost(List<Integer> price, List<Integer> needs){
+        int cost=0;
+        for(int i=0;i<needs.size();i++){
+            cost+= needs.get(i)*price.get(i); 
+        }
+        return cost;
+    }
+}
+```
 
 
 
-<!-- <details id="Remove Half Nodes">
+    Things to remember
+    unable to make this on 1st Attempt
+    Time Complexity: O(states × specialOffers × itemTypes) where states = ∏(needs[i] + 1).
+    Space Complexity: O(states) for the memoization map, plus O(sum(needs)) recursion depth.
+</details>
+
+
+
+<details id="1049. Last Stone Weight II">
 <summary> 
-<span style="color:green;font-size:16px;font-weight:bold">Remove Half Nodes 
+<span style="color:green;font-size:16px;font-weight:bold">1049. Last Stone Weight II 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/last-stone-weight-ii/description/
+
+
+took  multiple attempts and days
+
+You are given an array of integers stones where stones[i] is the weight of the ith stone.
+
+We are playing a game with the stones. On each turn, we choose any two stones and smash them together. Suppose the stones have weights x and y with x <= y. The result of this smash is:
+
+If x == y, both stones are destroyed, and
+If x != y, the stone of weight x is destroyed, and the stone of weight y has new weight y - x.
+At the end of the game, there is at most one stone left.
+
+Return the smallest possible weight of the left stone. If there are no stones left, return 0.
+
+ 
+
+Example 1:
+
+Input: stones = [2,7,4,1,8,1]
+Output: 1
+Explanation:
+We can combine 2 and 4 to get 2, so the array converts to [2,7,1,8,1] then,
+we can combine 7 and 8 to get 1, so the array converts to [2,1,1,1] then,
+we can combine 2 and 1 to get 1, so the array converts to [1,1,1] then,
+we can combine 1 and 1 to get 0, so the array converts to [1], then that's the optimal value.
+Example 2:
+
+Input: stones = [31,26,33,21,40]
+Output: 5
+ 
+
+Constraints:
+
+1 <= stones.length <= 30
+1 <= stones[i] <= 100
+
+
+```java
+// recursive (TLE)
+class Solution {
+    public int lastStoneWeightII(int[] stones) {
+        int totalSum=Arrays.stream(stones).sum();
+        // making the bigger sum subset as the target 
+        int sum = totalSum%2 == 0 ? totalSum/2 : totalSum/2 + 1;
+        return findSubset(0, 0, sum,totalSum, stones);
+    }
+
+    private int findSubset(int i, int currSum, int target,int totalSum, int[] stones){
+        // here there are 3 conditions
+        if(currSum >= target || i == stones.length){
+            return (int)Math.abs((totalSum - currSum)-currSum);
+        }
+        int take = findSubset(i+1, currSum + stones[i], target, totalSum, stones);
+        int skip = findSubset(i+1, currSum , target, totalSum, stones);
+
+        return Math.min(take, skip);
+    }
+}
+```
+
+
+```java
+// recursion + memo
+class Solution {
+    public int lastStoneWeightII(int[] stones) {
+        int totalSum=Arrays.stream(stones).sum();
+        // making the bigger sum subset as the target 
+        int sum = totalSum%2 == 0 ? totalSum/2 : totalSum/2 + 1;
+
+        Map<String, Integer> map=new HashMap<>();
+        return findSubset(0, 0, sum,totalSum, stones, map);
+    }
+
+    private int findSubset(int i, int currSum, int target,int totalSum, int[] stones, Map<String, Integer> map){
+        // here there are 3 conditions
+        if(currSum >= target || i == stones.length){
+            return (int)Math.abs((totalSum - currSum)-currSum);
+        }
+        String key= i+","+currSum;
+        if(map.containsKey(key))return map.get(key);
+
+        int take = findSubset(i+1, currSum + stones[i], target, totalSum, stones, map);
+        int skip = findSubset(i+1, currSum , target, totalSum, stones, map);
+        map.put(key, Math.min(take, skip));
+        return Math.min(take, skip);
+    }
+}
+```
+
+    Things to remember
+    This took me multiple days to solve.
+
+    The trick is to know that we can convert this tnto 2 subsets of almost equal sum. The logic behind is that with those 2 subsets any possible collision between these sets will always remains the diff between their sum constant.
+
+    So now things boils down to finsing a subset which is closest to the sum/2 
+
+</details>
 
 
 
-<!-- <details id="Remove Half Nodes">
+<details id="Rod Cutting">
 <summary> 
-<span style="color:green;font-size:16px;font-weight:bold">Remove Half Nodes 
+<span style="color:green;font-size:16px;font-weight:bold">Rod Cutting 
 </span>
 </summary>
-</details> -->
+
+https://www.geeksforgeeks.org/problems/rod-cutting0840/1
+
+Given a rod of length n inches and an array price[], where price[i] denotes the value of a piece of length i (1-based Index). Determine the maximum value obtainable by cutting up the rod and selling the pieces.
+
+Note: The value of n is equal to the size of price array.
+
+Example:
+
+Input: price[] = [1, 5, 8, 9, 10, 17, 17, 20]
+Output: 22
+Explanation: The maximum obtainable value is 22 by cutting in two pieces of lengths 2 and 6, i.e., 5 + 17 = 22.
+Input: price[] = [3, 5, 8, 9, 10, 17, 17, 20]
+Output: 24
+Explanation: The maximum obtainable value is 24 by cutting the rod into 8 pieces of length 1, i.e, 8*price[1] = 8*3 = 24.
+Input: price[] = [3]
+Output: 3
+Explanation: There is only 1 way to pick a piece of length 1.
+Constraints:
+
+1 ≤ price.size() ≤ 103
+1 ≤ price[i] ≤ 106
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+```java
+class Solution {
+    public int cutRod(int[] price) {
+        int[][] dp=new int[price.length+1][price.length + 1];
+        for(int[] d:dp)Arrays.fill(d, -1);
+        return maxProfit(0, price.length, price, dp);
+    }
+    
+    private int maxProfit(int i, int len, int[] price, int[][] dp){
+        if(i == price.length || len == 0)return 0;
+        
+        if(dp[i][len] != -1)return dp[i][len];
+        int cut=0;
+        // cut
+        int pieceLen = i + 1;
+        // visiting i again to check if i can be taken again, but with updated remaining length 
+        if (pieceLen <= len)cut = price[i] + maxProfit(i, len-(i+1), price, dp);
+        
+        
+        int skip = maxProfit(i+1, len, price, dp);
+        
+        return dp[i][len] = Math.max(cut, skip);
+    }
+}
+```
+
+    Things to remember
+    This is an good example of unbounded knapsack question, here we are visiting at most (n+1) * (n+1)  state so tc is O(n^2)
+
+    This can also be solved using 
+</details>
+
+
+<details id="879. Profitable Schemes">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:red;font-size:16px;font-weight:bold">879. Profitable Schemes 
 </span>
 </summary>
-</details> -->
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+https://leetcode.com/problems/profitable-schemes/description/
+
+There is a group of n members, and a list of various crimes they could commit. The ith crime generates a profit[i] and requires group[i] members to participate in it. If a member participates in one crime, that member can't participate in another crime.
+
+Let's call a profitable scheme any subset of these crimes that generates at least minProfit profit, and the total number of members participating in that subset of crimes is at most n.
+
+Return the number of schemes that can be chosen. Since the answer may be very large, return it modulo 109 + 7.
+
+ 
+
+Example 1:
+
+Input: n = 5, minProfit = 3, group = [2,2], profit = [2,3]
+Output: 2
+Explanation: To make a profit of at least 3, the group could either commit crimes 0 and 1, or just crime 1.
+In total, there are 2 schemes.
+Example 2:
+
+Input: n = 10, minProfit = 5, group = [2,3,5], profit = [6,7,8]
+Output: 7
+Explanation: To make a profit of at least 5, the group could commit any crimes, as long as they commit one.
+There are 7 possible schemes: (0), (1), (2), (0,1), (0,2), (1,2), and (0,1,2).
+ 
+
+Constraints:
+
+1 <= n <= 100
+0 <= minProfit <= 100
+1 <= group.length <= 100
+1 <= group[i] <= 100
+profit.length == group.length
+0 <= profit[i] <= 100
+
+```java
+class Solution {
+    int MOD = (int)Math.pow(10,9)+7;
+    public int profitableSchemes(int n, int minProfit, int[] group, int[] profit) {
+        Integer[][][] dp = new Integer[group.length][minProfit + 1][n + 1];
+        return countSubsets(0, 0, n, minProfit, group, profit, dp);
+    }
+
+    private int countSubsets(int i, int sum, int members, int minProfit, int[] group, int[] profit, Integer[][][] dp){
+        if (i == group.length) {
+            return sum >= minProfit ? 1 : 0;
+        }
+        
+        if (dp[i][sum][members] != null) {
+            return dp[i][sum][members];
+        }
+        // loot this profit
+        int loot = 0;
+        
+        if(members - group[i]>=0){
+            loot = countSubsets(
+                i+1, 
+                Math.min(minProfit, sum + profit[i]), // should be just sum + profit[i] idealy, but not doing this will give memory limit exceed
+                members - group[i], 
+                minProfit, 
+                group, 
+                profit, 
+                dp);
+        }
+
+        int skip = countSubsets(i+1, sum, members, minProfit, group, profit, dp);
+        loot %= MOD;
+        skip %= MOD;
+        int total= (loot + skip)% MOD;
+        return dp[i][sum][members] = total;
+    }
+}
+
+
+    Things to remember
+    States = group.length × (minProfit + 1) × (n + 1)
+    Time = O(m * minProfit * n)
+    Space = O(m * minProfit * n)
+
+    where m = group.length.
+
+    this recursion creates all possible subsets of group[] and only at the terminal condition we can say that we have a subset, so there only we need to add a +1 condition
+
+
+```
+</details>
+
+### Longest Increasing Subsequence
+
+<details id="300. Longest Increasing Subsequence">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">300. Longest Increasing Subsequence 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/longest-increasing-subsequence/description/
+
+Given an integer array nums, return the length of the longest strictly increasing subsequence.
+
+ 
+
+Example 1:
+
+Input: nums = [10,9,2,5,3,7,101,18]
+Output: 4
+Explanation: The longest increasing subsequence is [2,3,7,101], therefore the length is 4.
+Example 2:
+
+Input: nums = [0,1,0,3,2,3]
+Output: 4
+Example 3:
+
+Input: nums = [7,7,7,7,7,7,7]
+Output: 1
+ 
+
+Constraints:
+
+1 <= nums.length <= 2500
+-104 <= nums[i] <= 104
+ 
+
+Follow up: Can you come up with an algorithm that runs in O(n log(n)) time complexity?
+
+```java
+// recursion + memo  O(n^2)
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int[][] dp= new int[nums.length + 1][nums.length + 1];
+        for(int[] d:dp)Arrays.fill(d, -1);
+        return maxLIS(0, -1, nums, dp);
+    }
+
+    private int maxLIS(int i, int prev, int[] nums, int[][] dp){
+        if(i>= nums.length)return 0;
+
+        if(prev != -1 && dp[i][prev] != -1)return dp[i][prev]; 
+
+        //take
+        int take=0;
+        if(prev == -1 || nums[i] > nums[prev]){
+            take = 1 + maxLIS(i+1, i, nums, dp);
+        }
+
+        //skip
+        int skip = maxLIS(i+1, prev, nums, dp);
+
+        if(prev!= -1)dp[i][prev] = Math.max(take, skip);
+
+        return Math.max(take, skip);
+    }
+}
+```
+
+```java
+// bottom up
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int[] dp=new int[nums.length];
+        Arrays.fill(dp, 1);
+
+        for(int i=0;i<nums.length;i++){
+            for(int j=0;j<i;j++){
+                if(nums[j] < nums[i]){
+                    dp[i]=Math.max(dp[i], dp[j]+1);
+                }
+            }
+        }
+        return Arrays.stream(dp).max().getAsInt();
+    }
+}
+
+// dp[i] represent the LIS ending at i
+// we keep on asking a question to j is that what is the LIS at j + 1 (1 for including i itself) and compare it with LIS with i 
+
+// best solution )(n^2)
+```
+</details>
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="673. Number of Longest Increasing Subsequence">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">673. Number of Longest Increasing Subsequence 
 </span>
 </summary>
-</details> -->
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+https://leetcode.com/problems/number-of-longest-increasing-subsequence/description/
+
+Given an integer array nums, return the number of longest increasing subsequences.
+
+Notice that the sequence has to be strictly increasing.
+
+ 
+
+Example 1:
+
+Input: nums = [1,3,5,4,7]
+Output: 2
+Explanation: The two longest increasing subsequences are [1, 3, 4, 7] and [1, 3, 5, 7].
+Example 2:
+
+Input: nums = [2,2,2,2,2]
+Output: 5
+Explanation: The length of the longest increasing subsequence is 1, and there are 5 increasing subsequences of length 1, so output 5.
+ 
+
+Constraints:
+
+1 <= nums.length <= 2000
+-106 <= nums[i] <= 106
+The answer is guaranteed to fit inside a 32-bit integer.
+
+
+```java
+// dilasa k liye likha hai but dont follow this too complex better go with bottom up
+class Solution {
+    static class Pair {
+        int len;
+        int count;
+        Pair(int len, int count) {
+            this.len = len;
+            this.count = count;
+        }
+    }
+    Pair[][] dp;
+
+    public int findNumberOfLIS(int[] nums) {
+        int n = nums.length;
+        dp = new Pair[n][n + 1];
+        Pair ans = dfs(0, -1, nums);
+        return ans.count;
+    }
+
+    private Pair dfs(int i, int prev, int[] nums) {
+        if (i == nums.length) {
+            return new Pair(0, 1);
+        }
+        if (dp[i][prev + 1] != null) {
+            return dp[i][prev + 1];
+        }
+        // Skip current element
+        Pair skip = dfs(i + 1, prev, nums);
+        // Take current element
+        Pair take = null;
+        
+        if (prev == -1 || nums[i] > nums[prev]) {
+            Pair next = dfs(i + 1, i, nums);
+            take = new Pair(next.len + 1, next.count);
+        }
+
+        Pair res;
+
+        if (take == null) {
+            res = skip;
+        }
+        else if (take.len > skip.len) {
+            res = take;
+        }
+        else if (skip.len > take.len) {
+            res = skip;
+        }
+        else {
+            // Same maximum length achieved by both paths
+            res = new Pair(take.len, take.count + skip.count);
+        }
+
+        dp[i][prev + 1] = res;
+        return res;
+    }
+}
+
+```
+
+
+```java
+// memoized version O(n^2)
+class Solution {
+    public int findNumberOfLIS(int[] nums) {
+        int[] dp = new int[nums.length];
+        int[] LIS_count= new int[nums.length];
+        Arrays.fill(dp, 1);
+        for(int i=0;i<nums.length;i++){
+            for(int j=0;j<i;j++){
+                // we can include nums[i] to the LIS at j or not
+                if(nums[j]<nums[i]){
+                    dp[i]=Math.max(dp[i], dp[j]+1);
+                    LIS_count[dp[i] - 1]
+                }
+            }
+        }
+
+        int max = Arrays.stream(dp).max().getAsInt();
+        int count=0;
+        for(int num:dp){
+            if(num == max)count++;
+        }
+        return count;
+    }
+}
+```
+</details>
+
+<details id="368. Largest Divisible Subset">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">368. Largest Divisible Subset 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/largest-divisible-subset/description/
+
+Given a set of distinct positive integers nums, return the largest subset answer such that every pair (answer[i], answer[j]) of elements in this subset satisfies:
+
+answer[i] % answer[j] == 0, or
+answer[j] % answer[i] == 0
+If there are multiple solutions, return any of them.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,3]
+Output: [1,2]
+Explanation: [1,3] is also accepted.
+Example 2:
+
+Input: nums = [1,2,4,8]
+Output: [1,2,4,8]
+ 
+
+Constraints:
+
+1 <= nums.length <= 1000
+1 <= nums[i] <= 2 * 109
+All the integers in nums are unique
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+```java
+class Solution {
+    public List<Integer> largestDivisibleSubset(int[] nums) {
+        List<List<Integer>> subsets=new ArrayList<>();
+        Arrays.sort(nums);
+
+        for(int i=0;i<nums.length;i++){
+            subsets.add(new ArrayList<Integer>(Arrays.asList(nums[i])));
+        }
+        for(int i=0;i<nums.length;i++){
+            for(int j=0;j<i;j++){
+                if(nums[i] % nums[j] == 0 && subsets.get(j).size()+1>subsets.get(i).size() ){
+                    List<Integer> arr = new ArrayList<>(subsets.get(j));
+                    arr.add(nums[i]);
+                    subsets.set(i, arr);
+                }
+            }
+        }
+        int max_length = subsets.stream()
+                        .map(i -> i.size())
+                        .max(Integer::compareTo)
+                        .get();
+        for(List<Integer> list: subsets){
+            if(list.size() == max_length){
+                return list;
+            }
+        }
+        return null;
+    }
+}
+```
+
+    Things to remember:
+    Here sorting is nescessory,  
+</details>
+
+
+<details id="1691. Maximum Height by Stacking Cuboids ">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:red;font-size:16px;font-weight:bold">1691. Maximum Height by Stacking Cuboids  
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/maximum-height-by-stacking-cuboids/description/
+
+Given n cuboids where the dimensions of the ith cuboid is cuboids[i] = [widthi, lengthi, heighti] (0-indexed). Choose a subset of cuboids and place them on each other.
+
+You can place cuboid i on cuboid j if widthi <= widthj and lengthi <= lengthj and heighti <= heightj. You can rearrange any cuboid's dimensions by rotating it to put it on another cuboid.
+
+Return the maximum height of the stacked cuboids.
+
+ 
+
+Example 1:
+
+
+
+Input: cuboids = [[50,45,20],[95,37,53],[45,23,12]]
+Output: 190
+Explanation:
+Cuboid 1 is placed on the bottom with the 53x37 side facing down with height 95.
+Cuboid 0 is placed next with the 45x20 side facing down with height 50.
+Cuboid 2 is placed next with the 23x12 side facing down with height 45.
+The total height is 95 + 50 + 45 = 190.
+Example 2:
+
+Input: cuboids = [[38,25,45],[76,35,3]]
+Output: 76
+Explanation:
+You can't place any of the cuboids on the other.
+We choose cuboid 1 and rotate it so that the 35x3 side is facing down and its height is 76.
+Example 3:
+
+Input: cuboids = [[7,11,17],[7,17,11],[11,7,17],[11,17,7],[17,7,11],[17,11,7]]
+Output: 102
+Explanation:
+After rearranging the cuboids, you can see that all cuboids have the same dimension.
+You can place the 11x7 side down on all cuboids so their heights are 17.
+The maximum height of stacked cuboids is 6 * 17 = 102.
+ 
+
+Constraints:
+
+n == cuboids.length
+1 <= n <= 100
+1 <= widthi, lengthi, heighti <= 100
+
+```java
+class Solution {
+    public int maxHeight(int[][] cuboids) {
+        for (int[] cube : cuboids) {
+            Arrays.sort(cube);
+        }
+
+        // in order to make the cubes lexicographically sorted we need to consider all the dimensions starting from smallest to largest vv imp
+        Arrays.sort(cuboids, (a, b) -> {
+            if (a[0] != b[0]) return a[0] - b[0];
+            if (a[1] != b[1]) return a[1] - b[1];
+            return a[2] - b[2];
+        });
+        int n = cuboids.length;
+        int[] dp = new int[n];
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            dp[i] = cuboids[i][2];
+            for (int j = 0; j < i; j++) {
+                if (cuboids[i][0] >= cuboids[j][0]
+                        && cuboids[i][1] >= cuboids[j][1]
+                        && cuboids[i][2] >= cuboids[j][2]) {
+
+                    dp[i] = Math.max(dp[i], dp[j] + cuboids[i][2]);
+                }
+            }
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+    }
+}
+```
+    Things to remember
+    Time Complexity = O(n²)
+    vvimp is to make the cubes lexicographically sorted
+</details>
 
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
