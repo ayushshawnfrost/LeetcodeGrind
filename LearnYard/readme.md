@@ -5435,6 +5435,8 @@ class Solution {
 
     LCS always have 2 strings/arrays which have to be checked and make a single subsequence
 
+    Here the recursion + memo  sol is same in TC with bottonup
+
 <details id="1143. Longest Common Subsequence">
 <summary> 
 <span style="color:yellow;font-size:16px;font-weight:bold">1143. Longest Common Subsequence 
@@ -5537,27 +5539,360 @@ class Solution {
 </details>
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="516. Longest Palindromic Subsequence">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">516. Longest Palindromic Subsequence 
 </span>
 </summary>
-</details> -->
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+https://leetcode.com/problems/longest-palindromic-subsequence/description/
+
+Given a string s, find the longest palindromic subsequence's length in s.
+
+A subsequence is a sequence that can be derived from another sequence by deleting some or no elements without changing the order of the remaining elements.
+
+ 
+
+Example 1:
+
+Input: s = "bbbab"
+Output: 4
+Explanation: One possible longest palindromic subsequence is "bbbb".
+Example 2:
+
+Input: s = "cbbd"
+Output: 2
+Explanation: One possible longest palindromic subsequence is "bb".
+ 
+
+Constraints:
+
+1 <= s.length <= 1000
+s consists only of lowercase English letters.
+
+```java
+// recursion + memo
+class Solution {
+    public int longestPalindromeSubseq(String s) {
+        int[][] dp = new int[s.length()][s.length()];
+        for(int[] d:dp)Arrays.fill(d, -1);
+
+        String rev = (new StringBuilder(s)).reverse().toString();
+        return LPS(0,0,s,rev,dp);
+    }
+    private int LPS(int i1, int i2, String s, String rev, int[][] dp){
+        // dont return at the half length
+        if(i1 >= s.length() || i2 >= rev.length())return 0;
+
+        if(dp[i1][i2] != -1)return dp[i1][i2];
+        if(s.charAt(i1) == rev.charAt(i2)){
+            return  dp[i1][i2] = 1 + LPS(i1+1,i2+1,s,rev,dp);
+        }
+
+        int skip1 = LPS(i1+1,i2,s,rev,dp);
+        int skip2 = LPS(i1,i2+1,s,rev,dp);
+
+        return dp[i1][i2] = Math.max(skip1, skip2);
+    }
+}
+```
+
+
+```java
+class Solution {
+    public int longestPalindromeSubseq(String s) {
+        int n = s.length();
+        String rev = new StringBuilder(s).reverse().toString();
+        int[][] dp = new int[n + 1][n + 1];
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (s.charAt(i - 1) == rev.charAt(j - 1)) {
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j],
+                                        dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[n][n];
+    }
+}
+```
+</details>
+
+<details id="72. Edit Distance">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">72. Edit Distance 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/edit-distance/description/
 
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+Given two strings word1 and word2, return the minimum number of operations required to convert word1 to word2.
+
+You have the following three operations permitted on a word:
+
+Insert a character
+Delete a character
+Replace a character
+ 
+
+Example 1:
+
+Input: word1 = "horse", word2 = "ros"
+Output: 3
+Explanation: 
+horse -> rorse (replace 'h' with 'r')
+rorse -> rose (remove 'r')
+rose -> ros (remove 'e')
+Example 2:
+
+Input: word1 = "intention", word2 = "execution"
+Output: 5
+Explanation: 
+intention -> inention (remove 't')
+inention -> enention (replace 'i' with 'e')
+enention -> exention (replace 'n' with 'x')
+exention -> exection (replace 'n' with 'c')
+exection -> execution (insert 'u')
+ 
+
+Constraints:
+
+0 <= word1.length, word2.length <= 500
+word1 and word2 consist of lowercase English letters.
+
+```java
+// recursion + memo
+class Solution {
+    public int minDistance(String word1, String word2) {
+        int[][] dp= new int[word1.length()][word2.length()];
+        for(int[]d:dp)Arrays.fill(d, -1);
+
+        return minDist(0, 0, word1, word2, dp);
+    }
+
+    private int minDist(int i1, int i2, String w1, String w2, int[][] dp) {
+        if (i1 >= w1.length()) {
+            return w2.length() - i2; // insert remaining 
+        }
+
+        if (i2 == w2.length()) {
+            return w1.length() - i1; // delete remaining chars
+        }
+
+        if(dp[i1][i2] != -1)return dp[i1][i2];
+
+        if (w1.charAt(i1) == w2.charAt(i2)) {
+            return dp[i1][i2] = minDist(i1 + 1, i2 + 1, w1, w2, dp);
+        }
+
+        int insert = 1 + minDist(i1, i2 + 1, w1, w2, dp);
+
+        int delete = 1 + minDist(i1 + 1, i2, w1, w2, dp);
+
+        int replace = 1 + minDist(i1 + 1, i2 + 1, w1, w2, dp);
+        return dp[i1][i2] = Math.min(insert, Math.min(delete, replace));
+    }
+}
+```
+
+
+```java
+// bottom up
+class Solution {
+    public int minDistance(String word1, String word2) {
+        int m = word1.length();
+        int n = word2.length();
+        int[][] dp = new int[m + 1][n + 1];
+        
+        // Base cases
+        for (int i = 0; i <= m; i++)dp[i][0] = i;
+        for (int j = 0; j <= n; j++)dp[0][j] = j;
+
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (word1.charAt(i - 1) == word2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    int insert = dp[i][j - 1];
+                    int delete = dp[i - 1][j];
+                    int replace = dp[i - 1][j - 1];
+                    dp[i][j] = 1 + Math.min(insert,
+                                   Math.min(delete, replace));
+                }
+            }
+        }
+        return dp[m][n];
+    }
+}
+```
+    Things to remember
+    TC : O(n*m)
+    SC : O(n*m)
+
+
+```java
+// bottom up (space optimized 2 rows sol) space: O(n)
+class Solution {
+    public int minDistance(String word1, String word2) {
+        int m = word1.length();
+        int n = word2.length();
+        int[] prev = new int[n + 1];
+        // just need 2 rows to get the diagonal, left and top element so store just current and prev rows
+        for (int j = 0; j <= n; j++)prev[j] = j;
+
+        for (int i = 1; i <= m; i++) {
+            int[] curr = new int[n + 1];
+            curr[0] = i;
+            for (int j = 1; j <= n; j++) {
+                if (word1.charAt(i - 1) == word2.charAt(j - 1)) {
+                    curr[j] = prev[j - 1];
+                } else {
+                    int insert = curr[j - 1];
+                    int delete = prev[j];
+                    int replace = prev[j - 1];
+                    curr[j] = 1 + Math.min(insert,
+                                   Math.min(delete, replace));
+                }
+            }
+            prev = curr;
+        }
+        return prev[n];
+    }
+}
+
+```
+</details>
+
+
+<details id="44. Wildcard Matching">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">44. Wildcard Matching 
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/wildcard-matching/description/
+
+Given an input string (s) and a pattern (p), implement wildcard pattern matching with support for '?' and '*' where:
+
+'?' Matches any single character.
+'*' Matches any sequence of characters (including the empty sequence).
+The matching should cover the entire input string (not partial).
+
+ 
+
+Example 1:
+
+Input: s = "aa", p = "a"
+Output: false
+Explanation: "a" does not match the entire string "aa".
+Example 2:
+
+Input: s = "aa", p = "*"
+Output: true
+Explanation: '*' matches any sequence.
+Example 3:
+
+Input: s = "cb", p = "?a"
+Output: false
+Explanation: '?' matches 'c', but the second letter is 'a', which does not match 'b'.
+ 
+
+Constraints:
+
+0 <= s.length, p.length <= 2000
+s contains only lowercase English letters.
+p contains only lowercase English letters, '?' or '*'.
+
+
+```java
+// bottom up is best
+class Solution {
+    public boolean isMatch(String s, String p) {
+        int s_len = s.length();
+        int p_len = p.length();
+        boolean[][] dp=new boolean[s_len + 1][p_len + 1];
+        // Base case: empty string matches empty pattern
+        dp[0][0] = true;
+        // Handle patterns starting with '*' that can match an empty string
+        for (int j = 1; j <= p_len; j++) {
+            if (p.charAt(j - 1) == '*') {
+                dp[0][j] = dp[0][j - 1];
+            }
+        }
+        
+        for(int i=1;i<=s_len;i++){
+            for(int j=1;j<=p_len;j++){
+                if(s.charAt(i-1) == p.charAt(j-1) || p.charAt(j-1) == '?'){
+                    // same character or we matched ? with any char at i
+                    dp[i][j] = dp[i-1][j-1];
+                }else if(p.charAt(j-1) == '*'){
+                    // mactch * with empty or just one char (we keep on doing it in next iteration comparing * with all the lengths in future)
+                    dp[i][j] = dp[i-1][j] || dp[i][j-1];
+                }else{
+                    // not req as boolean[] is false by default
+                    dp[i][j] = false;
+                }
+            }
+        }
+        return dp[s_len][p_len];
+    }
+}
+```
+
+    thing to remember
+    TC: O(m*n)
+
+
+
+```java
+// recursion + memo but go for 
+class Solution {
+    public boolean isMatch(String s, String p) {
+        int m = s.length(), n = p.length();
+        Boolean[][] memo = new Boolean[m + 1][n + 1];
+        return helper(s, p, 0, 0, memo);
+    }
+    
+    private boolean helper(String s, String p, int i, int j, Boolean[][] memo) {
+        // If pattern is fully exhausted, string must also be exhausted
+        if (j == p.length()) {
+            return i == s.length();
+        }
+        
+        // If string is exhausted, remaining pattern must consist only of '*'
+        if (i == s.length()) {
+            for (int k = j; k < p.length(); k++) {
+                if (p.charAt(k) != '*') return false;
+            }
+            return true;
+        }
+        
+        // Return cached result if already computed
+        if (memo[i][j] != null) {
+            return memo[i][j];
+        }
+        
+        boolean ans = false;
+        char pc = p.charAt(j);
+        char sc = s.charAt(i);
+        
+        if (pc == '*') {
+            // '*' can match empty sequence (j + 1) or consume current char (i + 1)
+            ans = helper(s, p, i, j + 1, memo) || helper(s, p, i + 1, j, memo);
+        } else if (pc == '?' || sc == pc) {
+            // Characters match or '?' matches any single character
+            ans = helper(s, p, i + 1, j + 1, memo);
+        }
+        
+        return memo[i][j] = ans;
+    }
+}
+```
+</details>
 
 <!-- <details id="1584. Min Cost to Connect All Points">
 <summary> 
