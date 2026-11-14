@@ -5894,12 +5894,129 @@ class Solution {
 ```
 </details>
 
-<!-- <details id="1584. Min Cost to Connect All Points">
+<details id="1092. Shortest Common Supersequence ">
 <summary> 
-<span style="color:yellow;font-size:16px;font-weight:bold">1584. Min Cost to Connect All Points 
+<span style="color:yellow;font-size:16px;font-weight:bold">1092. Shortest Common Supersequence  
 </span>
 </summary>
-</details> -->
+
+https://leetcode.com/problems/shortest-common-supersequence/description/
+
+Given two strings str1 and str2, return the shortest string that has both str1 and str2 as subsequences. If there are multiple valid strings, return any of them.
+
+A string s is a subsequence of string t if deleting some number of characters from t (possibly 0) results in the string s.
+
+ 
+
+Example 1:
+
+Input:
+String str1 = "abac";
+String str2 = "cab";
+
+Output: "cabac"
+Explanation: 
+str1 = "abac" is a subsequence of "cabac" because we can delete the first "c".
+str2 = "cab" is a subsequence of "cabac" because we can delete the last "ac".
+The answer provided is the shortest such string that satisfies these properties.
+Example 2:
+
+Input:
+String str1 = "aaaaaaaa";
+String str2 = "aaaaaaaa";
+
+Output: "aaaaaaaa"
+ 
+
+Constraints:
+
+1 <= str1.length, str2.length <= 1000
+str1 and str2 consist of lowercase English letters.
+
+
+
+```java
+// recursion + memo (TLE)
+class Solution {
+    public String shortestCommonSupersequence(String str1, String str2) {
+        Map<String, String> dp=new HashMap<>();
+        return SCS(0, 0, str1, str2, dp);
+    }
+
+    private String SCS(int i1, int i2, String str1, String str2, Map<String, String> dp){
+        if(i1>= str1.length() && i2>=str2.length()){
+            return "";
+        }
+        if(i1 >= str1.length()){
+            return str2.substring(i2, str2.length());
+        }
+        if(i2 >= str2.length()){
+            return str1.substring(i1, str1.length());
+        }
+        if(dp.containsKey(i1+","+i2)){
+            return dp.get(i1+","+i2);
+        }
+
+        // same char
+        if(str1.charAt(i1) == str2.charAt(i2)){
+            String ans = str1.charAt(i1) + SCS(i1+1, i2+1, str1, str2, dp);
+            dp.put(i1+","+i2, ans);
+            return ans;
+        }
+        String sub1="";
+        String sub2="";
+        // take 1st one
+        sub1 = str1.charAt(i1) + SCS(i1+1, i2, str1, str2, dp);
+
+        // take 2nd one
+        sub2 = str2.charAt(i2) + SCS(i1, i2+1, str1, str2, dp);
+        String ans = sub1.length()<sub2.length()?sub1:sub2;
+        dp.put(i1+","+i2, ans);
+
+        return ans;
+    }
+}
+TC- O(m*n*(m+n)) // (m+n) is the work done for each state in string
+```
+
+```java
+// accepted bottom up LCS + printing SCS
+class Solution {
+    public String shortestCommonSupersequence(String str1, String str2) {
+        int m = str1.length();
+        int n = str2.length();
+        int[][] dp = new int[m + 1][n + 1];
+
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (str1.charAt(i - 1) == str2.charAt(j - 1))
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
+                else
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+        StringBuilder ans = new StringBuilder();
+        int i = m, j = n;
+        while (i > 0 && j > 0) {
+            if (str1.charAt(i - 1) == str2.charAt(j - 1)) {
+                ans.append(str1.charAt(i - 1));
+                i--;
+                j--;
+            } else if (dp[i - 1][j] > dp[i][j - 1]) {
+                ans.append(str1.charAt(i - 1));
+                i--;
+            } else {
+                ans.append(str2.charAt(j - 1));
+                j--;
+            }
+        }
+        while (i > 0) ans.append(str1.charAt(--i));
+        while (j > 0) ans.append(str2.charAt(--j));
+        return ans.reverse().toString();
+    }
+}
+```
+</details>
 
 
 <!-- <details id="1584. Min Cost to Connect All Points">
